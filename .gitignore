@@ -1,0 +1,44 @@
+# Qt build artifacts
+*.o
+*.a
+moc_*.cpp
+moc_*.h
+ui_*.h
+qrc_*.cpp
+*.so
+*.so.*
+
+# qmake generated
+Makefile
+.qmake.stash
+.qmake.cache
+
+# Build directories
+build/
+debug/
+release/
+*-Debug/
+*-Release/
+
+# Qt Creator project user files (machine-specific)
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+*.creator.user
+
+# Binary output
+SystemInfo
+
+# Compiled Python files (tooling)
+__pycache__/
+*.py[cod]
+
+# Editor / OS noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
