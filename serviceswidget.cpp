@@ -3,10 +3,10 @@
 
 ServicesWidget::ServicesWidget(QWidget *parent) : QWidget(parent), ui(new Ui::ServicesWidget)
 {
-    ui->setupUi(this);
+    this->ui->setupUi(this);
 }
 
 ServicesWidget::~ServicesWidget()
 {
-    delete ui;
+    delete this->ui;
 }

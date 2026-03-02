@@ -3,10 +3,10 @@
 
 PerformanceWidget::PerformanceWidget(QWidget *parent) : QWidget(parent), ui(new Ui::PerformanceWidget)
 {
-    ui->setupUi(this);
+    this->ui->setupUi(this);
 }
 
 PerformanceWidget::~PerformanceWidget()
 {
-    delete ui;
+    delete this->ui;
 }

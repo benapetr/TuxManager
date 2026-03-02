@@ -36,7 +36,7 @@ void Logger::Log(Level level, const QString &message)
     // Filter based on Verbosity:
     //   Verbosity 0 → show Info and above (suppress Debug)
     //   Verbosity 1+ → show everything
-    const Level minLevel = (Verbosity >= 1) ? Debug : Info;
+    const Level minLevel = (this->Verbosity >= 1) ? Debug : Info;
     if (level < minLevel)
         return;
 

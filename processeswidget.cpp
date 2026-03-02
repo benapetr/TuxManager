@@ -3,10 +3,10 @@
 
 ProcessesWidget::ProcessesWidget(QWidget *parent) : QWidget(parent), ui(new Ui::ProcessesWidget)
 {
-    ui->setupUi(this);
+    this->ui->setupUi(this);
 }
 
 ProcessesWidget::~ProcessesWidget()
 {
-    delete ui;
+    delete this->ui;
 }

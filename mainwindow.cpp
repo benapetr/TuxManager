@@ -9,34 +9,33 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     , m_usersWidget(new UsersWidget(this))
     , m_servicesWidget(new ServicesWidget(this))
 {
-    ui->setupUi(this);
+    this->ui->setupUi(this);
 
-    ui->processesLayout->addWidget(m_processesWidget);
-    ui->performanceLayout->addWidget(m_performanceWidget);
-    ui->usersLayout->addWidget(m_usersWidget);
-    ui->servicesLayout->addWidget(m_servicesWidget);
+    this->ui->processesLayout->addWidget(this->m_processesWidget);
+    this->ui->performanceLayout->addWidget(this->m_performanceWidget);
+    this->ui->usersLayout->addWidget(this->m_usersWidget);
+    this->ui->servicesLayout->addWidget(this->m_servicesWidget);
 
     // Restore previous window layout
     if (!CFG->WindowGeometry.isEmpty())
-        restoreGeometry(CFG->WindowGeometry);
+        this->restoreGeometry(CFG->WindowGeometry);
     if (!CFG->WindowState.isEmpty())
-        restoreState(CFG->WindowState);
-    ui->tabWidget->setCurrentIndex(CFG->ActiveTab);
+        this->restoreState(CFG->WindowState);
+    this->ui->tabWidget->setCurrentIndex(CFG->ActiveTab);
 
     // Keep ActiveTab in sync as the user switches tabs
-    connect(ui->tabWidget, &QTabWidget::currentChanged,
-            this, [](int index) { CFG->ActiveTab = index; });
+    connect(this->ui->tabWidget, &QTabWidget::currentChanged, this, [](int index) { CFG->ActiveTab = index; });
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+    delete this->ui;
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    CFG->WindowGeometry = saveGeometry();
-    CFG->WindowState    = saveState();
+    CFG->WindowGeometry = this->saveGeometry();
+    CFG->WindowState    = this->saveState();
     CFG->Save();
     QMainWindow::closeEvent(event);
 }

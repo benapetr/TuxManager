@@ -19,12 +19,12 @@ void Configuration::Load()
     QSettings s;
 
     // Window
-    WindowGeometry = s.value("Window/Geometry").toByteArray();
-    WindowState    = s.value("Window/State").toByteArray();
-    ActiveTab      = s.value("Window/ActiveTab", ActiveTab).toInt();
+    this->WindowGeometry = s.value("Window/Geometry").toByteArray();
+    this->WindowState    = s.value("Window/State").toByteArray();
+    this->ActiveTab      = s.value("Window/ActiveTab", this->ActiveTab).toInt();
 
     // General
-    RefreshRateMs  = s.value("General/RefreshRateMs", RefreshRateMs).toInt();
+    this->RefreshRateMs  = s.value("General/RefreshRateMs", this->RefreshRateMs).toInt();
 }
 
 void Configuration::Save()
@@ -32,12 +32,12 @@ void Configuration::Save()
     QSettings s;
 
     // Window
-    s.setValue("Window/Geometry",  WindowGeometry);
-    s.setValue("Window/State",     WindowState);
-    s.setValue("Window/ActiveTab", ActiveTab);
+    s.setValue("Window/Geometry",  this->WindowGeometry);
+    s.setValue("Window/State",     this->WindowState);
+    s.setValue("Window/ActiveTab", this->ActiveTab);
 
     // General
-    s.setValue("General/RefreshRateMs", RefreshRateMs);
+    s.setValue("General/RefreshRateMs", this->RefreshRateMs);
 
     s.sync();
 }

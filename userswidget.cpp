@@ -3,10 +3,10 @@
 
 UsersWidget::UsersWidget(QWidget *parent) : QWidget(parent), ui(new Ui::UsersWidget)
 {
-    ui->setupUi(this);
+    this->ui->setupUi(this);
 }
 
 UsersWidget::~UsersWidget()
 {
-    delete ui;
+    delete this->ui;
 }
