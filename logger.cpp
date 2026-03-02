@@ -12,27 +12,31 @@ Logger *Logger::instance()
     return s_instance;
 }
 
-Logger::Logger(QObject *parent)
-    : QObject(parent)
+Logger::Logger(QObject *parent) : QObject(parent)
 {}
 
 const char *Logger::levelTag(Level level)
 {
-    switch (level) {
-    case Debug: return "DEBUG";
-    case Info:  return "INFO ";
-    case Warn:  return "WARN ";
-    case Error: return "ERROR";
+    switch (level)
+    {
+        case Debug:
+            return "DEBUG";
+        case Info:
+            return "INFO ";
+        case Warn:
+            return "WARN ";
+        case Error:
+            return "ERROR";
     }
     return "?????";
 }
 
-void Logger::log(Level level, const QString &message)
+void Logger::Log(Level level, const QString &message)
 {
-    // Filter based on verbosity:
-    //   verbosity 0 → show Info and above (suppress Debug)
-    //   verbosity 1+ → show everything
-    const Level minLevel = (verbosity >= 1) ? Debug : Info;
+    // Filter based on Verbosity:
+    //   Verbosity 0 → show Info and above (suppress Debug)
+    //   Verbosity 1+ → show everything
+    const Level minLevel = (Verbosity >= 1) ? Debug : Info;
     if (level < minLevel)
         return;
 
@@ -42,11 +46,13 @@ void Logger::log(Level level, const QString &message)
         QString("%1 %2: %3\n").arg(timestamp, levelTag(level), message);
 
     // WARN and ERROR → stderr, everything else → stdout
-    if (level >= Warn) {
+    if (level >= Warn)
+    {
         QTextStream err(stderr);
         err << line;
         err.flush();
-    } else {
+    } else
+    {
         QTextStream out(stdout);
         out << line;
         out.flush();

@@ -1,8 +1,7 @@
 #include "performancewidget.h"
 #include "ui_performancewidget.h"
 
-PerformanceWidget::PerformanceWidget(QWidget *parent)
-    : QWidget(parent), ui(new Ui::PerformanceWidget)
+PerformanceWidget::PerformanceWidget(QWidget *parent) : QWidget(parent), ui(new Ui::PerformanceWidget)
 {
     ui->setupUi(this);
 }

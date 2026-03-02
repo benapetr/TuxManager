@@ -8,7 +8,7 @@
 #include <cstdio>
 #include <cstring>
 
-static constexpr char kVersion[] = "0.1.0";
+static constexpr char kVersion[] = "1.0.0";
 static constexpr char kAppName[] = "SystemInfo";
 
 // Pre-screen --help / --version before QApplication so they work without a display.
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
                 if (c == 'v') verbosity++;
         }
     }
-    Logger::instance()->verbosity = verbosity;
+    Logger::instance()->Verbosity = verbosity;
 
     // ── Bootstrap ─────────────────────────────────────────────────────────────
     CFG->Load();

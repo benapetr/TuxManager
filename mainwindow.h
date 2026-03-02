@@ -9,8 +9,9 @@
 #include "serviceswidget.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui {
-class MainWindow;
+namespace Ui
+{
+    class MainWindow;
 }
 QT_END_NAMESPACE
 
@@ -18,19 +19,19 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
-public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+    public:
+        MainWindow(QWidget *parent = nullptr);
+        ~MainWindow();
 
-protected:
-    void closeEvent(QCloseEvent *event) override;
+    protected:
+        void closeEvent(QCloseEvent *event) override;
 
-private:
-    Ui::MainWindow *ui;
+    private:
+        Ui::MainWindow *ui;
 
-    ProcessesWidget   *m_processesWidget;
-    PerformanceWidget *m_performanceWidget;
-    UsersWidget       *m_usersWidget;
-    ServicesWidget    *m_servicesWidget;
+        ProcessesWidget   *m_processesWidget;
+        PerformanceWidget *m_performanceWidget;
+        UsersWidget       *m_usersWidget;
+        ServicesWidget    *m_servicesWidget;
 };
 #endif // MAINWINDOW_H

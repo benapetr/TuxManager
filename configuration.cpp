@@ -11,8 +11,7 @@ Configuration *Configuration::instance()
     return s_instance;
 }
 
-Configuration::Configuration(QObject *parent)
-    : QObject(parent)
+Configuration::Configuration(QObject *parent) : QObject(parent)
 {}
 
 void Configuration::Load()

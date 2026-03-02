@@ -4,8 +4,9 @@
 #include <QWidget>
 
 QT_BEGIN_NAMESPACE
-namespace Ui {
-class PerformanceWidget;
+namespace Ui
+{
+    class PerformanceWidget;
 }
 QT_END_NAMESPACE
 
@@ -13,12 +14,12 @@ class PerformanceWidget : public QWidget
 {
     Q_OBJECT
 
-public:
-    explicit PerformanceWidget(QWidget *parent = nullptr);
-    ~PerformanceWidget();
+    public:
+        explicit PerformanceWidget(QWidget *parent = nullptr);
+        ~PerformanceWidget();
 
-private:
-    Ui::PerformanceWidget *ui;
+    private:
+        Ui::PerformanceWidget *ui;
 };
 
 #endif // PERFORMANCEWIDGET_H

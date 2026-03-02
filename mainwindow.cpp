@@ -2,8 +2,7 @@
 #include "ui_mainwindow.h"
 #include "configuration.h"
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , m_processesWidget(new ProcessesWidget(this))
     , m_performanceWidget(new PerformanceWidget(this))
