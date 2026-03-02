@@ -23,6 +23,10 @@ class GraphWidget : public QWidget
         /// Replace the displayed history and trigger a repaint.
         void setHistory(const QVector<double> &data, double maxVal = 100.0);
 
+        /// Optional secondary (kernel-time) history drawn as a darker overlay.
+        /// Pass an empty vector to disable.
+        void setSecondaryHistory(const QVector<double> &data2);
+
         /// Optional: change the line / fill colour pair from the default blue.
         void setColor(QColor line, QColor fill);
 
@@ -39,10 +43,12 @@ class GraphWidget : public QWidget
 
     private:
         QVector<double> m_data;
+        QVector<double> m_data2;            ///< kernel-time overlay (optional)
         double          m_maxVal    { 100.0 };
 
-        QColor          m_lineColor { 0x00, 0xbc, 0xff };  // bright blue
-        QColor          m_fillColor { 0x00, 0x4c, 0x8a, 120 };
+        QColor          m_lineColor  { 0x00, 0xbc, 0xff };  // bright blue
+        QColor          m_fillColor  { 0x00, 0x4c, 0x8a, 120 };
+        QColor          m_fillColor2 { 0x00, 0x22, 0x55, 160 };  // darker blue for kernel
 
         int             m_gridCols  { 5 };
         int             m_gridRows  { 4 };

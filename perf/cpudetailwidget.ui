@@ -3,7 +3,7 @@
  <class>CpuDetailWidget</class>
  <widget class="QWidget" name="CpuDetailWidget">
   <property name="geometry">
-   <rect><x>0</x><y>0</y><width>600</width><height>500</height></rect>
+   <rect><x>0</x><y>0</y><width>640</width><height>520</height></rect>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="leftMargin"><number>12</number></property>
@@ -12,20 +12,26 @@
    <property name="bottomMargin"><number>10</number></property>
    <property name="spacing"><number>6</number></property>
 
-   <!-- Header row -->
+   <!-- Header row: title + model name + utilisation % -->
    <item>
-    <layout class="QHBoxLayout" name="headerLayout">
+    <layout class="QHBoxLayout" name="headerLayout" stretch="1,0">
      <item>
-      <widget class="QLabel" name="titleLabel">
-       <property name="text"><string>CPU</string></property>
-       <property name="styleSheet"><string>font-size: 18pt; font-weight: bold; color: #00bcff;</string></property>
-      </widget>
-     </item>
-     <item>
-      <spacer>
-       <property name="orientation"><enum>Qt::Horizontal</enum></property>
-       <property name="sizeHint" stdset="0"><size><width>40</width><height>0</height></size></property>
-      </spacer>
+      <layout class="QVBoxLayout" name="headerLabelLayout">
+       <property name="spacing"><number>2</number></property>
+       <item>
+        <widget class="QLabel" name="titleLabel">
+         <property name="text"><string>CPU</string></property>
+         <property name="styleSheet"><string>font-size: 18pt; font-weight: bold; color: #00bcff;</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="modelNameLabel">
+         <property name="text"><string></string></property>
+         <property name="styleSheet"><string>color: #aaa; font-size: 8pt;</string></property>
+         <property name="wordWrap"><bool>true</bool></property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
       <widget class="QLabel" name="utilizationLabel">
@@ -37,10 +43,16 @@
     </layout>
    </item>
 
-   <!-- Graph -->
+   <!-- Graph container — CpuGraphArea is inserted here at runtime -->
    <item>
-    <widget class="Perf::GraphWidget" name="graphWidget">
+    <widget class="QWidget" name="graphAreaContainer">
      <property name="minimumHeight"><number>180</number></property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>1</verstretch>
+      </sizepolicy>
+     </property>
     </widget>
    </item>
 
@@ -69,42 +81,40 @@
     </layout>
    </item>
 
-   <!-- Stats grid -->
+   <!-- Stats grid: 3 columns of label/value pairs -->
    <item>
     <layout class="QGridLayout" name="statsGrid">
-     <property name="horizontalSpacing"><number>24</number></property>
-     <property name="verticalSpacing"><number>8</number></property>
+     <property name="horizontalSpacing"><number>20</number></property>
+     <property name="verticalSpacing"><number>6</number></property>
 
+     <!-- Row 0 -->
      <item row="0" column="0"><widget class="QLabel"><property name="text"><string>Utilization</string></property><property name="styleSheet"><string>color:#888;</string></property></widget></item>
      <item row="0" column="1"><widget class="QLabel" name="statUtilValue"><property name="text"><string>0%</string></property></widget></item>
-     <item row="0" column="2"><widget class="QLabel"><property name="text"><string>Processes</string></property><property name="styleSheet"><string>color:#888;</string></property></widget></item>
-     <item row="0" column="3"><widget class="QLabel" name="statProcessesValue"><property name="text"><string>—</string></property></widget></item>
+     <item row="0" column="2"><widget class="QLabel"><property name="text"><string>Speed</string></property><property name="styleSheet"><string>color:#888;</string></property></widget></item>
+     <item row="0" column="3"><widget class="QLabel" name="statSpeedValue"><property name="text"><string>—</string></property></widget></item>
 
-     <item row="1" column="0"><widget class="QLabel"><property name="text"><string>Logical processors</string></property><property name="styleSheet"><string>color:#888;</string></property></widget></item>
-     <item row="1" column="1"><widget class="QLabel" name="statLogicalCpusValue"><property name="text"><string>—</string></property></widget></item>
-     <item row="1" column="2"><widget class="QLabel"><property name="text"><string>Uptime</string></property><property name="styleSheet"><string>color:#888;</string></property></widget></item>
-     <item row="1" column="3"><widget class="QLabel" name="statUptimeValue"><property name="text"><string>—</string></property></widget></item>
+     <!-- Row 1 -->
+     <item row="1" column="0"><widget class="QLabel"><property name="text"><string>Processes</string></property><property name="styleSheet"><string>color:#888;</string></property></widget></item>
+     <item row="1" column="1"><widget class="QLabel" name="statProcessesValue"><property name="text"><string>—</string></property></widget></item>
+     <item row="1" column="2"><widget class="QLabel"><property name="text"><string>Threads</string></property><property name="styleSheet"><string>color:#888;</string></property></widget></item>
+     <item row="1" column="3"><widget class="QLabel" name="statThreadsValue"><property name="text"><string>—</string></property></widget></item>
+
+     <!-- Row 2 -->
+     <item row="2" column="0"><widget class="QLabel"><property name="text"><string>Uptime</string></property><property name="styleSheet"><string>color:#888;</string></property></widget></item>
+     <item row="2" column="1"><widget class="QLabel" name="statUptimeValue"><property name="text"><string>—</string></property></widget></item>
+     <item row="2" column="2"><widget class="QLabel"><property name="text"><string>Logical processors</string></property><property name="styleSheet"><string>color:#888;</string></property></widget></item>
+     <item row="2" column="3"><widget class="QLabel" name="statLogicalCpusValue"><property name="text"><string>—</string></property></widget></item>
+
+     <!-- Row 3 -->
+     <item row="3" column="0"><widget class="QLabel"><property name="text"><string>Base speed</string></property><property name="styleSheet"><string>color:#888;</string></property></widget></item>
+     <item row="3" column="1"><widget class="QLabel" name="statBaseSpeedValue"><property name="text"><string>—</string></property></widget></item>
 
     </layout>
    </item>
 
-   <!-- Vertical spacer -->
-   <item>
-    <spacer>
-     <property name="orientation"><enum>Qt::Vertical</enum></property>
-     <property name="sizeHint" stdset="0"><size><width>0</width><height>40</height></size></property>
-    </spacer>
-   </item>
-
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>Perf::GraphWidget</class>
-   <extends>QWidget</extends>
-   <header>perf/graphwidget.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>
+

@@ -25,7 +25,9 @@ SOURCES += \
     perf/graphwidget.cpp \
     perf/sidepanelitem.cpp \
     perf/sidepanel.cpp \
+    perf/cpugrapharea.cpp \
     perf/cpudetailwidget.cpp \
+    perf/memorybar.cpp \
     perf/memorydetailwidget.cpp
 
 HEADERS += \
@@ -44,7 +46,9 @@ HEADERS += \
     perf/graphwidget.h \
     perf/sidepanelitem.h \
     perf/sidepanel.h \
+    perf/cpugrapharea.h \
     perf/cpudetailwidget.h \
+    perf/memorybar.h \
     perf/memorydetailwidget.h
 
 FORMS += \

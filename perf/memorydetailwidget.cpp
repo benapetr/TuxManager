@@ -46,22 +46,31 @@ void MemoryDetailWidget::onUpdated()
     const qint64 total   = this->m_provider->memTotalKb();
     const qint64 used    = this->m_provider->memUsedKb();
     const qint64 avail   = this->m_provider->memAvailKb();
-    const qint64 cached  = this->m_provider->memCachedKb();
+    const qint64 free    = this->m_provider->memFreeKb();
+    const qint64 cached  = this->m_provider->memCachedKb();   // includes buffers
     const qint64 buffers = this->m_provider->memBuffersKb();
+    const qint64 dirty   = this->m_provider->memDirtyKb();
 
     this->ui->totalLabel->setText(fmtGb(total) + " GB");
     this->ui->statInUseValue->setText(fmtGb(used)    + " GB");
     this->ui->statAvailValue->setText(fmtGb(avail)   + " GB");
     this->ui->statCachedValue->setText(fmtGb(cached) + " GB");
     this->ui->statBuffersValue->setText(fmtGb(buffers) + " GB");
+    this->ui->statFreeValue->setText(fmtGb(free)     + " GB");
 
-    // Composition bar (0–1000 scale)
-    if (total > 0)
-    {
-        const int barVal = static_cast<int>(
-            static_cast<double>(used) / static_cast<double>(total) * 1000.0);
-        this->ui->compositionBar->setValue(barVal);
-    }
+    // Dirty shown in MB when small, GB when large
+    if (dirty < 1024LL * 1024LL)
+        this->ui->statDirtyValue->setText(
+                QString::number(dirty / 1024.0, 'f', 1) + " MB");
+    else
+        this->ui->statDirtyValue->setText(fmtGb(dirty) + " GB");
+
+    // Composition bar — 4 segments must sum to total
+    // free   = MemFree
+    // cached = Buffers + PageCache  (includes dirty subset)
+    // used   = Total - Free - Cached (htop formula, non-reclaimable)
+    // Verify: used + cached + free == total  ✓
+    this->ui->compositionBar->setSegments(used, dirty, cached, free, total);
 
     this->ui->graphWidget->setHistory(this->m_provider->memHistory());
 }

@@ -1,8 +1,10 @@
 #ifndef PERF_CPUDETAILWIDGET_H
 #define PERF_CPUDETAILWIDGET_H
 
+#include "cpugrapharea.h"
 #include "perfdataprovider.h"
 
+#include <QMenu>
 #include <QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -24,12 +26,15 @@ class CpuDetailWidget : public QWidget
 
     private slots:
         void onUpdated();
+        void onContextMenuRequested(const QPoint &globalPos);
 
     private:
         Ui::CpuDetailWidget  *ui;
-        PerfDataProvider     *m_provider { nullptr };
+        PerfDataProvider     *m_provider   { nullptr };
+        CpuGraphArea         *m_graphArea  { nullptr };
 };
 
 } // namespace Perf
 
 #endif // PERF_CPUDETAILWIDGET_H
+

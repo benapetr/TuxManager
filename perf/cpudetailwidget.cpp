@@ -1,8 +1,12 @@
 #include "cpudetailwidget.h"
 #include "ui_cpudetailwidget.h"
 
+#include <QAction>
+#include <QApplication>
+#include <QClipboard>
 #include <QFile>
-#include <unistd.h>
+#include <QMenu>
+#include <QVBoxLayout>
 
 namespace Perf
 {
@@ -13,15 +17,15 @@ CpuDetailWidget::CpuDetailWidget(QWidget *parent)
 {
     this->ui->setupUi(this);
 
-    // CPU graph: blue
-    this->ui->graphWidget->setColor(QColor(0x00, 0xbc, 0xff),
-                                    QColor(0x00, 0x4c, 0x8a, 120));
-    this->ui->graphWidget->setGridColumns(6);
-    this->ui->graphWidget->setGridRows(4);
+    // Embed CpuGraphArea into the plain container widget from the .ui
+    this->m_graphArea = new CpuGraphArea(this->ui->graphAreaContainer);
+    QVBoxLayout *lay  = new QVBoxLayout(this->ui->graphAreaContainer);
+    lay->setContentsMargins(0, 0, 0, 0);
+    lay->addWidget(this->m_graphArea);
+    this->ui->graphAreaContainer->setLayout(lay);
 
-    // Populate static fields immediately
-    const int logical = static_cast<int>(sysconf(_SC_NPROCESSORS_ONLN));
-    this->ui->statLogicalCpusValue->setText(QString::number(logical));
+    connect(this->m_graphArea, &CpuGraphArea::contextMenuRequested,
+            this, &CpuDetailWidget::onContextMenuRequested);
 }
 
 CpuDetailWidget::~CpuDetailWidget()
@@ -39,11 +43,22 @@ void CpuDetailWidget::setProvider(PerfDataProvider *provider)
 
     if (this->m_provider)
     {
+        // Populate one-time static labels from metadata
+        this->ui->modelNameLabel->setText(this->m_provider->cpuModelName());
+        this->ui->statLogicalCpusValue->setText(
+                QString::number(this->m_provider->cpuLogicalCount()));
+        const double baseMhz = this->m_provider->cpuBaseMhz();
+        if (baseMhz > 0.0)
+            this->ui->statBaseSpeedValue->setText(
+                    tr("%1 GHz").arg(baseMhz / 1000.0, 0, 'f', 2));
+
         connect(this->m_provider, &PerfDataProvider::updated,
                 this, &CpuDetailWidget::onUpdated);
         this->onUpdated();
     }
 }
+
+// ── Private slots ─────────────────────────────────────────────────────────────
 
 void CpuDetailWidget::onUpdated()
 {
@@ -52,9 +67,21 @@ void CpuDetailWidget::onUpdated()
 
     const double pct = this->m_provider->cpuPercent();
 
+    // Header utilisation
     this->ui->utilizationLabel->setText(QString::number(pct, 'f', 0) + "%");
+
+    // Stats panel
     this->ui->statUtilValue->setText(QString::number(pct, 'f', 1) + "%");
-    this->ui->graphWidget->setHistory(this->m_provider->cpuHistory());
+
+    const double curMhz = this->m_provider->cpuCurrentMhz();
+    if (curMhz > 0.0)
+        this->ui->statSpeedValue->setText(
+                tr("%1 GHz").arg(curMhz / 1000.0, 0, 'f', 2));
+
+    this->ui->statProcessesValue->setText(
+            QString::number(this->m_provider->processCount()));
+    this->ui->statThreadsValue->setText(
+            QString::number(this->m_provider->threadCount()));
 
     // Uptime from /proc/uptime
     QFile f("/proc/uptime");
@@ -80,6 +107,56 @@ void CpuDetailWidget::onUpdated()
                     .arg(seconds, 2, 10, QChar('0'));
         this->ui->statUptimeValue->setText(upStr);
     }
+
+    // Update the graph area
+    this->m_graphArea->updateData(this->m_provider);
+}
+
+void CpuDetailWidget::onContextMenuRequested(const QPoint &globalPos)
+{
+    QMenu menu(this);
+    menu.setTitle(tr("CPU graph options"));
+
+    // ── Change graph to ───────────────────────────────────────────────────────
+    QMenu *graphMenu = menu.addMenu(tr("Change graph to"));
+
+    QAction *actOverall  = graphMenu->addAction(tr("Overall utilization"));
+    QAction *actPerCore  = graphMenu->addAction(tr("Logical processors"));
+    actOverall->setCheckable(true);
+    actPerCore->setCheckable(true);
+
+    const bool isOverall = (this->m_graphArea->mode() == CpuGraphArea::GraphMode::Overall);
+    actOverall->setChecked( isOverall);
+    actPerCore->setChecked(!isOverall);
+
+    connect(actOverall, &QAction::triggered, this, [this]() {
+        this->m_graphArea->setMode(CpuGraphArea::GraphMode::Overall);
+    });
+    connect(actPerCore, &QAction::triggered, this, [this]() {
+        this->m_graphArea->setMode(CpuGraphArea::GraphMode::PerCore);
+    });
+
+    menu.addSeparator();
+
+    // ── Show kernel times ─────────────────────────────────────────────────────
+    QAction *actKernel = menu.addAction(tr("Show kernel times"));
+    actKernel->setCheckable(true);
+    actKernel->setChecked(this->m_graphArea->showKernelTime());
+    connect(actKernel, &QAction::triggered, this, [this](bool checked) {
+        this->m_graphArea->setShowKernelTime(checked);
+    });
+
+    menu.addSeparator();
+
+    // ── Copy ─────────────────────────────────────────────────────────────────
+    QAction *actCopy = menu.addAction(tr("Copy\tCtrl+C"));
+    connect(actCopy, &QAction::triggered, this, [this]() {
+        QApplication::clipboard()->setPixmap(
+                this->m_graphArea->grab());
+    });
+
+    menu.exec(globalPos);
 }
 
 } // namespace Perf
+
