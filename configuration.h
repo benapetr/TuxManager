@@ -40,6 +40,8 @@ class Configuration : public QObject
         QVector<int> GpuEngineSelectorIndices { 0, 1, 2, 3 };
         /// CPU graph mode: 0 = overall, 1 = logical processors.
         int CpuGraphMode { 0 };
+        /// CPU overlay toggle in Performance -> CPU.
+        bool CpuShowKernelTimes { false };
 
     private:
         explicit Configuration(QObject *parent = nullptr);

@@ -49,6 +49,8 @@ void Configuration::Load()
     this->CpuGraphMode = s.value("Performance/CpuGraphMode", this->CpuGraphMode).toInt();
     if (this->CpuGraphMode != 0 && this->CpuGraphMode != 1)
         this->CpuGraphMode = 0;
+    this->CpuShowKernelTimes = s.value("Performance/CpuShowKernelTimes",
+                                       this->CpuShowKernelTimes).toBool();
 }
 
 void Configuration::Save()
@@ -75,6 +77,7 @@ void Configuration::Save()
         gpuSel.append(v);
     s.setValue("Performance/GpuEngineSelectorIndices", gpuSel);
     s.setValue("Performance/CpuGraphMode", this->CpuGraphMode);
+    s.setValue("Performance/CpuShowKernelTimes", this->CpuShowKernelTimes);
 
     s.sync();
 }

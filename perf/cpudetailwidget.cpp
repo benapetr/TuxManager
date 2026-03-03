@@ -32,6 +32,7 @@ CpuDetailWidget::CpuDetailWidget(QWidget *parent)
                 CFG->CpuGraphMode == 1
                 ? CpuGraphArea::GraphMode::PerCore
                 : CpuGraphArea::GraphMode::Overall);
+    this->m_graphArea->setShowKernelTime(CFG->CpuShowKernelTimes);
 }
 
 CpuDetailWidget::~CpuDetailWidget()
@@ -161,6 +162,7 @@ void CpuDetailWidget::onContextMenuRequested(const QPoint &globalPos)
     actKernel->setChecked(this->m_graphArea->showKernelTime());
     connect(actKernel, &QAction::triggered, this, [this](bool checked) {
         this->m_graphArea->setShowKernelTime(checked);
+        CFG->CpuShowKernelTimes = checked;
     });
 
     menu.addSeparator();
