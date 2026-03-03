@@ -18,6 +18,8 @@ DiskDetailWidget::DiskDetailWidget(QWidget *parent)
     this->ui->activeGraphWidget->setSampleCapacity(HISTORY_SIZE);
     this->ui->activeGraphWidget->setGridColumns(6);
     this->ui->activeGraphWidget->setGridRows(4);
+    this->ui->activeGraphWidget->setSeriesNames(tr("Active time"));
+    this->ui->activeGraphWidget->setValueFormat(GraphWidget::ValueFormat::Percent);
 
     // Transfer graph (read + write overlay)
     this->ui->transferGraphWidget->setColor(QColor(0x88, 0xcc, 0x66),
@@ -25,6 +27,8 @@ DiskDetailWidget::DiskDetailWidget(QWidget *parent)
     this->ui->transferGraphWidget->setSampleCapacity(HISTORY_SIZE);
     this->ui->transferGraphWidget->setGridColumns(6);
     this->ui->transferGraphWidget->setGridRows(4);
+    this->ui->transferGraphWidget->setSeriesNames(tr("Read"), tr("Write"));
+    this->ui->transferGraphWidget->setValueFormat(GraphWidget::ValueFormat::BytesPerSec);
 }
 
 DiskDetailWidget::~DiskDetailWidget()

@@ -18,6 +18,14 @@ class GraphWidget : public QWidget
     Q_OBJECT
 
     public:
+        enum class ValueFormat
+        {
+            Auto,          ///< Percent if max<=100, otherwise raw number.
+            Percent,       ///< 0..100%
+            BytesPerSec,   ///< B/s, KB/s, MB/s, GB/s
+            Raw            ///< Plain number
+        };
+
         explicit GraphWidget(QWidget *parent = nullptr);
 
         /// Replace the displayed history and trigger a repaint.
@@ -26,6 +34,7 @@ class GraphWidget : public QWidget
         /// Optional secondary (kernel-time) history drawn as a darker overlay.
         /// Pass an empty vector to disable.
         void setSecondaryHistory(const QVector<double> &data2);
+        const QVector<double> &secondaryHistory() const { return this->m_data2; }
 
         /// Optional: change the line / fill colour pair from the default blue.
         void setColor(QColor line, QColor fill);
@@ -37,11 +46,18 @@ class GraphWidget : public QWidget
         /// Number of fixed time slots across the X axis (controls scrolling).
         void setSampleCapacity(int samples);
 
+        void setHoverLineEnabled(bool enabled) { this->m_hoverLineEnabled = enabled; update(); }
+        void setHoverTooltipEnabled(bool enabled) { this->m_hoverTooltipEnabled = enabled; }
+        void setSeriesNames(const QString &primary, const QString &secondary = QString());
+        void setValueFormat(ValueFormat fmt) { this->m_valueFormat = fmt; }
+
         QSize sizeHint() const override { return QSize(200, 80); }
         QSize minimumSizeHint() const override { return QSize(60, 30); }
 
     protected:
         void paintEvent(QPaintEvent *event) override;
+        void mouseMoveEvent(QMouseEvent *event) override;
+        void leaveEvent(QEvent *event) override;
 
     private:
         QVector<double> m_data;
@@ -56,6 +72,15 @@ class GraphWidget : public QWidget
         int             m_gridRows  { 4 };
         int             m_sampleCapacity { 60 };  ///< Matches PerfDataProvider::HISTORY_SIZE.
         int             m_historyTick { 0 };      ///< Advances as samples arrive; used for grid phase.
+        int             m_hoverSlot { -1 };
+        bool            m_hoverLineEnabled { true };
+        bool            m_hoverTooltipEnabled { true };
+        QString         m_primaryName { tr("Value") };
+        QString         m_secondaryName { tr("Secondary") };
+        ValueFormat     m_valueFormat { ValueFormat::Auto };
+
+        static int sampleIndexForSlot(int size, int slot, int sampleCount);
+        QString formatValue(double v) const;
 };
 
 } // namespace Perf

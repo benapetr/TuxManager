@@ -1,8 +1,11 @@
 #include "graphwidget.h"
 
+#include <cmath>
+#include <QMouseEvent>
 #include <QPainter>
 #include <QPainterPath>
 #include <QPaintEvent>
+#include <QToolTip>
 
 namespace Perf
 {
@@ -11,6 +14,7 @@ GraphWidget::GraphWidget(QWidget *parent)
     : QWidget(parent)
 {
     this->setAutoFillBackground(false);
+    this->setMouseTracking(true);
 }
 
 void GraphWidget::setHistory(const QVector<double> &data, double maxVal)
@@ -26,6 +30,14 @@ void GraphWidget::setSecondaryHistory(const QVector<double> &data2)
 {
     this->m_data2 = data2;
     this->update();
+}
+
+void GraphWidget::setSeriesNames(const QString &primary, const QString &secondary)
+{
+    if (!primary.isEmpty())
+        this->m_primaryName = primary;
+    if (!secondary.isEmpty())
+        this->m_secondaryName = secondary;
 }
 
 void GraphWidget::setColor(QColor line, QColor fill)
@@ -168,6 +180,102 @@ void GraphWidget::paintEvent(QPaintEvent * /*event*/)
     p.setPen(QPen(this->m_lineColor.darker(150), 1));
     p.setBrush(Qt::NoBrush);
     p.drawRect(r.adjusted(0, 0, -1, -1));
+
+    if (this->m_hoverLineEnabled && this->m_hoverSlot >= 0 && this->m_hoverSlot < sampleCount)
+    {
+        const int x = static_cast<int>(this->m_hoverSlot * stepX + 0.5);
+        QColor hover = this->m_lineColor;
+        hover.setAlpha(170);
+        p.setPen(QPen(hover, 1));
+        p.drawLine(x, 0, x, h);
+    }
+}
+
+void GraphWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    const int sampleCount = qMax(2, this->m_sampleCapacity);
+    const double stepX = static_cast<double>(qMax(1, this->width())) / static_cast<double>(sampleCount - 1);
+    const int slot = qBound(0, static_cast<int>(std::lround(event->position().x() / stepX)), sampleCount - 1);
+
+    if (slot != this->m_hoverSlot)
+    {
+        this->m_hoverSlot = slot;
+        this->update();
+    }
+
+    if (this->m_hoverTooltipEnabled)
+    {
+        const int idx1 = sampleIndexForSlot(this->m_data.size(), slot, sampleCount);
+        const int idx2 = sampleIndexForSlot(this->m_data2.size(), slot, sampleCount);
+
+        if (idx1 >= 0 || idx2 >= 0)
+        {
+            QString tip;
+            if (idx1 >= 0)
+                tip += tr("%1: %2").arg(this->m_primaryName, this->formatValue(this->m_data.at(idx1)));
+            if (idx2 >= 0)
+            {
+                if (!tip.isEmpty())
+                    tip += "\n";
+                tip += tr("%1: %2").arg(this->m_secondaryName, this->formatValue(this->m_data2.at(idx2)));
+            }
+            const int secAgo = sampleCount - 1 - slot;
+            if (!tip.isEmpty())
+                tip += tr("\n%1 s ago").arg(secAgo);
+            QToolTip::showText(event->globalPosition().toPoint(), tip, this);
+        }
+        else
+        {
+            QToolTip::hideText();
+        }
+    }
+
+    QWidget::mouseMoveEvent(event);
+}
+
+void GraphWidget::leaveEvent(QEvent *event)
+{
+    this->m_hoverSlot = -1;
+    if (this->m_hoverTooltipEnabled)
+        QToolTip::hideText();
+    this->update();
+    QWidget::leaveEvent(event);
+}
+
+int GraphWidget::sampleIndexForSlot(int size, int slot, int sampleCount)
+{
+    if (size <= 0 || slot < 0 || sampleCount < 2)
+        return -1;
+    const int visibleStart = qMax(0, size - sampleCount);
+    const int visibleCount = size - visibleStart;
+    const int slotOffset = qMax(0, sampleCount - visibleCount);
+    if (slot < slotOffset || slot >= slotOffset + visibleCount)
+        return -1;
+    return visibleStart + (slot - slotOffset);
+}
+
+QString GraphWidget::formatValue(double v) const
+{
+    switch (this->m_valueFormat)
+    {
+        case ValueFormat::Percent:
+            return QString::number(v, 'f', 1) + tr("%");
+        case ValueFormat::BytesPerSec:
+            if (v >= 1024.0 * 1024.0 * 1024.0)
+                return QString::number(v / (1024.0 * 1024.0 * 1024.0), 'f', 2) + tr(" GB/s");
+            if (v >= 1024.0 * 1024.0)
+                return QString::number(v / (1024.0 * 1024.0), 'f', 1) + tr(" MB/s");
+            if (v >= 1024.0)
+                return QString::number(v / 1024.0, 'f', 0) + tr(" KB/s");
+            return QString::number(v, 'f', 0) + tr(" B/s");
+        case ValueFormat::Raw:
+            return QString::number(v, 'f', 2);
+        case ValueFormat::Auto:
+        default:
+            if (this->m_maxVal <= 100.0)
+                return QString::number(v, 'f', 1) + tr("%");
+            return QString::number(v, 'f', 2);
+    }
 }
 
 } // namespace Perf

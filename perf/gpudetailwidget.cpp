@@ -29,6 +29,7 @@ GpuDetailWidget::GpuDetailWidget(QWidget *parent)
         graph->setSampleCapacity(HISTORY_SIZE);
         graph->setGridColumns(6);
         graph->setGridRows(4);
+        graph->setValueFormat(GraphWidget::ValueFormat::Percent);
     };
 
     auto *root = new QVBoxLayout(this);
@@ -101,6 +102,7 @@ GpuDetailWidget::GpuDetailWidget(QWidget *parent)
 
     this->m_dedicatedMemGraph = new GraphWidget(this);
     configureGraph(this->m_dedicatedMemGraph);
+    this->m_dedicatedMemGraph->setSeriesNames(tr("Dedicated memory usage"));
     this->m_dedicatedMemGraph->setMinimumHeight(70);
     root->addWidget(this->m_dedicatedMemGraph);
 
@@ -119,6 +121,7 @@ GpuDetailWidget::GpuDetailWidget(QWidget *parent)
 
     this->m_sharedMemGraph = new GraphWidget(this);
     configureGraph(this->m_sharedMemGraph);
+    this->m_sharedMemGraph->setSeriesNames(tr("Shared memory usage"));
     this->m_sharedMemGraph->setMinimumHeight(70);
     root->addWidget(this->m_sharedMemGraph);
 
@@ -141,6 +144,8 @@ GpuDetailWidget::GpuDetailWidget(QWidget *parent)
 
     this->m_copyBwGraph = new GraphWidget(this);
     configureGraph(this->m_copyBwGraph);
+    this->m_copyBwGraph->setSeriesNames(tr("TX"), tr("RX"));
+    this->m_copyBwGraph->setValueFormat(GraphWidget::ValueFormat::BytesPerSec);
     this->m_copyBwGraph->setMinimumHeight(70);
     root->addWidget(this->m_copyBwGraph);
 
@@ -302,6 +307,8 @@ void GpuDetailWidget::onUpdated()
 
         if (engineIndex >= 0)
         {
+            const QString engName = this->m_provider->gpuEngineName(this->m_gpuIndex, engineIndex);
+            graph->setSeriesNames(engName);
             graph->setHistory(this->m_provider->gpuEngineHistory(this->m_gpuIndex, engineIndex), 100.0);
             value->setText(QString::number(this->m_provider->gpuEnginePercent(this->m_gpuIndex, engineIndex), 'f', 0) + "%");
         }

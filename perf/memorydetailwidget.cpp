@@ -13,6 +13,8 @@ MemoryDetailWidget::MemoryDetailWidget(QWidget *parent) : QWidget(parent), ui(ne
     this->ui->graphWidget->setSampleCapacity(HISTORY_SIZE);
     this->ui->graphWidget->setGridColumns(6);
     this->ui->graphWidget->setGridRows(4);
+    this->ui->graphWidget->setSeriesNames(tr("Used memory"));
+    this->ui->graphWidget->setValueFormat(GraphWidget::ValueFormat::Percent);
 }
 
 MemoryDetailWidget::~MemoryDetailWidget()
