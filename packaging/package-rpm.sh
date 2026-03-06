@@ -181,7 +181,7 @@ Release:        $RELEASE%{?dist}
 Summary:        $DESCRIPTION
 
 License:        GPL-3.0-or-later
-URL:            https://github.com/petrbena/SystemInfo
+URL:            https://github.com/benapetr/TuxManager
 Source0:        %{name}-%{version}.tar.gz
 
 %if 0%{?qt_major} == 5
@@ -200,7 +200,7 @@ Tux Manager is a Linux system monitor inspired by Windows Task Manager.
 %build
 mkdir -p release
 pushd src
-%{qmake_cmd} SystemInfo.pro -o ../release/Makefile
+%{qmake_cmd} TuxManager.pro -o ../release/Makefile
 popd
 %make_build -C release
 
