@@ -69,6 +69,16 @@ void GraphWidget::SetSampleCapacity(int samples)
     this->update();
 }
 
+void GraphWidget::SetPercentTooltipAbsolute(double maxAbsoluteValue,
+                                            const QString &unitLabel,
+                                            int precision)
+{
+    this->m_percentTooltipAbsoluteEnabled = (maxAbsoluteValue > 0.0);
+    this->m_percentTooltipAbsoluteMax = qMax(0.0, maxAbsoluteValue);
+    this->m_percentTooltipAbsoluteUnit = unitLabel;
+    this->m_percentTooltipAbsolutePrecision = qMax(0, precision);
+}
+
 void GraphWidget::paintEvent(QPaintEvent * /*event*/)
 {
     QPainter p(this);
@@ -275,7 +285,17 @@ QString GraphWidget::formatValue(double v) const
     switch (this->m_valueFormat)
     {
         case ValueFormat::Percent:
-            return QString::number(v, 'f', 1) + tr("%");
+        {
+            const QString percent = QString::number(v, 'f', 1) + tr("%");
+            if (!this->m_percentTooltipAbsoluteEnabled || this->m_percentTooltipAbsoluteMax <= 0.0)
+                return percent;
+
+            const double absolute = (v / 100.0) * this->m_percentTooltipAbsoluteMax;
+            return tr("%1 (%2 %3)")
+                    .arg(percent)
+                    .arg(QString::number(absolute, 'f', this->m_percentTooltipAbsolutePrecision))
+                    .arg(this->m_percentTooltipAbsoluteUnit);
+        }
         case ValueFormat::BytesPerSec:
             if (v >= 1024.0 * 1024.0 * 1024.0)
                 return QString::number(v / (1024.0 * 1024.0 * 1024.0), 'f', 2) + tr(" GB/s");
@@ -293,4 +313,3 @@ QString GraphWidget::formatValue(double v) const
             return QString::number(v, 'f', 2);
     }
 }
-

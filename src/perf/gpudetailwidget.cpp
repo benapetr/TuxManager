@@ -334,9 +334,15 @@ void GpuDetailWidget::onUpdated()
     }
 
     this->m_dedicatedMemGraph->SetHistory(this->m_provider->GpuMemUsageHistory(this->m_gpuIndex), 100.0);
+    this->m_dedicatedMemGraph->SetPercentTooltipAbsolute(static_cast<double>(dedicatedTotalMiB) / 1024.0,
+                                                         tr("GB"),
+                                                         2);
     this->m_dedicatedMemGraphMaxLabel->setText(formatMemMib(dedicatedTotalMiB));
 
     this->m_sharedMemGraph->SetHistory(this->m_sharedMemHistory, 100.0);
+    this->m_sharedMemGraph->SetPercentTooltipAbsolute(static_cast<double>(sharedTotalMiB) / 1024.0,
+                                                      tr("GB"),
+                                                      2);
     this->m_sharedMemGraphMaxLabel->setText(formatMemMib(sharedTotalMiB));
 
     const QVector<double> &txHistory = this->m_provider->GpuCopyTxHistory(this->m_gpuIndex);
@@ -368,4 +374,3 @@ QString GpuDetailWidget::formatRate(double bytesPerSec)
         return QString::number(bytesPerSec / (1024.0 * 1024.0), 'f', 1) + QObject::tr(" MB/s");
     return QString::number(bytesPerSec / 1024.0, 'f', 0) + QObject::tr(" KB/s");
 }
-

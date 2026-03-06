@@ -98,6 +98,9 @@ void MemoryDetailWidget::onUpdated()
     // Verify: used + cached + free == total  ✓
     this->ui->compositionBar->SetSegments(used, dirty, cached, free, total);
 
+    this->ui->graphWidget->SetPercentTooltipAbsolute(static_cast<double>(total) / (1024.0 * 1024.0),
+                                                     tr("GB"),
+                                                     2);
     this->ui->graphWidget->SetHistory(this->m_provider->MemHistory());
 }
 
@@ -109,4 +112,3 @@ QString MemoryDetailWidget::fmtGb(qint64 kb)
         return QString::number(gb, 'f', 1);
     return QString::number(gb, 'f', 2);
 }
-
