@@ -14,7 +14,7 @@ It is inspired by the Windows Task Manager but targets Linux and aims to expose 
 
 ## Coding style
 
-Follow the guidelines in [CODING_STYLE.md](../CODING_STYLE.md).
+Follow the guidelines in [CODING_STYLE.md](../src/CODING_STYLE.md).
 
 ## Important conventions
 
