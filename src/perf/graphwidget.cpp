@@ -118,7 +118,7 @@ void GraphWidget::paintEvent(QPaintEvent * /*event*/)
     QColor gridColor = darkTheme ? pal.color(QPalette::Midlight)
                                  : pal.color(QPalette::Text);
     if (gridColor.alpha() == 255)
-        gridColor.setAlpha(darkTheme ? 150 : 105);
+        gridColor.setAlpha(darkTheme ? 150 : 62);
     p.setPen(QPen(gridColor, 1));
 
     // Denser grid on larger widgets while keeping existing configured minimum.
