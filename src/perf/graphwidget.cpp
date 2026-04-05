@@ -107,6 +107,7 @@ void GraphWidget::paintEvent(QPaintEvent * /*event*/)
     // ── Background ────────────────────────────────────────────────────────────
     const QPalette pal = this->palette();
     const QColor bg = pal.color(QPalette::Base);
+    const bool darkTheme = bg.lightness() <= 127;
     p.fillRect(r, bg);
 
     // Fixed time axis slot geometry.
@@ -114,9 +115,10 @@ void GraphWidget::paintEvent(QPaintEvent * /*event*/)
     const double stepX = static_cast<double>(w) / static_cast<double>(sampleCount - 1);
 
     // ── Grid ──────────────────────────────────────────────────────────────────
-    QColor gridColor = pal.color(QPalette::Midlight);
+    QColor gridColor = darkTheme ? pal.color(QPalette::Midlight)
+                                 : pal.color(QPalette::Text);
     if (gridColor.alpha() == 255)
-        gridColor.setAlpha(150);
+        gridColor.setAlpha(darkTheme ? 150 : 105);
     p.setPen(QPen(gridColor, 1));
 
     // Denser grid on larger widgets while keeping existing configured minimum.
@@ -230,7 +232,8 @@ void GraphWidget::paintEvent(QPaintEvent * /*event*/)
         QFont f = p.font();
         f.setPointSizeF(qMax(7.0, f.pointSizeF() - 1.0));
         p.setFont(f);
-        p.setPen(QColor(245, 245, 245, 220));
+        p.setPen(darkTheme ? QColor(245, 245, 245, 220)
+                           : QColor(35, 35, 35, 220));
         p.drawText(r.adjusted(4, 2, -4, -2),
                    Qt::AlignLeft | Qt::AlignTop,
                    this->m_overlayText);

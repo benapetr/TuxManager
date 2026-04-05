@@ -36,9 +36,11 @@ SidePanel::SidePanel(QWidget *parent)
     this->m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->m_scrollArea->setFrameShape(QFrame::NoFrame);
 
-    // Dark background matching SidePanelItem
+    // Keep original dark styling in dark mode, adapt to palette in light mode.
     QPalette pal = this->m_container->palette();
-    pal.setColor(QPalette::Window, QColor(0x12, 0x12, 0x1a));
+    const QColor window = this->palette().color(QPalette::Window);
+    const bool darkTheme = window.lightness() <= 127;
+    pal.setColor(QPalette::Window, darkTheme ? QColor(0x12, 0x12, 0x1a) : window);
     this->m_container->setPalette(pal);
     this->m_container->setAutoFillBackground(true);
 
