@@ -29,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>About TuxManager</string>
   </property>
   <widget class="QPushButton" name="closeButton">
    <property name="geometry">
