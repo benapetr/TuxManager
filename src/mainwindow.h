@@ -53,5 +53,9 @@ class MainWindow : public QMainWindow
         PerformanceWidget *m_performanceWidget;
         UsersWidget       *m_usersWidget;
         ServicesWidget    *m_servicesWidget;
+
+    private slots:
+        void on_actionAbout_triggered();
+        void on_actionExit_triggered();
 };
 #endif // MAINWINDOW_H

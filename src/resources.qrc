@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file alias="tux_manager_256.ico">tux_manager_256.ico</file>
+        <file>tux_manager_icon_vector.svg</file>
     </qresource>
 </RCC>

@@ -26,10 +26,10 @@
      inkscape:document-units="mm"
      showgrid="true"
      inkscape:zoom="3.0502806"
-     inkscape:cx="104.2527"
+     inkscape:cx="52.945949"
      inkscape:cy="159.98528"
-     inkscape:window-width="1920"
-     inkscape:window-height="1012"
+     inkscape:window-width="1280"
+     inkscape:window-height="956"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -274,7 +274,7 @@
          id="path6593"
          style="fill:#364e72;fill-opacity:0.25441805;stroke-width:23.9664" /></g><text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.70755px;font-family:'Liberation Mono';-inkscape-font-specification:'Liberation Mono, @wght=700';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 700;fill:#1a2536;fill-opacity:1;stroke:#d00000;stroke-width:0"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.70755px;font-family:'Liberation Mono';-inkscape-font-specification:'Liberation Mono, @wght=700';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 700;fill:#1a2536;fill-opacity:1;stroke:none;stroke-width:0;stroke-opacity:0"
        x="19.22471"
        y="68.940216"
        id="text6730"
@@ -282,7 +282,7 @@
        inkscape:label="Name"><tspan
          sodipodi:role="line"
          id="tspan6728"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.70755px;font-family:'Liberation Mono';-inkscape-font-specification:'Liberation Mono, @wght=700';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 700;stroke-width:0"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.70755px;font-family:'Liberation Mono';-inkscape-font-specification:'Liberation Mono, @wght=700';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 700;stroke-width:0;stroke:none;stroke-opacity:0"
          x="19.22471"
          y="68.940216">TUXMAN</tspan></text><g
        id="g7762"

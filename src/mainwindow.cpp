@@ -19,6 +19,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "configuration.h"
+#include "aboutwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -41,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
         this->restoreState(CFG->WindowState);
     this->ui->tabWidget->setCurrentIndex(CFG->ActiveTab);
     this->updateTabActivity(this->ui->tabWidget->currentIndex());
+
 
     // Keep ActiveTab in sync as the user switches tabs
     connect(this->ui->tabWidget, &QTabWidget::currentChanged, this, [this](int index)
@@ -70,4 +72,18 @@ void MainWindow::updateTabActivity(int index)
     this->m_performanceWidget->SetActive(index == 1);
     this->m_usersWidget->SetActive(index == 2);
     this->m_servicesWidget->SetActive(index == 3);
+}
+
+void MainWindow::on_actionAbout_triggered()
+{
+    // Create an instance of the About Dialog
+    AboutWindow about(this);
+
+    // Open as modal window
+    about.exec();
+}
+
+void MainWindow::on_actionExit_triggered()
+{
+    qApp->quit();
 }
