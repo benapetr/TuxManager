@@ -1,0 +1,47 @@
+name: Build (Debian Qt6)
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    name: Debian ${{ matrix.debian }}
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ matrix.image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - debian: "12"
+            image: debian:12
+          - debian: "13"
+            image: debian:13
+
+    steps:
+      - name: Install build dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            ca-certificates \
+            git \
+            build-essential \
+            pkg-config \
+            qmake6 \
+            qt6-base-dev \
+            qt6-base-dev-tools \
+            libgl1-mesa-dev
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure (qmake6)
+        working-directory: src
+        run: qmake6 TuxManager.pro
+
+      - name: Build
+        working-directory: src
+        run: make -j"$(nproc)"
