@@ -26,6 +26,8 @@
 #include <QGridLayout>
 #include <QLabel>
 
+#define MAX_RATE 1024.0
+
 using namespace Perf;
 
 DiskDetailWidget::DiskDetailWidget(QWidget *parent) : QWidget(parent), ui(new Ui::DiskDetailWidget)
@@ -115,41 +117,39 @@ void DiskDetailWidget::ApplyColorScheme()
     this->update();
 }
 
-void DiskDetailWidget::SetProvider(PerfDataProvider *provider)
+void DiskDetailWidget::SetDisk(PerfDataProvider *provider, int index)
 {
     if (this->m_provider)
         disconnect(this->m_provider, &PerfDataProvider::updated, this, &DiskDetailWidget::onUpdated);
 
     this->m_provider = provider;
+    this->m_diskIndex = index;
     this->m_activeHistory = nullptr;
     this->m_readHistory = nullptr;
     this->m_writeHistory = nullptr;
 
     if (this->m_provider)
-        connect(this->m_provider, &PerfDataProvider::updated, this, &DiskDetailWidget::onUpdated);
-}
-
-void DiskDetailWidget::SetDiskIndex(int index)
-{
-    this->m_diskIndex = index;
-    if (this->m_provider && this->m_diskIndex >= 0 && this->m_diskIndex < this->m_provider->DiskCount())
     {
-        const QString name = this->m_provider->DiskName(this->m_diskIndex);
-        const QString model = this->m_provider->DiskModel(this->m_diskIndex);
-        const QString type = this->m_provider->DiskType(this->m_diskIndex);
+        if (this->m_diskIndex >= 0 && this->m_diskIndex < this->m_provider->DiskCount())
+        {
+            const QString name = this->m_provider->DiskName(this->m_diskIndex);
+            const QString model = this->m_provider->DiskModel(this->m_diskIndex);
+            const QString type = this->m_provider->DiskType(this->m_diskIndex);
 
-        this->m_activeHistory = &this->m_provider->DiskActiveHistory(this->m_diskIndex);
-        this->m_readHistory = &this->m_provider->DiskReadHistory(this->m_diskIndex);
-        this->m_writeHistory = &this->m_provider->DiskWriteHistory(this->m_diskIndex);
+            this->m_activeHistory = &this->m_provider->DiskActiveHistory(this->m_diskIndex);
+            this->m_readHistory = &this->m_provider->DiskReadHistory(this->m_diskIndex);
+            this->m_writeHistory = &this->m_provider->DiskWriteHistory(this->m_diskIndex);
 
-        this->ui->titleLabel->setText(tr("Disk (%1)").arg(name));
-        this->ui->modelLabel->setText(model);
-        this->ui->typeValueLabel->setText(type);
-        this->ui->deviceValueLabel->setText("/dev/" + name);
+            this->ui->titleLabel->setText(tr("Disk (%1)").arg(name));
+            this->ui->modelLabel->setText(model);
+            this->ui->typeValueLabel->setText(type);
+            this->ui->deviceValueLabel->setText("/dev/" + name);
 
-        this->ui->activeGraphWidget->SetDataSource(*this->m_activeHistory, 100.0);
-        this->ui->transferGraphWidget->SetDataSource(*this->m_readHistory, 1024.0);
-        this->ui->transferGraphWidget->SetOverlayDataSource(*this->m_writeHistory);
+            this->ui->activeGraphWidget->SetDataSource(*this->m_activeHistory, 100.0);
+            this->ui->transferGraphWidget->SetDataSource(*this->m_readHistory, MAX_RATE);
+            this->ui->transferGraphWidget->SetOverlayDataSource(*this->m_writeHistory);
+        }
+        connect(this->m_provider, &PerfDataProvider::updated, this, &DiskDetailWidget::onUpdated);
     }
     this->onUpdated();
 }
@@ -179,7 +179,7 @@ void DiskDetailWidget::onUpdated()
 
     this->ui->activeGraphMaxLabel->setText(tr("100%"));
 
-    double maxRate = 1024.0; // at least 1 KB/s scale
+    double maxRate = MAX_RATE;
     for (double v : *this->m_readHistory)
         maxRate = std::max(maxRate, v);
     for (double v : *this->m_writeHistory)

@@ -37,8 +37,7 @@ namespace Perf
             explicit DiskDetailWidget(QWidget *parent = nullptr);
             ~DiskDetailWidget();
 
-            void SetProvider(PerfDataProvider *provider);
-            void SetDiskIndex(int index);
+            void SetDisk(PerfDataProvider *provider, int index);
             void ApplyColorScheme();
 
         private slots:

@@ -36,8 +36,7 @@ namespace Perf
         public:
             explicit GpuDetailWidget(QWidget *parent = nullptr);
 
-            void SetProvider(PerfDataProvider *provider);
-            void SetGpuIndex(int index);
+            void SetGpu(PerfDataProvider *provider, int index);
             void ApplyColorScheme();
 
         private slots:
@@ -45,6 +44,11 @@ namespace Perf
             void onEngineSelectionChanged(int slot, int comboIndex);
 
         private:
+            void rebuildEngineSelectors();
+            void bindGpuIdentity();
+            void bindEngineGraphSource(int slot);
+            void bindMemoryAndCopySources(bool hasSharedData);
+
             PerfDataProvider *m_provider { nullptr };
             int               m_gpuIndex { -1 };
 
@@ -70,9 +74,11 @@ namespace Perf
             GraphWidget *m_dedicatedMemGraph { nullptr };
             GraphWidget *m_sharedMemGraph { nullptr };
             GraphWidget *m_copyBwGraph { nullptr };
+            const QVector<double> *m_dedicatedMemHistory { nullptr };
+            const QVector<double> *m_sharedMemHistorySource { nullptr };
+            const QVector<double> *m_copyTxHistory { nullptr };
+            const QVector<double> *m_copyRxHistory { nullptr };
             QVector<double> m_sharedMemHistory;
-
-            void rebuildEngineSelectors();
     };
 } // namespace Perf
 

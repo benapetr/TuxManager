@@ -147,8 +147,7 @@ void PerformanceWidget::setupDiskPanels()
         this->m_diskItems.append(item);
 
         auto *detail = new Perf::DiskDetailWidget(this);
-        detail->SetProvider(this->m_provider);
-        detail->SetDiskIndex(i);
+        detail->SetDisk(this->m_provider, i);
         this->m_stack->addWidget(detail);
         this->m_diskDetails.append(detail);
     }
@@ -170,8 +169,7 @@ void PerformanceWidget::setupGpuPanels()
         this->m_gpuItems.append(item);
 
         auto *detail = new Perf::GpuDetailWidget(this);
-        detail->SetProvider(this->m_provider);
-        detail->SetGpuIndex(i);
+        detail->SetGpu(this->m_provider, i);
         this->m_stack->addWidget(detail);
         this->m_gpuDetails.append(detail);
     }
@@ -193,8 +191,7 @@ void PerformanceWidget::setupNetworkPanels()
         this->m_networkItems.append(item);
 
         auto *detail = new Perf::NetworkDetailWidget(this);
-        detail->SetProvider(this->m_provider);
-        detail->SetNetworkIndex(i);
+        detail->SetNetwork(this->m_provider, i);
         this->m_stack->addWidget(detail);
         this->m_networkDetails.append(detail);
     }

@@ -37,8 +37,7 @@ namespace Perf
             explicit NetworkDetailWidget(QWidget *parent = nullptr);
             ~NetworkDetailWidget();
 
-            void SetProvider(PerfDataProvider *provider);
-            void SetNetworkIndex(int index);
+            void SetNetwork(PerfDataProvider *provider, int index);
             void ApplyColorScheme();
 
         private slots:

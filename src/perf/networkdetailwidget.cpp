@@ -95,7 +95,7 @@ void NetworkDetailWidget::ApplyColorScheme()
     this->update();
 }
 
-void NetworkDetailWidget::SetProvider(PerfDataProvider *provider)
+void NetworkDetailWidget::SetNetwork(PerfDataProvider *provider, int index)
 {
     if (this->m_provider)
     {
@@ -103,38 +103,34 @@ void NetworkDetailWidget::SetProvider(PerfDataProvider *provider)
     }
 
     this->m_provider = provider;
+    this->m_networkIndex = index;
 
     if (this->m_provider)
     {
+        if (this->m_networkIndex >= 0 && this->m_networkIndex < this->m_provider->NetworkCount())
+        {
+            const QString name = this->m_provider->NetworkName(this->m_networkIndex);
+            const QString type = this->m_provider->NetworkType(this->m_networkIndex);
+            const int speedMbps = this->m_provider->NetworkLinkSpeedMbps(this->m_networkIndex);
+            const QString ipv4 = this->m_provider->NetworkIpv4(this->m_networkIndex);
+            const QString ipv6 = this->m_provider->NetworkIpv6(this->m_networkIndex);
+
+            this->m_rxHistory = &this->m_provider->NetworkRxHistory(this->m_networkIndex);
+            this->m_txHistory = &this->m_provider->NetworkTxHistory(this->m_networkIndex);
+
+            this->ui->titleLabel->setText(tr("NIC (%1)").arg(name));
+            this->ui->adapterValueLabel->setText(name);
+            this->ui->typeValueLabel->setText(type);
+            this->ui->speedValueLabel->setText(speedMbps > 0 ? QString::number(speedMbps) + tr(" Mbps") : tr("Unknown"));
+            this->ui->ipv4ValueLabel->setText(ipv4.isEmpty() ? tr("—") : ipv4);
+            this->ui->ipv6ValueLabel->setText(ipv6.isEmpty() ? tr("—") : ipv6);
+
+            this->ui->throughputGraphWidget->SetDataSource(*this->m_rxHistory, 1024.0);
+            this->ui->throughputGraphWidget->SetOverlayDataSource(*this->m_txHistory);
+        }
         connect(this->m_provider, &PerfDataProvider::updated, this, &NetworkDetailWidget::onUpdated);
         this->onUpdated();
     }
-}
-
-void NetworkDetailWidget::SetNetworkIndex(int index)
-{
-    this->m_networkIndex = index;
-    const QString name = this->m_provider->NetworkName(this->m_networkIndex);
-    const QString type = this->m_provider->NetworkType(this->m_networkIndex);
-    const int speedMbps = this->m_provider->NetworkLinkSpeedMbps(this->m_networkIndex);
-    const QString ipv4 = this->m_provider->NetworkIpv4(this->m_networkIndex);
-    const QString ipv6 = this->m_provider->NetworkIpv6(this->m_networkIndex);
-
-    this->m_rxHistory = &this->m_provider->NetworkRxHistory(this->m_networkIndex);
-    this->m_txHistory = &this->m_provider->NetworkTxHistory(this->m_networkIndex);
-
-    this->ui->titleLabel->setText(tr("NIC (%1)").arg(name));
-    this->ui->adapterValueLabel->setText(name);
-    this->ui->typeValueLabel->setText(type);
-    this->ui->speedValueLabel->setText(speedMbps > 0 ? QString::number(speedMbps) + tr(" Mbps") : tr("Unknown"));
-    this->ui->ipv4ValueLabel->setText(ipv4.isEmpty() ? tr("—") : ipv4);
-    this->ui->ipv6ValueLabel->setText(ipv6.isEmpty() ? tr("—") : ipv6);
-
-    double maxRate = 1024.0; // at least 1KB/s scale
-    this->ui->throughputGraphWidget->SetDataSource(*this->m_rxHistory, maxRate);
-    this->ui->throughputGraphWidget->SetOverlayDataSource(*this->m_txHistory);
-
-    this->onUpdated();
 }
 
 void NetworkDetailWidget::onUpdated()
