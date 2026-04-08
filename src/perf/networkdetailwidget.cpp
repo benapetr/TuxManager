@@ -114,25 +114,14 @@ void NetworkDetailWidget::SetProvider(PerfDataProvider *provider)
 void NetworkDetailWidget::SetNetworkIndex(int index)
 {
     this->m_networkIndex = index;
-    this->onUpdated();
-}
-
-void NetworkDetailWidget::onUpdated()
-{
-    if (!this->m_provider || this->m_networkIndex < 0 || this->m_networkIndex >= this->m_provider->NetworkCount())
-    {
-        return;
-    }
-
     const QString name = this->m_provider->NetworkName(this->m_networkIndex);
     const QString type = this->m_provider->NetworkType(this->m_networkIndex);
     const int speedMbps = this->m_provider->NetworkLinkSpeedMbps(this->m_networkIndex);
     const QString ipv4 = this->m_provider->NetworkIpv4(this->m_networkIndex);
     const QString ipv6 = this->m_provider->NetworkIpv6(this->m_networkIndex);
-    const double rxBps = this->m_provider->NetworkRxBytesPerSec(this->m_networkIndex);
-    const double txBps = this->m_provider->NetworkTxBytesPerSec(this->m_networkIndex);
-    const QVector<double> &rxHistory = this->m_provider->NetworkRxHistory(this->m_networkIndex);
-    const QVector<double> &txHistory = this->m_provider->NetworkTxHistory(this->m_networkIndex);
+
+    this->m_rxHistory = &this->m_provider->NetworkRxHistory(this->m_networkIndex);
+    this->m_txHistory = &this->m_provider->NetworkTxHistory(this->m_networkIndex);
 
     this->ui->titleLabel->setText(tr("NIC (%1)").arg(name));
     this->ui->adapterValueLabel->setText(name);
@@ -141,16 +130,30 @@ void NetworkDetailWidget::onUpdated()
     this->ui->ipv4ValueLabel->setText(ipv4.isEmpty() ? tr("—") : ipv4);
     this->ui->ipv6ValueLabel->setText(ipv6.isEmpty() ? tr("—") : ipv6);
 
+    double maxRate = 1024.0; // at least 1KB/s scale
+    this->ui->throughputGraphWidget->SetDataSource(*this->m_rxHistory, maxRate);
+    this->ui->throughputGraphWidget->SetOverlayDataSource(*this->m_txHistory);
+
+    this->onUpdated();
+}
+
+void NetworkDetailWidget::onUpdated()
+{
+    if (!this->m_rxHistory || !this->m_txHistory || !this->m_provider || this->m_networkIndex < 0 || this->m_networkIndex >= this->m_provider->NetworkCount())
+        return;
+
+    const double rxBps = this->m_provider->NetworkRxBytesPerSec(this->m_networkIndex);
+    const double txBps = this->m_provider->NetworkTxBytesPerSec(this->m_networkIndex);
     this->ui->sendValueLabel->setText(Misc::FormatBytesPerSecond(txBps));
     this->ui->receiveValueLabel->setText(Misc::FormatBytesPerSecond(rxBps));
 
-    double maxRate = 1024.0; // at least 1KB/s scale
-    for (double v : rxHistory)
+    double maxRate = 1024.0;
+    for (double v : *this->m_rxHistory)
         maxRate = std::max(maxRate, v);
-    for (double v : txHistory)
+    for (double v : *this->m_txHistory)
         maxRate = std::max(maxRate, v);
 
-    this->ui->throughputGraphWidget->SetHistoryRef(rxHistory, maxRate);
-    this->ui->throughputGraphWidget->SetSecondaryHistoryRef(txHistory);
+    this->ui->throughputGraphWidget->SetMax(maxRate);
+    this->ui->throughputGraphWidget->Tick();
     this->ui->throughputGraphMaxLabel->setText(Misc::FormatBytesPerSecond(maxRate));
 }

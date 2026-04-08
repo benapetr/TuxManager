@@ -48,6 +48,8 @@ namespace Perf
             Ui::NetworkDetailWidget *ui;
             PerfDataProvider        *m_provider { nullptr };
             int                      m_networkIndex { -1 };
+            const QVector<double>   *m_rxHistory { nullptr };
+            const QVector<double>   *m_txHistory { nullptr };
     };
 } // namespace Perf
 

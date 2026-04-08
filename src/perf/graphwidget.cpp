@@ -40,36 +40,38 @@ GraphWidget::GraphWidget(QWidget *parent) : QWidget(parent)
     this->setMouseTracking(true);
 }
 
-void GraphWidget::SetHistory(const QVector<double> &data, double maxVal)
+void GraphWidget::SetDataSource(const QVector<double> &data, double maxVal)
 {
-    // Advance grid phase on every sample tick, even if values are unchanged.
-    // This keeps the time axis moving continuously (task-manager behavior).
-    ++this->m_historyTick;
-    this->m_dataRef = nullptr;
-    this->m_data   = data;
+    this->m_data = &data;
     this->m_maxVal = (maxVal > 0.0) ? maxVal : 100.0;
+    this->Tick();
+}
+
+void GraphWidget::SetOverlayDataSource(const QVector<double> &data)
+{
+    this->m_overlayData = &data;
     this->update();
 }
 
-void GraphWidget::SetHistoryRef(const QVector<double> &data, double maxVal)
+void GraphWidget::SetMax(double maxVal)
+{
+    this->m_maxVal = (maxVal > 0.0) ? maxVal : 100.0;
+}
+
+void GraphWidget::Tick()
 {
     ++this->m_historyTick;
-    this->m_dataRef = &data;
-    this->m_maxVal = (maxVal > 0.0) ? maxVal : 100.0;
     this->update();
 }
 
-void GraphWidget::SetSecondaryHistory(const QVector<double> &data2)
+void GraphWidget::ClearDataSource()
 {
-    this->m_data2Ref = nullptr;
-    this->m_data2 = data2;
-    this->update();
+    this->m_data = nullptr;
 }
 
-void GraphWidget::SetSecondaryHistoryRef(const QVector<double> &data2)
+void GraphWidget::ClearOverlayDataSource()
 {
-    this->m_data2Ref = &data2;
-    this->update();
+    this->m_overlayData = nullptr;
 }
 
 void GraphWidget::SetSeriesNames(const QString &primary, const QString &secondary)
@@ -112,8 +114,7 @@ void GraphWidget::paintEvent(QPaintEvent * /*event*/)
     const int   h = r.height();
 
     // ── Background ────────────────────────────────────────────────────────────
-    const QPalette pal = this->palette();
-    const QColor bg = pal.color(QPalette::Base);
+    const QColor bg = this->palette().color(QPalette::Base);
     const ColorScheme *scheme = ColorScheme::GetCurrent();
     p.fillRect(r, bg);
 
@@ -155,11 +156,10 @@ void GraphWidget::paintEvent(QPaintEvent * /*event*/)
     }
 
     // ── Data ──────────────────────────────────────────────────────────────────
-    const QVector<double> *primary = this->primarySource();
-    if (!primary || primary->isEmpty())
+    if (!this->m_data || this->m_data->isEmpty())
         return;
 
-    const int n = primary->size();
+    const int n = this->m_data->size();
 
     // Keep a fixed-width time axis:
     // - when history is short, right-align it (empty area on the left)
@@ -172,7 +172,7 @@ void GraphWidget::paintEvent(QPaintEvent * /*event*/)
     QPainterPath path;
     for (int i = 0; i < visibleCount; ++i)
     {
-        const double val = qBound(0.0, primary->at(visibleStart + i), this->m_maxVal);
+        const double val = qBound(0.0, this->m_data->at(visibleStart + i), this->m_maxVal);
         const double fx  = (slotOffset + i) * stepX;
         const double fy  = h - (val / this->m_maxVal) * h;
 
@@ -193,17 +193,16 @@ void GraphWidget::paintEvent(QPaintEvent * /*event*/)
     p.drawPath(fillPath);
 
     // Kernel-time overlay (secondary data2) — drawn on top as a darker fill
-    const QVector<double> *secondary = this->secondarySource();
-    if (secondary && !secondary->isEmpty())
+    if (this->m_overlayData && !this->m_overlayData->isEmpty())
     {
-        const int n2 = secondary->size();
+        const int n2 = this->m_overlayData->size();
         const int visibleStart2 = qMax(0, n2 - sampleCount);
         const int visibleCount2 = n2 - visibleStart2;
         const int slotOffset2 = qMax(0, sampleCount - visibleCount2);
         QPainterPath kPath;
         for (int i = 0; i < visibleCount2; ++i)
         {
-            const double val = qBound(0.0, secondary->at(visibleStart2 + i), this->m_maxVal);
+            const double val = qBound(0.0, this->m_overlayData->at(visibleStart2 + i), this->m_maxVal);
             const double fx  = (slotOffset2 + i) * stepX;
             const double fy  = h - (val / this->m_maxVal) * h;
             if (i == 0)
@@ -270,21 +269,19 @@ void GraphWidget::mouseMoveEvent(QMouseEvent *event)
 
     if (this->m_hoverTooltipEnabled)
     {
-        const QVector<double> *primary = this->primarySource();
-        const QVector<double> *secondary = this->secondarySource();
-        const int idx1 = sampleIndexForSlot(primary ? primary->size() : 0, slot, sampleCount);
-        const int idx2 = sampleIndexForSlot(secondary ? secondary->size() : 0, slot, sampleCount);
+        const int idx1 = sampleIndexForSlot(this->m_data ? this->m_data->size() : 0, slot, sampleCount);
+        const int idx2 = sampleIndexForSlot(this->m_overlayData ? this->m_overlayData->size() : 0, slot, sampleCount);
 
         if (idx1 >= 0 || idx2 >= 0)
         {
             QString tip;
             if (idx1 >= 0)
-                tip += tr("%1: %2").arg(this->m_primaryName, this->formatValue(primary->at(idx1)));
+                tip += tr("%1: %2").arg(this->m_primaryName, this->formatValue(this->m_data->at(idx1)));
             if (idx2 >= 0)
             {
                 if (!tip.isEmpty())
                     tip += "\n";
-                tip += tr("%1: %2").arg(this->m_secondaryName, this->formatValue(secondary->at(idx2)));
+                tip += tr("%1: %2").arg(this->m_secondaryName, this->formatValue(this->m_overlayData->at(idx2)));
             }
             const int secAgo = sampleCount - 1 - slot;
             if (!tip.isEmpty())
@@ -324,16 +321,6 @@ int GraphWidget::sampleIndexForSlot(int size, int slot, int sampleCount)
     return visibleStart + (slot - slotOffset);
 }
 
-const QVector<double> *GraphWidget::primarySource() const
-{
-    return this->m_dataRef ? this->m_dataRef : &this->m_data;
-}
-
-const QVector<double> *GraphWidget::secondarySource() const
-{
-    return this->m_data2Ref ? this->m_data2Ref : &this->m_data2;
-}
-
 QString GraphWidget::formatValue(double v) const
 {
     switch (this->m_valueFormat)
@@ -345,10 +332,10 @@ QString GraphWidget::formatValue(double v) const
                 return percent;
 
             const double absolute = (v / 100.0) * this->m_percentTooltipAbsoluteMax;
-            return tr("%1 (%2 %3)")
-                    .arg(percent)
-                    .arg(QString::number(absolute, 'f', this->m_percentTooltipAbsolutePrecision))
-                    .arg(this->m_percentTooltipAbsoluteUnit);
+            return tr("%1 (%2 %3)", "%1=percent text %2=absolute value %3=absolute unit")
+                    .arg(percent,
+                         QString::number(absolute, 'f', this->m_percentTooltipAbsolutePrecision),
+                         this->m_percentTooltipAbsoluteUnit);
         }
         case ValueFormat::BytesPerSec:
             return Misc::FormatBytesPerSecond(v);

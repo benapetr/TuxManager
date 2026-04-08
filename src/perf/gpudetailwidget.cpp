@@ -355,23 +355,23 @@ void GpuDetailWidget::onUpdated()
         {
             const QString engName = this->m_provider->GpuEngineName(this->m_gpuIndex, engineIndex);
             graph->SetSeriesNames(engName);
-            graph->SetHistoryRef(this->m_provider->GpuEngineHistory(this->m_gpuIndex, engineIndex), 100.0);
+            graph->SetDataSource(this->m_provider->GpuEngineHistory(this->m_gpuIndex, engineIndex), 100.0);
             value->setText(QString::number(this->m_provider->GpuEnginePercent(this->m_gpuIndex, engineIndex), 'f', 0) + "%");
         } else
         {
-            graph->SetHistoryRef(kEmptyHistory, 100.0);
+            graph->SetDataSource(kEmptyHistory, 100.0);
             value->setText("0%");
         }
     }
 
-    this->m_dedicatedMemGraph->SetHistoryRef(this->m_provider->GpuMemUsageHistory(this->m_gpuIndex), 100.0);
+    this->m_dedicatedMemGraph->SetDataSource(this->m_provider->GpuMemUsageHistory(this->m_gpuIndex), 100.0);
     this->m_dedicatedMemGraph->SetPercentTooltipAbsolute(static_cast<double>(dedicatedTotalMiB) / 1024.0, tr("GB"), 2);
     this->m_dedicatedMemGraphMaxLabel->setText(Misc::FormatMiB(static_cast<quint64>(qMax<qint64>(0, dedicatedTotalMiB)), 1));
 
     const QVector<double> &sharedHistory = hasSharedData
         ? this->m_provider->GpuSharedMemHistory(this->m_gpuIndex)
         : this->m_sharedMemHistory;
-    this->m_sharedMemGraph->SetHistoryRef(sharedHistory, 100.0);
+    this->m_sharedMemGraph->SetDataSource(sharedHistory, 100.0);
     this->m_sharedMemGraph->SetPercentTooltipAbsolute(static_cast<double>(sharedTotalMiB) / 1024.0, tr("GB"), 2);
     this->m_sharedMemGraphMaxLabel->setText(Misc::FormatMiB(static_cast<quint64>(qMax<qint64>(0, sharedTotalMiB)), 1));
 
@@ -382,8 +382,8 @@ void GpuDetailWidget::onUpdated()
         maxCopyRate = std::max(maxCopyRate, v);
     for (double v : rxHistory)
         maxCopyRate = std::max(maxCopyRate, v);
-    this->m_copyBwGraph->SetHistoryRef(txHistory, maxCopyRate);
-    this->m_copyBwGraph->SetSecondaryHistoryRef(rxHistory);
+    this->m_copyBwGraph->SetDataSource(txHistory, maxCopyRate);
+    this->m_copyBwGraph->SetOverlayDataSource(rxHistory);
     this->m_copyBwGraphMaxLabel->setText(Misc::FormatBytesPerSecond(maxCopyRate));
     this->m_copyBwGraph->setToolTip(tr("Copy bandwidth: light trace = TX, dark trace = RX"));
 }

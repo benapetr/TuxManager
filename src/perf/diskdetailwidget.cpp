@@ -169,7 +169,7 @@ void DiskDetailWidget::onUpdated()
     this->ui->systemDiskValueLabel->setText(isSystemDisk ? tr("Yes") : tr("No"));
     this->ui->pageFileValueLabel->setText(hasPageFile ? tr("Yes") : tr("No"));
 
-    this->ui->activeGraphWidget->SetHistoryRef(activeHistory, 100.0);
+    this->ui->activeGraphWidget->SetDataSource(activeHistory, 100.0);
     this->ui->activeGraphMaxLabel->setText(tr("100%"));
 
     double maxRate = 1024.0; // at least 1 KB/s scale
@@ -177,7 +177,7 @@ void DiskDetailWidget::onUpdated()
         maxRate = std::max(maxRate, v);
     for (double v : writeHistory)
         maxRate = std::max(maxRate, v);
-    this->ui->transferGraphWidget->SetHistoryRef(readHistory, maxRate);
-    this->ui->transferGraphWidget->SetSecondaryHistoryRef(writeHistory);
+    this->ui->transferGraphWidget->SetDataSource(readHistory, maxRate);
+    this->ui->transferGraphWidget->SetOverlayDataSource(writeHistory);
     this->ui->transferGraphMaxLabel->setText(Misc::FormatBytesPerSecond(maxRate));
 }

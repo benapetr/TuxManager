@@ -74,9 +74,9 @@ void CpuGraphArea::SetShowKernelTime(bool show)
     // the darker fill disappears without waiting for the next data tick.
     if (!show)
     {
-        this->m_overallGraph->SetSecondaryHistory({});
+        this->m_overallGraph->ClearOverlayDataSource();
         for (GraphWidget *g : this->m_coreGraphs)
-            g->SetSecondaryHistory({});
+            g->ClearOverlayDataSource();
     }
     // When turning ON the provider's next tick (≤1 s) will populate them.
 }
@@ -87,11 +87,11 @@ void CpuGraphArea::UpdateData(const PerfDataProvider *provider)
         return;
 
     // ── Aggregate graph ───────────────────────────────────────────────────────
-    this->m_overallGraph->SetHistoryRef(provider->CpuHistory());
+    this->m_overallGraph->SetDataSource(provider->CpuHistory());
     if (this->m_showKernelTime)
-        this->m_overallGraph->SetSecondaryHistoryRef(provider->CpuKernelHistory());
+        this->m_overallGraph->SetOverlayDataSource(provider->CpuKernelHistory());
     else
-        this->m_overallGraph->SetSecondaryHistory({});
+        this->m_overallGraph->ClearOverlayDataSource();
 
     // ── Per-core grid ─────────────────────────────────────────────────────────
     const int cores = provider->CoreCount();
@@ -101,11 +101,11 @@ void CpuGraphArea::UpdateData(const PerfDataProvider *provider)
         for (int i = 0; i < cores; ++i)
         {
             GraphWidget *g = this->m_coreGraphs.at(i);
-            g->SetHistoryRef(provider->CoreHistory(i));
+            g->SetDataSource(provider->CoreHistory(i));
             if (this->m_showKernelTime)
-                g->SetSecondaryHistoryRef(provider->CoreKernelHistory(i));
+                g->SetOverlayDataSource(provider->CoreKernelHistory(i));
             else
-                g->SetSecondaryHistory({});
+                g->ClearOverlayDataSource();
 
             const double coreMhz = provider->CoreCurrentMhz(i);
             if (coreMhz > 0.0)

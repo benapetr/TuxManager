@@ -207,7 +207,7 @@ void SwapDetailWidget::onUpdated()
     this->m_outRateValueLabel->setText(Misc::FormatBytesPerSecond(outBps));
 
     this->m_usageGraph->SetPercentTooltipAbsolute(static_cast<double>(totalKb) / (1024.0 * 1024.0), tr("GB"), 2);
-    this->m_usageGraph->SetHistoryRef(usageHistory, 100.0);
+    this->m_usageGraph->SetDataSource(usageHistory, 100.0);
 
     double maxRate = 1024.0;
     for (double v : inHistory)
@@ -215,7 +215,7 @@ void SwapDetailWidget::onUpdated()
     for (double v : outHistory)
         maxRate = std::max(maxRate, v);
 
-    this->m_activityGraph->SetHistoryRef(inHistory, maxRate);
-    this->m_activityGraph->SetSecondaryHistoryRef(outHistory);
+    this->m_activityGraph->SetDataSource(inHistory, maxRate);
+    this->m_activityGraph->SetOverlayDataSource(outHistory);
     this->m_activityMaxLabel->setText(Misc::FormatBytesPerSecond(maxRate));
 }
