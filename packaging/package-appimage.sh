@@ -69,9 +69,21 @@ else
     fi
 fi
 
-if ! command -v linuxdeployqt >/dev/null 2>&1; then
-    echo "Error: linuxdeployqt not found in PATH."
-    echo "Install linuxdeployqt and re-run."
+if ! command -v linuxdeploy >/dev/null 2>&1; then
+    echo "Error: linuxdeploy not found in PATH."
+    echo "Install linuxdeploy and re-run."
+    exit 1
+fi
+
+if ! command -v linuxdeploy-plugin-qt >/dev/null 2>&1; then
+    echo "Error: linuxdeploy-plugin-qt not found in PATH."
+    echo "Install linuxdeploy-plugin-qt and re-run."
+    exit 1
+fi
+
+if ! command -v linuxdeploy-plugin-appimage >/dev/null 2>&1; then
+    echo "Error: linuxdeploy-plugin-appimage not found in PATH."
+    echo "Install linuxdeploy-plugin-appimage and re-run."
     exit 1
 fi
 
@@ -114,15 +126,19 @@ echo ""
 echo "Step 3: Bundling AppImage..."
 cd "$PROJECT_ROOT"
 rm -f "$PROJECT_ROOT"/*.AppImage
-linuxdeployqt \
-    "$APPDIR/usr/share/applications/io.github.benapetr.TuxManager.desktop" \
-    -appimage \
-    -bundle-non-qt-libs \
-    -unsupported-allow-new-glibc
+export QMAKE
+QMAKE="$(command -v "$QMAKE_CMD")"
+
+linuxdeploy \
+    --appdir "$APPDIR" \
+    --desktop-file "$APPDIR/usr/share/applications/io.github.benapetr.TuxManager.desktop" \
+    --icon-file "$APPDIR/usr/share/icons/hicolor/scalable/apps/io.github.benapetr.TuxManager.svg" \
+    --plugin qt \
+    --output appimage
 
 mapfile -t APPIMAGE_FILES < <(find "$PROJECT_ROOT" -maxdepth 1 -type f -name "*.AppImage" | sort) || true
 if [ ${#APPIMAGE_FILES[@]} -eq 0 ]; then
-    echo "Error: linuxdeployqt did not produce an AppImage."
+    echo "Error: linuxdeploy did not produce an AppImage."
     exit 1
 fi
 

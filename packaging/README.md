@@ -6,8 +6,10 @@ This directory contains Linux packaging scripts for Tux Manager.
 
 - Debian/Ubuntu (`.deb`) via `package-deb.sh`
 - Fedora/RHEL/Alma/Rocky (`.rpm` + `.src.rpm`) via `package-rpm.sh`
-- Flatpak (`.flatpak`) via `package-flatpak.sh`
 - AppImage (`.AppImage`) via `package-appimage.sh`
+
+## Unsupported targets
+- Flatpak (`.flatpak`) via `package-flatpak.sh` - runs in container and doesn't allow access to host's /proc
 
 ## Dependencies
 
@@ -37,6 +39,8 @@ Notes:
 
 ### Flatpak
 
+NOTE: flatpak doesn't work right now - the resulting app runs in isolation and doesn't have access to /proc so you can't use it to full extent
+
 Required tools/runtime:
 
 ```bash
@@ -53,13 +57,21 @@ Notes:
 
 Required tools/packages:
 
+* https://github.com/linuxdeploy/linuxdeploy
+* https://github.com/linuxdeploy/linuxdeploy-plugin-qt
+* https://github.com/linuxdeploy/linuxdeploy-plugin-appimage
+
+Download released appimages from all 3, put them into some directory and create symlinks with bare names, then add this folder to PATH variable
+
 ```bash
 sudo apt-get install build-essential pkg-config qt6-base-dev
-linuxdeployqt --version
+linuxdeploy --version
+linuxdeploy-plugin-qt --help
+linuxdeploy-plugin-appimage --help
 ```
 
 Notes:
-- `linuxdeployqt` must be available in `PATH`.
+- `linuxdeploy`, `linuxdeploy-plugin-qt`, and `linuxdeploy-plugin-appimage` must be available in `PATH`.
 - The script reuses the desktop/icon metadata from `packaging/flatpak/`.
 - The resulting AppImage is written to `packaging/output/`.
 
