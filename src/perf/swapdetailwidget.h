@@ -58,6 +58,10 @@ namespace Perf
             QLabel *m_outRateValueLabel { nullptr };
             QVector<QLabel *> m_statLabels;
             QVector<QLabel *> m_axisLabels;
+
+            const QVector<double> *m_usageHistory { nullptr };
+            const QVector<double> *m_inHistory { nullptr };
+            const QVector<double> *m_outHistory { nullptr };
     };
 } // namespace Perf
 
