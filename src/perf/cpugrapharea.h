@@ -45,6 +45,7 @@ namespace Perf
             enum class GraphMode { Overall, PerCore };
 
             explicit CpuGraphArea(QWidget *parent = nullptr);
+            void SetProvider(const PerfDataProvider *provider);
 
             void SetMode(GraphMode mode);
             GraphMode GetMode() const { return this->m_mode; }
@@ -54,7 +55,7 @@ namespace Perf
             void ApplyColorScheme();
 
             /// Call after every PerfDataProvider::updated() signal.
-            void UpdateData(const PerfDataProvider *provider);
+            void UpdateData();
 
         signals:
             void contextMenuRequested(const QPoint &globalPos);
@@ -64,12 +65,15 @@ namespace Perf
 
         private:
             void ensureCoreGraphs(int count);
+            void bindOverallGraphSources();
+            void bindCoreGraphSources(int count);
 
             QStackedWidget        *m_stack           { nullptr };
             GraphWidget           *m_overallGraph     { nullptr };
             QWidget               *m_perCoreContainer { nullptr };
             QGridLayout           *m_perCoreGrid      { nullptr };
             QVector<GraphWidget *> m_coreGraphs;
+            const PerfDataProvider *m_provider        { nullptr };
 
             GraphMode              m_mode            { GraphMode::Overall };
             bool                   m_showKernelTime  { false };

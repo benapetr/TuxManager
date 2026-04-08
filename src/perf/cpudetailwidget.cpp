@@ -92,6 +92,7 @@ void CpuDetailWidget::SetProvider(PerfDataProvider *provider)
         // Populate one-time static labels from metadata
         this->ui->modelNameLabel->setText(this->m_provider->CpuModelName());
         this->ui->statLogicalCpusValue->setText(QString::number(this->m_provider->CpuLogicalCount()));
+        this->m_graphArea->SetProvider(this->m_provider);
 
         connect(this->m_provider, &PerfDataProvider::updated, this, &CpuDetailWidget::onUpdated);
         this->onUpdated();
@@ -180,7 +181,7 @@ void CpuDetailWidget::onUpdated()
     }
 
     // Update the graph area
-    this->m_graphArea->UpdateData(this->m_provider);
+    this->m_graphArea->UpdateData();
 
     if (this->m_provider->CpuIsVirtualMachine())
     {

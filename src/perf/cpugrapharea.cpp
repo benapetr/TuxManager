@@ -57,6 +57,22 @@ CpuGraphArea::CpuGraphArea(QWidget *parent) : QWidget(parent), m_stack(new QStac
 
 // ── Public interface ──────────────────────────────────────────────────────────
 
+void CpuGraphArea::SetProvider(const PerfDataProvider *provider)
+{
+    this->m_provider = provider;
+    if (!this->m_provider)
+        return;
+
+    this->bindOverallGraphSources();
+
+    const int cores = this->m_provider->CoreCount();
+    if (cores > 0)
+    {
+        this->ensureCoreGraphs(cores);
+        this->bindCoreGraphSources(cores);
+    }
+}
+
 void CpuGraphArea::SetMode(GraphMode mode)
 {
     if (this->m_mode == mode)
@@ -77,37 +93,36 @@ void CpuGraphArea::SetShowKernelTime(bool show)
         this->m_overallGraph->ClearOverlayDataSource();
         for (GraphWidget *g : this->m_coreGraphs)
             g->ClearOverlayDataSource();
+        return;
     }
-    // When turning ON the provider's next tick (≤1 s) will populate them.
+
+    this->bindOverallGraphSources();
+    this->bindCoreGraphSources(this->m_coreGraphs.size());
 }
 
-void CpuGraphArea::UpdateData(const PerfDataProvider *provider)
+void CpuGraphArea::UpdateData()
 {
-    if (!provider)
+    if (!this->m_provider)
         return;
 
     // ── Aggregate graph ───────────────────────────────────────────────────────
-    this->m_overallGraph->SetDataSource(provider->CpuHistory());
-    if (this->m_showKernelTime)
-        this->m_overallGraph->SetOverlayDataSource(provider->CpuKernelHistory());
-    else
-        this->m_overallGraph->ClearOverlayDataSource();
+    this->m_overallGraph->Tick();
 
     // ── Per-core grid ─────────────────────────────────────────────────────────
-    const int cores = provider->CoreCount();
+    const int cores = this->m_provider->CoreCount();
     if (cores > 0)
     {
+        const bool coreGraphsRebuilt = (this->m_coreGraphs.size() != cores);
         this->ensureCoreGraphs(cores);
+        if (coreGraphsRebuilt)
+            this->bindCoreGraphSources(cores);
+
         for (int i = 0; i < cores; ++i)
         {
             GraphWidget *g = this->m_coreGraphs.at(i);
-            g->SetDataSource(provider->CoreHistory(i));
-            if (this->m_showKernelTime)
-                g->SetOverlayDataSource(provider->CoreKernelHistory(i));
-            else
-                g->ClearOverlayDataSource();
-
-            const double coreMhz = provider->CoreCurrentMhz(i);
+            if (!coreGraphsRebuilt)
+                g->Tick();
+            const double coreMhz = this->m_provider->CoreCurrentMhz(i);
             if (coreMhz > 0.0)
                 g->SetOverlayText(tr("%1 GHz").arg(coreMhz / 1000.0, 0, 'f', 2));
             else
@@ -179,4 +194,33 @@ void CpuGraphArea::ensureCoreGraphs(int count)
 
     // Notify the layout system that the container's size hint has changed
     this->m_perCoreContainer->updateGeometry();
+}
+
+void CpuGraphArea::bindOverallGraphSources()
+{
+    if (!this->m_provider)
+        return;
+
+    this->m_overallGraph->SetDataSource(this->m_provider->CpuHistory());
+    if (this->m_showKernelTime)
+        this->m_overallGraph->SetOverlayDataSource(this->m_provider->CpuKernelHistory());
+    else
+        this->m_overallGraph->ClearOverlayDataSource();
+}
+
+void CpuGraphArea::bindCoreGraphSources(int count)
+{
+    if (!this->m_provider)
+        return;
+
+    const int boundCount = qMin(count, this->m_coreGraphs.size());
+    for (int i = 0; i < boundCount; ++i)
+    {
+        GraphWidget *g = this->m_coreGraphs.at(i);
+        g->SetDataSource(this->m_provider->CoreHistory(i));
+        if (this->m_showKernelTime)
+            g->SetOverlayDataSource(this->m_provider->CoreKernelHistory(i));
+        else
+            g->ClearOverlayDataSource();
+    }
 }
