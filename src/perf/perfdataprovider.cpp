@@ -313,7 +313,7 @@ bool PerfDataProvider::DiskIsSystemDisk(int i) const
     return this->m_disks.at(i).isSystemDisk;
 }
 
-bool PerfDataProvider::DiskHasPageFile(int i) const
+bool PerfDataProvider::DiskHasSwapFile(int i) const
 {
     if (i < 0 || i >= this->m_disks.size())
         return false;

@@ -118,7 +118,7 @@ namespace Perf
             qint64 DiskCapacityBytes(int i) const;
             qint64 DiskFormattedBytes(int i) const;
             bool DiskIsSystemDisk(int i) const;
-            bool DiskHasPageFile(int i) const;
+            bool DiskHasSwapFile(int i) const;
             const QVector<double> &DiskActiveHistory(int i) const;
             const QVector<double> &DiskReadHistory(int i) const;
             const QVector<double> &DiskWriteHistory(int i) const;

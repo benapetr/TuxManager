@@ -48,6 +48,9 @@ namespace Perf
             Ui::DiskDetailWidget *ui;
             PerfDataProvider     *m_provider { nullptr };
             int                   m_diskIndex { -1 };
+            const QVector<double> *m_activeHistory { nullptr };
+            const QVector<double> *m_readHistory { nullptr };
+            const QVector<double> *m_writeHistory { nullptr };
     };
 } // namespace Perf
 
