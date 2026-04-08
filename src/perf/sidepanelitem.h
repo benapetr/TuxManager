@@ -38,9 +38,8 @@ namespace Perf
         public:
             explicit SidePanelItem(const QString &title, QWidget *parent = nullptr);
 
-            /// Push a fresh data snapshot into the embedded mini-graph and
-            /// Update the subtitle text.
-            void Update(const QString &subtitle, const QVector<double> &history, double maxVal = 100.0);
+            void SetGraphSource(const QVector<double> &history, double maxVal = 100.0);
+            void Update(const QString &subtitle, double maxVal = 100.0);
 
             void SetSelected(bool selected);
             bool IsSelected() const { return this->m_selected; }

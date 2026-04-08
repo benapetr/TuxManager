@@ -44,7 +44,7 @@ void GraphWidget::SetDataSource(const QVector<double> &data, double maxVal)
 {
     this->m_data = &data;
     this->m_maxVal = (maxVal > 0.0) ? maxVal : 100.0;
-    this->Tick();
+    this->update();
 }
 
 void GraphWidget::SetOverlayDataSource(const QVector<double> &data)
