@@ -118,9 +118,30 @@ void MemoryDetailWidget::setProvider(PerfDataProvider *provider)
         disconnect(this->m_provider, &PerfDataProvider::updated, this, &MemoryDetailWidget::onUpdated);
 
     this->m_provider = provider;
+    this->m_memHistory = nullptr;
 
     if (this->m_provider)
     {
+        const qint64 total = this->m_provider->MemTotalKb();
+        this->m_memHistory = &this->m_provider->MemHistory();
+
+        this->ui->totalLabel->setText(Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, total)), 1));
+        this->ui->graphWidget->SetPercentTooltipAbsolute(static_cast<double>(total) / (1024.0 * 1024.0), tr("GB"), 2);
+        this->ui->graphWidget->SetDataSource(*this->m_memHistory);
+
+        const int dimmUsed = this->m_provider->MemDimmSlotsUsed();
+        const int dimmTotal = this->m_provider->MemDimmSlotsTotal();
+        if (dimmTotal > 0)
+            this->ui->statDimmSlotsValue->setText(tr("%1 / %2").arg(dimmUsed).arg(dimmTotal));
+        else
+            this->ui->statDimmSlotsValue->setText(tr("—"));
+
+        const int memMtps = this->m_provider->MemSpeedMtps();
+        if (memMtps > 0)
+            this->ui->statMemSpeedValue->setText(tr("%1 MT/s").arg(memMtps));
+        else
+            this->ui->statMemSpeedValue->setText(tr("—"));
+
         connect(this->m_provider, &PerfDataProvider::updated, this, &MemoryDetailWidget::onUpdated);
         this->onUpdated();
     }
@@ -139,25 +160,11 @@ void MemoryDetailWidget::onUpdated()
     const qint64 buffers = this->m_provider->MemBuffersKb();
     const qint64 dirty   = this->m_provider->MemDirtyKb();
 
-    this->ui->totalLabel->setText(Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, total)), 1));
     this->ui->statInUseValue->setText(Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, used)), 1));
     this->ui->statAvailValue->setText(Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, avail)), 1));
     this->ui->statCachedValue->setText(Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, cached)), 1));
     this->ui->statBuffersValue->setText(Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, buffers)), 1));
     this->ui->statFreeValue->setText(Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, free)), 1));
-    const int dimmUsed = this->m_provider->MemDimmSlotsUsed();
-    const int dimmTotal = this->m_provider->MemDimmSlotsTotal();
-    if (dimmTotal > 0)
-        this->ui->statDimmSlotsValue->setText(tr("%1 / %2").arg(dimmUsed).arg(dimmTotal));
-    else
-        this->ui->statDimmSlotsValue->setText(tr("—"));
-
-    const int memMtps = this->m_provider->MemSpeedMtps();
-    if (memMtps > 0)
-        this->ui->statMemSpeedValue->setText(tr("%1 MT/s").arg(memMtps));
-    else
-        this->ui->statMemSpeedValue->setText(tr("—"));
-
     this->ui->statDirtyValue->setText(Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, dirty)), 1));
 
     // Composition bar — 4 segments must sum to total
@@ -167,6 +174,6 @@ void MemoryDetailWidget::onUpdated()
     // Verify: used + cached + free == total  ✓
     this->ui->compositionBar->SetSegments(used, dirty, cached, free, total);
 
-    this->ui->graphWidget->SetPercentTooltipAbsolute(static_cast<double>(total) / (1024.0 * 1024.0), tr("GB"), 2);
-    this->ui->graphWidget->SetDataSource(this->m_provider->MemHistory());
+    if (this->m_memHistory)
+        this->ui->graphWidget->Tick();
 }

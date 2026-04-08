@@ -46,6 +46,7 @@ namespace Perf
         private:
             Ui::MemoryDetailWidget *ui;
             PerfDataProvider       *m_provider { nullptr };
+            const QVector<double>  *m_memHistory { nullptr };
     };
 } // namespace Perf
 
