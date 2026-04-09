@@ -1153,53 +1153,31 @@ int PerfDataProvider::readLinkSpeedMbps(const QString &name)
     return speed;
 }
 
-bool PerfDataProvider::sampleNetworks()
+void PerfDataProvider::refreshNetworkState(bool force)
 {
-    QFile f("/proc/net/dev");
-    if (!f.open(QIODevice::ReadOnly | QIODevice::Text))
-        return false;
-
-    struct NetCounters
+    if (!force)
     {
-        quint64 rxBytes { 0 };
-        quint64 txBytes { 0 };
-    };
-    QHash<QString, NetCounters> countersByName;
-    QStringList activeNames;
-
-    int lineNo = 0;
-    for (;;)
-    {
-        const QByteArray line = f.readLine();
-        if (line.isNull())
-            break;
-        ++lineNo;
-        if (lineNo <= 2)
-            continue; // headers
-
-        const int colon = line.indexOf(':');
-        if (colon < 0)
-            continue;
-
-        const QString ifName = QString::fromUtf8(line.left(colon)).trimmed();
-        if (!isActiveNetworkInterface(ifName))
-            continue;
-
-        const QList<QByteArray> fields = line.mid(colon + 1).simplified().split(' ');
-        if (fields.size() < 9)
-            continue;
-
-        NetCounters c;
-        c.rxBytes = fields.at(0).toULongLong();
-        c.txBytes = fields.at(8).toULongLong();
-        countersByName.insert(ifName, c);
-        activeNames.append(ifName);
+        ++this->m_networkStateRefreshCounter;
+        if (this->m_networkStateRefreshCounter < 10)
+            return;
     }
-    f.close();
 
-    std::sort(activeNames.begin(), activeNames.end());
+    this->m_networkStateRefreshCounter = 0;
+    for (NetworkSample &n : this->m_networks)
+        n.isActive = isActiveNetworkInterface(n.name);
+}
 
-    // Best-effort interface metadata (IP addresses + type) from getifaddrs.
+void PerfDataProvider::refreshNetworkMetadata(bool force)
+{
+    if (!force)
+    {
+        ++this->m_networkMetadataRefreshCounter;
+        if (this->m_networkMetadataRefreshCounter < 60)
+            return;
+    }
+
+    this->m_networkMetadataRefreshCounter = 0;
+
     struct IfAddrInfo
     {
         QString ipv4;
@@ -1214,8 +1192,6 @@ bool PerfDataProvider::sampleNetworks()
             if (!ifa->ifa_name || !ifa->ifa_addr)
                 continue;
             const QString name = QString::fromUtf8(ifa->ifa_name);
-            if (!countersByName.contains(name))
-                continue;
 
             char host[NI_MAXHOST] = {};
             const int fam = ifa->ifa_addr->sa_family;
@@ -1242,29 +1218,91 @@ bool PerfDataProvider::sampleNetworks()
         ::freeifaddrs(ifaddr);
     }
 
-    // Keep discovered NIC objects persistent so graph history refs stay valid.
-    if (this->m_networks.isEmpty())
+    for (NetworkSample &n : this->m_networks)
     {
-        this->m_networks.reserve(activeNames.size());
-        for (const QString &name : activeNames)
+        const int arpType = readSysTextFile(QString("/sys/class/net/%1/type").arg(n.name)).toInt();
+        n.type = networkTypeFromArpType(arpType);
+        n.linkSpeedMbps = readLinkSpeedMbps(n.name);
+        n.ipv4 = ifaddrByName.value(n.name).ipv4;
+        n.ipv6 = ifaddrByName.value(n.name).ipv6;
+    }
+}
+
+bool PerfDataProvider::sampleNetworks()
+{
+    QFile f("/proc/net/dev");
+    if (!f.open(QIODevice::ReadOnly | QIODevice::Text))
+        return false;
+
+    struct NetCounters
+    {
+        quint64 rxBytes { 0 };
+        quint64 txBytes { 0 };
+    };
+    QHash<QString, NetCounters> countersByName;
+    QStringList seenNames;
+
+    int lineNo = 0;
+    for (;;)
+    {
+        const QByteArray line = f.readLine();
+        if (line.isNull())
+            break;
+        ++lineNo;
+        if (lineNo <= 2)
+            continue; // headers
+
+        const int colon = line.indexOf(':');
+        if (colon < 0)
+            continue;
+
+        const QString ifName = QString::fromUtf8(line.left(colon)).trimmed();
+        if (ifName.isEmpty() || ifName == QLatin1String("lo"))
+            continue;
+
+        const QList<QByteArray> fields = line.mid(colon + 1).simplified().split(' ');
+        if (fields.size() < 9)
+            continue;
+
+        NetCounters c;
+        c.rxBytes = fields.at(0).toULongLong();
+        c.txBytes = fields.at(8).toULongLong();
+        countersByName.insert(ifName, c);
+        seenNames.append(ifName);
+    }
+    f.close();
+
+    std::sort(seenNames.begin(), seenNames.end());
+
+    const bool initializingNetworks = this->m_networks.isEmpty();
+    if (initializingNetworks)
+    {
+        this->m_networks.reserve(seenNames.size());
+        for (const QString &name : seenNames)
         {
+            if (!isActiveNetworkInterface(name))
+                continue;
+
             NetworkSample n;
             n.name = name;
+            n.isActive = true;
             this->m_networks.append(n);
         }
     }
 
-    for (NetworkSample &n : this->m_networks)
+    bool topologyChanged = false;
+    QSet<QString> seenNameSet(seenNames.cbegin(), seenNames.cend());
+    for (const NetworkSample &n : std::as_const(this->m_networks))
     {
-        const QString &name = n.name;
-        if (name.isEmpty())
-            continue;
-        const int arpType = readSysTextFile(QString("/sys/class/net/%1/type").arg(name)).toInt();
-        n.type = networkTypeFromArpType(arpType);
-        n.linkSpeedMbps = readLinkSpeedMbps(name);
-        n.ipv4 = ifaddrByName.value(name).ipv4;
-        n.ipv6 = ifaddrByName.value(name).ipv6;
+        if (!seenNameSet.contains(n.name))
+        {
+            topologyChanged = true;
+            break;
+        }
     }
+
+    this->refreshNetworkState(initializingNetworks || topologyChanged);
+    this->refreshNetworkMetadata(initializingNetworks || topologyChanged);
 
     if (!this->m_netTimer.isValid())
         this->m_netTimer.start();
@@ -1276,7 +1314,7 @@ bool PerfDataProvider::sampleNetworks()
     for (NetworkSample &n : this->m_networks)
     {
         const auto it = countersByName.constFind(n.name);
-        if (it == countersByName.cend())
+        if (!n.isActive || it == countersByName.cend())
         {
             n.rxBps = 0.0;
             n.txBps = 0.0;

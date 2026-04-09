@@ -254,6 +254,7 @@ namespace Perf
                 QString         type;      ///< Ethernet/Wi-Fi/Other
                 QString         ipv4;
                 QString         ipv6;
+                bool            isActive { true };
                 int             linkSpeedMbps { 0 };
                 quint64         prevRxBytes { 0 };
                 quint64         prevTxBytes { 0 };
@@ -338,6 +339,8 @@ namespace Perf
             QVector<NetworkSample> m_networks;
             QElapsedTimer          m_netTimer;
             qint64                 m_prevNetSampleMs { 0 };
+            int                    m_networkStateRefreshCounter { 0 };
+            int                    m_networkMetadataRefreshCounter { 0 };
 
             // GPU state
             QVector<GpuSample>  m_gpus;
@@ -356,6 +359,8 @@ namespace Perf
             bool sampleDisks();
             /// Sample /proc/net/dev counters and compute per-interface RX/TX throughput histories.
             bool sampleNetworks();
+            void refreshNetworkState(bool force = false);
+            void refreshNetworkMetadata(bool force = false);
             /// Sample GPU backends (NVML when available) and update utilization/memory/engine histories.
             bool sampleGpus();
             /// Count processes/threads via /proc walk for CPU detail statistics.
