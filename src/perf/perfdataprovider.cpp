@@ -2128,38 +2128,81 @@ void PerfDataProvider::readCpuMetadata()
     this->readCurrentFreq();
 }
 
+void PerfDataProvider::detectCpuFreqSource()
+{
+    if (this->m_cpuFreqSourceDetected)
+        return;
+
+    this->m_cpuFreqSourceDetected = true;
+    this->m_cpuFreqUseSysfs = false;
+    this->m_cpuFreqPaths.clear();
+
+    for (int i = 0; i < this->m_cpuLogicalCount; ++i)
+    {
+        const QString base = QString("/sys/devices/system/cpu/cpu%1/cpufreq/").arg(i);
+        const QString scalingPath = base + "scaling_cur_freq";
+        const QString cpuinfoPath = base + "cpuinfo_cur_freq";
+
+        if (QFileInfo::exists(scalingPath))
+            this->m_cpuFreqPaths.append(scalingPath);
+        else if (QFileInfo::exists(cpuinfoPath))
+            this->m_cpuFreqPaths.append(cpuinfoPath);
+        else
+        {
+            this->m_cpuFreqPaths.clear();
+            return;
+        }
+    }
+
+    this->m_cpuFreqUseSysfs = !this->m_cpuFreqPaths.isEmpty();
+}
+
 void PerfDataProvider::readCurrentFreq()
 {
     const int coreCount = qMax(this->m_cores.size(), this->m_cpuLogicalCount);
     QVector<double> coreMhz(coreCount, 0.0);
 
-    // Parse per-core live frequencies from /proc/cpuinfo.
-    int currentProcessor = -1;
-    QFile f("/proc/cpuinfo");
-    if (f.open(QIODevice::ReadOnly | QIODevice::Text))
+    this->detectCpuFreqSource();
+
+    if (this->m_cpuFreqUseSysfs)
     {
-        for (;;)
+        for (int i = 0; i < this->m_cpuFreqPaths.size() && i < coreMhz.size(); ++i)
         {
-            const QByteArray line = f.readLine();
-            if (line.isNull())
-                break;
-
-            const int colon = line.indexOf(':');
-            if (colon < 0)
-                continue;
-
-            const QByteArray key = line.left(colon).trimmed();
-            const QByteArray val = line.mid(colon + 1).trimmed();
-            if (key == "processor")
-            {
-                currentProcessor = val.toInt();
-            }
-            else if (key == "cpu MHz" && currentProcessor >= 0 && currentProcessor < coreMhz.size())
-            {
-                coreMhz[currentProcessor] = val.toDouble();
-            }
+            bool ok = false;
+            const double kHz = readSysTextFile(this->m_cpuFreqPaths.at(i)).toDouble(&ok);
+            if (ok && kHz > 0.0)
+                coreMhz[i] = kHz / 1000.0;
         }
-        f.close();
+    } else
+    {
+        // Fallback: parse per-core live frequencies from /proc/cpuinfo.
+        int currentProcessor = -1;
+        QFile f("/proc/cpuinfo");
+        if (f.open(QIODevice::ReadOnly | QIODevice::Text))
+        {
+            for (;;)
+            {
+                const QByteArray line = f.readLine();
+                if (line.isNull())
+                    break;
+
+                const int colon = line.indexOf(':');
+                if (colon < 0)
+                    continue;
+
+                const QByteArray key = line.left(colon).trimmed();
+                const QByteArray val = line.mid(colon + 1).trimmed();
+                if (key == "processor")
+                {
+                    currentProcessor = val.toInt();
+                }
+                else if (key == "cpu MHz" && currentProcessor >= 0 && currentProcessor < coreMhz.size())
+                {
+                    coreMhz[currentProcessor] = val.toDouble();
+                }
+            }
+            f.close();
+        }
     }
 
     double sumMhz = 0.0;

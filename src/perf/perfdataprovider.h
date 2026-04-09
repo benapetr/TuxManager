@@ -294,6 +294,9 @@ namespace Perf
             QString  m_cpuVmVendor;
             int      m_cpuTemperatureC { -1 };
             QString  m_cpuTempInputPath;
+            bool     m_cpuFreqSourceDetected { false };
+            bool     m_cpuFreqUseSysfs { false };
+            QVector<QString> m_cpuFreqPaths;
 
             // Process/thread counts
             int      m_processCount { 0 };
@@ -358,6 +361,7 @@ namespace Perf
             /// Count processes/threads via /proc walk for CPU detail statistics.
             void sampleProcessStats();
             void readCpuMetadata();
+            void detectCpuFreqSource();
             void readCurrentFreq();
             void readHardwareMetadata();
             void detectCpuTemperatureSensor();
