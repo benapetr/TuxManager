@@ -19,8 +19,9 @@
 #ifndef PERF_GRAPHWIDGET_H
 #define PERF_GRAPHWIDGET_H
 
+#include "historybuffer.h"
+
 #include <QColor>
-#include <QVector>
 #include <QWidget>
 
 namespace Perf
@@ -46,10 +47,10 @@ namespace Perf
             explicit GraphWidget(QWidget *parent = nullptr);
 
             //! Pointer to a vector containing values to draw graph data from
-            void SetDataSource(const QVector<double> &data, double maxVal = 100.0);
+            void SetDataSource(const HistoryBuffer &data, double maxVal = 100.0);
 
             //! Optional secondary graph drawn as a darker overlay.
-            void SetOverlayDataSource(const QVector<double> &data);
+            void SetOverlayDataSource(const HistoryBuffer &data);
 
             void SetMax(double maxVal = 100.0);
 
@@ -91,8 +92,8 @@ namespace Perf
             void leaveEvent(QEvent *event) override;
 
         private:
-            const QVector<double> *m_data { nullptr };
-            const QVector<double> *m_overlayData { nullptr }; ///< overlay (optional)
+            const HistoryBuffer *m_data { nullptr };
+            const HistoryBuffer *m_overlayData { nullptr }; ///< overlay (optional)
             double          m_maxVal    { 100.0 };
 
             QColor          m_lineColor;

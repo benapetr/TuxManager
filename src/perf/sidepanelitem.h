@@ -20,6 +20,7 @@
 #define PERF_SIDEPANELITEM_H
 
 #include "graphwidget.h"
+#include "historybuffer.h"
 
 #include <QPoint>
 #include <QVector>
@@ -38,7 +39,7 @@ namespace Perf
         public:
             explicit SidePanelItem(const QString &title, QWidget *parent = nullptr);
 
-            void SetGraphSource(const QVector<double> &history, double maxVal = 100.0);
+            void SetGraphSource(const HistoryBuffer &history, double maxVal = 100.0);
             void Update(const QString &subtitle, double maxVal = 100.0);
 
             void SetSelected(bool selected);

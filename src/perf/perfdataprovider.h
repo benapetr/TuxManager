@@ -19,6 +19,8 @@
 #ifndef PERF_PERFDATAPROVIDER_H
 #define PERF_PERFDATAPROVIDER_H
 
+#include "historybuffer.h"
+
 #include <QObject>
 #include <QTimer>
 #include <QVector>
@@ -56,14 +58,14 @@ namespace Perf
 
             // ── Aggregate CPU ─────────────────────────────────────────────────────
             double CpuPercent()  const { return this->m_cpuHistory.isEmpty() ? 0.0 : this->m_cpuHistory.last(); }
-            const QVector<double> &CpuHistory()       const { return this->m_cpuHistory; }
-            const QVector<double> &CpuKernelHistory() const { return this->m_cpuKernelHistory; }
+            const HistoryBuffer &CpuHistory()       const { return this->m_cpuHistory; }
+            const HistoryBuffer &CpuKernelHistory() const { return this->m_cpuKernelHistory; }
 
             // ── Per-core CPU ──────────────────────────────────────────────────────
             int    CoreCount()                          const { return this->m_cores.size(); }
             double CorePercent(int i)                   const;
-            const  QVector<double> &CoreHistory(int i)       const;
-            const  QVector<double> &CoreKernelHistory(int i) const;
+            const  HistoryBuffer &CoreHistory(int i)       const;
+            const  HistoryBuffer &CoreKernelHistory(int i) const;
 
             // ── CPU metadata (read once at startup) ───────────────────────────────
             const QString &CpuModelName() const { return this->m_cpuModelName; }
@@ -95,7 +97,7 @@ namespace Perf
             int MemDimmSlotsUsed()  const { return this->m_memDimmSlotsUsed;  }
             int MemSpeedMtps()      const { return this->m_memSpeedMtps;      }
             double MemFraction()  const;
-            const QVector<double> &MemHistory() const { return this->m_memHistory; }
+            const HistoryBuffer &MemHistory() const { return this->m_memHistory; }
 
             // ── Swap ─────────────────────────────────────────────────────────────
             qint64 SwapTotalKb() const { return this->m_swapTotalKb; }
@@ -103,9 +105,9 @@ namespace Perf
             qint64 SwapFreeKb()  const { return this->m_swapFreeKb;  }
             double SwapInBytesPerSec()  const { return this->m_swapInBps;  }
             double SwapOutBytesPerSec() const { return this->m_swapOutBps; }
-            const QVector<double> &SwapUsageHistory() const { return this->m_swapUsageHistory; }
-            const QVector<double> &SwapInHistory()    const { return this->m_swapInHistory;    }
-            const QVector<double> &SwapOutHistory()   const { return this->m_swapOutHistory;   }
+            const HistoryBuffer &SwapUsageHistory() const { return this->m_swapUsageHistory; }
+            const HistoryBuffer &SwapInHistory()    const { return this->m_swapInHistory;    }
+            const HistoryBuffer &SwapOutHistory()   const { return this->m_swapOutHistory;   }
 
             // ── Disks (physical / virtual block devices from sysfs, excluding pseudo devices) ──
             int DiskCount() const { return this->m_disks.size(); }
@@ -119,9 +121,9 @@ namespace Perf
             qint64 DiskFormattedBytes(int i) const;
             bool DiskIsSystemDisk(int i) const;
             bool DiskHasSwapFile(int i) const;
-            const QVector<double> &DiskActiveHistory(int i) const;
-            const QVector<double> &DiskReadHistory(int i) const;
-            const QVector<double> &DiskWriteHistory(int i) const;
+            const HistoryBuffer &DiskActiveHistory(int i) const;
+            const HistoryBuffer &DiskReadHistory(int i) const;
+            const HistoryBuffer &DiskWriteHistory(int i) const;
 
             // ── Network interfaces (active, non-loopback) ──────────────────────
             int NetworkCount() const { return this->m_networks.size(); }
@@ -133,8 +135,8 @@ namespace Perf
             double NetworkRxBytesPerSec(int i) const;
             double NetworkTxBytesPerSec(int i) const;
             double NetworkMaxThroughputBytesPerSec(int i) const;
-            const QVector<double> &NetworkRxHistory(int i) const;
-            const QVector<double> &NetworkTxHistory(int i) const;
+            const HistoryBuffer &NetworkRxHistory(int i) const;
+            const HistoryBuffer &NetworkTxHistory(int i) const;
 
             // ── GPUs (tooling-backed, currently NVML runtime-loaded) ─────────────
             int GpuCount() const { return this->m_gpus.size(); }
@@ -145,18 +147,18 @@ namespace Perf
             int GpuTemperatureC(int i) const;
             qint64 GpuMemUsedMiB(int i) const;
             qint64 GpuMemTotalMiB(int i) const;
-            const QVector<double> &GpuUtilHistory(int i) const;
-            const QVector<double> &GpuMemUsageHistory(int i) const;
-            const QVector<double> &GpuCopyTxHistory(int i) const;
-            const QVector<double> &GpuCopyRxHistory(int i) const;
+            const HistoryBuffer &GpuUtilHistory(int i) const;
+            const HistoryBuffer &GpuMemUsageHistory(int i) const;
+            const HistoryBuffer &GpuCopyTxHistory(int i) const;
+            const HistoryBuffer &GpuCopyRxHistory(int i) const;
             double GpuMaxCopyBytesPerSec(int i) const;
             qint64 GpuSharedMemUsedMiB(int i) const;
             qint64 GpuSharedMemTotalMiB(int i) const;
-            const QVector<double> &GpuSharedMemHistory(int i) const;
+            const HistoryBuffer &GpuSharedMemHistory(int i) const;
             int GpuEngineCount(int gpuIndex) const;
             QString GpuEngineName(int gpuIndex, int engineIndex) const;
             double GpuEnginePercent(int gpuIndex, int engineIndex) const;
-            const QVector<double> &GpuEngineHistory(int gpuIndex, int engineIndex) const;
+            const HistoryBuffer &GpuEngineHistory(int gpuIndex, int engineIndex) const;
 
         signals:
             void updated();
@@ -171,8 +173,8 @@ namespace Perf
                 quint64        prevIdle   { 0 };
                 quint64        prevTotal  { 0 };
                 quint64        prevKernel { 0 };
-                QVector<double> history;
-                QVector<double> kernelHistory;
+                HistoryBuffer history { HISTORY_SIZE };
+                HistoryBuffer kernelHistory { HISTORY_SIZE };
             };
 
             struct DiskSample
@@ -190,9 +192,9 @@ namespace Perf
                 qint64         formattedBytes { 0 };
                 bool           isSystemDisk { false };
                 bool           hasPageFile { false };
-                QVector<double> activeHistory;
-                QVector<double> readHistory;
-                QVector<double> writeHistory;
+                HistoryBuffer activeHistory { HISTORY_SIZE };
+                HistoryBuffer readHistory { HISTORY_SIZE };
+                HistoryBuffer writeHistory { HISTORY_SIZE };
             };
 
             struct GpuEngineSample
@@ -200,7 +202,7 @@ namespace Perf
                 QString         key;
                 QString         label;
                 double          pct { 0.0 };
-                QVector<double> history;
+                HistoryBuffer history { HISTORY_SIZE };
             };
 
             struct GpuSample
@@ -218,11 +220,11 @@ namespace Perf
                 double          copyTxBps { 0.0 };
                 double          copyRxBps { 0.0 };
                 double          maxCopyBps { 0.0 };
-                QVector<double> utilHistory;
-                QVector<double> memUsageHistory;
-                QVector<double> sharedMemHistory;
-                QVector<double> copyTxHistory;
-                QVector<double> copyRxHistory;
+                HistoryBuffer utilHistory { HISTORY_SIZE };
+                HistoryBuffer memUsageHistory { HISTORY_SIZE };
+                HistoryBuffer sharedMemHistory { HISTORY_SIZE };
+                HistoryBuffer copyTxHistory { HISTORY_SIZE };
+                HistoryBuffer copyRxHistory { HISTORY_SIZE };
                 QVector<GpuEngineSample> engines;
                 QHash<QString, qint64> prevFdInfoEngineNs;
             };
@@ -264,8 +266,8 @@ namespace Perf
                 double          rxBps { 0.0 };
                 double          txBps { 0.0 };
                 double          maxThroughputBps { 0.0 };
-                QVector<double> rxHistory;
-                QVector<double> txHistory;
+                HistoryBuffer   rxHistory { HISTORY_SIZE };
+                HistoryBuffer   txHistory { HISTORY_SIZE };
             };
 
             QTimer *m_timer;
@@ -283,8 +285,8 @@ namespace Perf
             quint64          m_prevCpuIdle   { 0 };
             quint64          m_prevCpuTotal  { 0 };
             quint64          m_prevCpuKernel { 0 };
-            QVector<double>  m_cpuHistory;
-            QVector<double>  m_cpuKernelHistory;
+            HistoryBuffer    m_cpuHistory       { HISTORY_SIZE };
+            HistoryBuffer    m_cpuKernelHistory { HISTORY_SIZE };
 
             // Per-core state
             QVector<CoreSample> m_cores;
@@ -318,7 +320,7 @@ namespace Perf
             int              m_memDimmSlotsTotal { 0 };
             int              m_memDimmSlotsUsed  { 0 };
             int              m_memSpeedMtps      { 0 };
-            QVector<double>  m_memHistory;
+            HistoryBuffer    m_memHistory { HISTORY_SIZE };
 
             // Swap state
             qint64           m_swapTotalKb   { 0 };
@@ -328,9 +330,9 @@ namespace Perf
             quint64          m_prevSwapOutPages { 0 };
             double           m_swapInBps  { 0.0 };
             double           m_swapOutBps { 0.0 };
-            QVector<double>  m_swapUsageHistory;
-            QVector<double>  m_swapInHistory;
-            QVector<double>  m_swapOutHistory;
+            HistoryBuffer    m_swapUsageHistory { HISTORY_SIZE };
+            HistoryBuffer    m_swapInHistory { HISTORY_SIZE };
+            HistoryBuffer    m_swapOutHistory { HISTORY_SIZE };
             QElapsedTimer    m_swapTimer;
             qint64           m_prevSwapSampleMs { 0 };
 
@@ -398,8 +400,8 @@ namespace Perf
             static quint16 readLe16(const QByteArray &raw, int off);
             static quint32 readLe32(const QByteArray &raw, int off);
 
-            static void   appendHistory(QVector<double> &vec, double val);
-            static void   appendHistoryAndUpdateMax(QVector<double> &vec, double val, double &cachedMax, double minMax = 0.0);
+            static void   appendHistory(HistoryBuffer &vec, double val);
+            static void   appendHistoryAndUpdateMax(HistoryBuffer &vec, double val, double &cachedMax, double minMax = 0.0);
             static quint64 parseCpuLine(const QList<QByteArray> &parts,  quint64 &outIdle, quint64 &outKernel);
     };
 } // namespace Perf

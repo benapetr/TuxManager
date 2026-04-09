@@ -40,14 +40,14 @@ GraphWidget::GraphWidget(QWidget *parent) : QWidget(parent)
     this->setMouseTracking(true);
 }
 
-void GraphWidget::SetDataSource(const QVector<double> &data, double maxVal)
+void GraphWidget::SetDataSource(const HistoryBuffer &data, double maxVal)
 {
     this->m_data = &data;
     this->m_maxVal = (maxVal > 0.0) ? maxVal : 100.0;
     this->update();
 }
 
-void GraphWidget::SetOverlayDataSource(const QVector<double> &data)
+void GraphWidget::SetOverlayDataSource(const HistoryBuffer &data)
 {
     this->m_overlayData = &data;
     this->update();

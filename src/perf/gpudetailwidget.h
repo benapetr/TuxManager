@@ -20,6 +20,7 @@
 #define PERF_GPUDETAILWIDGET_H
 
 #include "graphwidget.h"
+#include "historybuffer.h"
 #include "perfdataprovider.h"
 
 #include <QComboBox>
@@ -74,11 +75,11 @@ namespace Perf
             GraphWidget *m_dedicatedMemGraph { nullptr };
             GraphWidget *m_sharedMemGraph { nullptr };
             GraphWidget *m_copyBwGraph { nullptr };
-            const QVector<double> *m_dedicatedMemHistory { nullptr };
-            const QVector<double> *m_sharedMemHistorySource { nullptr };
-            const QVector<double> *m_copyTxHistory { nullptr };
-            const QVector<double> *m_copyRxHistory { nullptr };
-            QVector<double> m_sharedMemHistory;
+            const HistoryBuffer *m_dedicatedMemHistory { nullptr };
+            const HistoryBuffer *m_sharedMemHistorySource { nullptr };
+            const HistoryBuffer *m_copyTxHistory { nullptr };
+            const HistoryBuffer *m_copyRxHistory { nullptr };
+            HistoryBuffer m_sharedMemHistory { HISTORY_SIZE };
     };
 } // namespace Perf
 

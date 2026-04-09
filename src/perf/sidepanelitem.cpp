@@ -46,7 +46,7 @@ SidePanelItem::SidePanelItem(const QString &title, QWidget *parent) : QWidget(pa
     this->setLayout(lay);
 }
 
-void SidePanelItem::SetGraphSource(const QVector<double> &history, double maxVal)
+void SidePanelItem::SetGraphSource(const HistoryBuffer &history, double maxVal)
 {
     this->m_graph->SetDataSource(history, maxVal);
 }

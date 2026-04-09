@@ -229,17 +229,17 @@ double PerfDataProvider::CorePercent(int i) const
     return c.history.isEmpty() ? 0.0 : c.history.last();
 }
 
-const QVector<double> &PerfDataProvider::CoreHistory(int i) const
+const HistoryBuffer &PerfDataProvider::CoreHistory(int i) const
 {
-    static const QVector<double> empty;
+    static const HistoryBuffer empty;
     if (i < 0 || i >= this->m_cores.size())
         return empty;
     return this->m_cores.at(i).history;
 }
 
-const QVector<double> &PerfDataProvider::CoreKernelHistory(int i) const
+const HistoryBuffer &PerfDataProvider::CoreKernelHistory(int i) const
 {
-    static const QVector<double> empty;
+    static const HistoryBuffer empty;
     if (i < 0 || i >= this->m_cores.size())
         return empty;
     return this->m_cores.at(i).kernelHistory;
@@ -322,25 +322,25 @@ bool PerfDataProvider::DiskHasSwapFile(int i) const
     return this->m_disks.at(i).hasPageFile;
 }
 
-const QVector<double> &PerfDataProvider::DiskActiveHistory(int i) const
+const HistoryBuffer &PerfDataProvider::DiskActiveHistory(int i) const
 {
-    static const QVector<double> empty;
+    static const HistoryBuffer empty;
     if (i < 0 || i >= this->m_disks.size())
         return empty;
     return this->m_disks.at(i).activeHistory;
 }
 
-const QVector<double> &PerfDataProvider::DiskReadHistory(int i) const
+const HistoryBuffer &PerfDataProvider::DiskReadHistory(int i) const
 {
-    static const QVector<double> empty;
+    static const HistoryBuffer empty;
     if (i < 0 || i >= this->m_disks.size())
         return empty;
     return this->m_disks.at(i).readHistory;
 }
 
-const QVector<double> &PerfDataProvider::DiskWriteHistory(int i) const
+const HistoryBuffer &PerfDataProvider::DiskWriteHistory(int i) const
 {
-    static const QVector<double> empty;
+    static const HistoryBuffer empty;
     if (i < 0 || i >= this->m_disks.size())
         return empty;
     return this->m_disks.at(i).writeHistory;
@@ -402,17 +402,17 @@ double PerfDataProvider::NetworkMaxThroughputBytesPerSec(int i) const
     return this->m_networks.at(i).maxThroughputBps;
 }
 
-const QVector<double> &PerfDataProvider::NetworkRxHistory(int i) const
+const HistoryBuffer &PerfDataProvider::NetworkRxHistory(int i) const
 {
-    static const QVector<double> empty;
+    static const HistoryBuffer empty;
     if (i < 0 || i >= this->m_networks.size())
         return empty;
     return this->m_networks.at(i).rxHistory;
 }
 
-const QVector<double> &PerfDataProvider::NetworkTxHistory(int i) const
+const HistoryBuffer &PerfDataProvider::NetworkTxHistory(int i) const
 {
-    static const QVector<double> empty;
+    static const HistoryBuffer empty;
     if (i < 0 || i >= this->m_networks.size())
         return empty;
     return this->m_networks.at(i).txHistory;
@@ -467,33 +467,33 @@ qint64 PerfDataProvider::GpuMemTotalMiB(int i) const
     return this->m_gpus.at(i).memTotalMiB;
 }
 
-const QVector<double> &PerfDataProvider::GpuUtilHistory(int i) const
+const HistoryBuffer &PerfDataProvider::GpuUtilHistory(int i) const
 {
-    static const QVector<double> empty;
+    static const HistoryBuffer empty;
     if (i < 0 || i >= this->m_gpus.size())
         return empty;
     return this->m_gpus.at(i).utilHistory;
 }
 
-const QVector<double> &PerfDataProvider::GpuMemUsageHistory(int i) const
+const HistoryBuffer &PerfDataProvider::GpuMemUsageHistory(int i) const
 {
-    static const QVector<double> empty;
+    static const HistoryBuffer empty;
     if (i < 0 || i >= this->m_gpus.size())
         return empty;
     return this->m_gpus.at(i).memUsageHistory;
 }
 
-const QVector<double> &PerfDataProvider::GpuCopyTxHistory(int i) const
+const HistoryBuffer &PerfDataProvider::GpuCopyTxHistory(int i) const
 {
-    static const QVector<double> empty;
+    static const HistoryBuffer empty;
     if (i < 0 || i >= this->m_gpus.size())
         return empty;
     return this->m_gpus.at(i).copyTxHistory;
 }
 
-const QVector<double> &PerfDataProvider::GpuCopyRxHistory(int i) const
+const HistoryBuffer &PerfDataProvider::GpuCopyRxHistory(int i) const
 {
-    static const QVector<double> empty;
+    static const HistoryBuffer empty;
     if (i < 0 || i >= this->m_gpus.size())
         return empty;
     return this->m_gpus.at(i).copyRxHistory;
@@ -520,9 +520,9 @@ qint64 PerfDataProvider::GpuSharedMemTotalMiB(int i) const
     return this->m_gpus.at(i).sharedMemTotalMiB;
 }
 
-const QVector<double> &PerfDataProvider::GpuSharedMemHistory(int i) const
+const HistoryBuffer &PerfDataProvider::GpuSharedMemHistory(int i) const
 {
-    static const QVector<double> empty;
+    static const HistoryBuffer empty;
     if (i < 0 || i >= this->m_gpus.size())
         return empty;
     return this->m_gpus.at(i).sharedMemHistory;
@@ -555,9 +555,9 @@ double PerfDataProvider::GpuEnginePercent(int gpuIndex, int engineIndex) const
     return engines.at(engineIndex).pct;
 }
 
-const QVector<double> &PerfDataProvider::GpuEngineHistory(int gpuIndex, int engineIndex) const
+const HistoryBuffer &PerfDataProvider::GpuEngineHistory(int gpuIndex, int engineIndex) const
 {
-    static const QVector<double> empty;
+    static const HistoryBuffer empty;
     if (gpuIndex < 0 || gpuIndex >= this->m_gpus.size())
         return empty;
     const auto &engines = this->m_gpus.at(gpuIndex).engines;
@@ -2485,18 +2485,16 @@ quint32 PerfDataProvider::readLe32(const QByteArray &raw, int off)
 }
 
 // static
-void PerfDataProvider::appendHistory(QVector<double> &vec, double val)
+void PerfDataProvider::appendHistory(HistoryBuffer &vec, double val)
 {
-    vec.append(val);
-    while (vec.size() > HISTORY_SIZE)
-        vec.removeFirst();
+    vec.Push(val);
 }
 
-void PerfDataProvider::appendHistoryAndUpdateMax(QVector<double> &vec, double val, double &cachedMax, double minMax)
+void PerfDataProvider::appendHistoryAndUpdateMax(HistoryBuffer &vec, double val, double &cachedMax, double minMax)
 {
     double removed = 0.0;
     bool removedWasCurrentMax = false;
-    if (vec.size() >= HISTORY_SIZE && !vec.isEmpty())
+    if (vec.size() >= vec.capacity() && !vec.isEmpty())
     {
         removed = vec.first();
         removedWasCurrentMax = (removed >= cachedMax);
@@ -2519,8 +2517,8 @@ void PerfDataProvider::appendHistoryAndUpdateMax(QVector<double> &vec, double va
     if (removedWasCurrentMax)
     {
         double recomputedMax = minMax;
-        for (double sample : std::as_const(vec))
-            recomputedMax = qMax(recomputedMax, sample);
+        for (int i = 0; i < vec.size(); ++i)
+            recomputedMax = qMax(recomputedMax, vec.at(i));
         cachedMax = recomputedMax;
         return;
     }

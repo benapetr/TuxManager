@@ -34,7 +34,7 @@ using namespace Perf;
 
 namespace
 {
-    const QVector<double> kEmptyHistory;
+    const HistoryBuffer kEmptyHistory;
 }
 
 GpuDetailWidget::GpuDetailWidget(QWidget *parent) : QWidget(parent)
@@ -327,9 +327,7 @@ void GpuDetailWidget::onUpdated()
     {
         sharedTotalMiB = qMax<qint64>(0, this->m_provider->MemTotalKb() / 1024 / 2);
         sharedUsedMiB  = 0;
-        this->m_sharedMemHistory.append(0.0);
-        while (this->m_sharedMemHistory.size() > HISTORY_SIZE)
-            this->m_sharedMemHistory.removeFirst();
+        this->m_sharedMemHistory.Push(0.0);
     }
     this->bindMemoryAndCopySources(hasSharedData);
 
@@ -424,9 +422,9 @@ void GpuDetailWidget::bindMemoryAndCopySources(bool hasSharedData)
     if (!this->m_provider || this->m_gpuIndex < 0 || this->m_gpuIndex >= this->m_provider->GpuCount())
         return;
 
-    const QVector<double> *dedicatedMemHistory = &this->m_provider->GpuMemUsageHistory(this->m_gpuIndex);
-    const QVector<double> *copyTxHistory = &this->m_provider->GpuCopyTxHistory(this->m_gpuIndex);
-    const QVector<double> *copyRxHistory = &this->m_provider->GpuCopyRxHistory(this->m_gpuIndex);
+    const HistoryBuffer *dedicatedMemHistory = &this->m_provider->GpuMemUsageHistory(this->m_gpuIndex);
+    const HistoryBuffer *copyTxHistory = &this->m_provider->GpuCopyTxHistory(this->m_gpuIndex);
+    const HistoryBuffer *copyRxHistory = &this->m_provider->GpuCopyRxHistory(this->m_gpuIndex);
 
     if (this->m_dedicatedMemHistory != dedicatedMemHistory)
     {
@@ -446,7 +444,7 @@ void GpuDetailWidget::bindMemoryAndCopySources(bool hasSharedData)
         this->m_copyBwGraph->SetOverlayDataSource(*this->m_copyRxHistory);
     }
 
-    const QVector<double> *desiredSharedHistory = hasSharedData
+    const HistoryBuffer *desiredSharedHistory = hasSharedData
                                                   ? &this->m_provider->GpuSharedMemHistory(this->m_gpuIndex)
                                                   : &this->m_sharedMemHistory;
     if (this->m_sharedMemHistorySource != desiredSharedHistory)

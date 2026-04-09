@@ -19,6 +19,7 @@
 #ifndef PERF_SWAPDETAILWIDGET_H
 #define PERF_SWAPDETAILWIDGET_H
 
+#include "historybuffer.h"
 #include "perfdataprovider.h"
 #include "graphwidget.h"
 
@@ -59,9 +60,9 @@ namespace Perf
             QVector<QLabel *> m_statLabels;
             QVector<QLabel *> m_axisLabels;
 
-            const QVector<double> *m_usageHistory { nullptr };
-            const QVector<double> *m_inHistory { nullptr };
-            const QVector<double> *m_outHistory { nullptr };
+            const HistoryBuffer *m_usageHistory { nullptr };
+            const HistoryBuffer *m_inHistory { nullptr };
+            const HistoryBuffer *m_outHistory { nullptr };
     };
 } // namespace Perf
 

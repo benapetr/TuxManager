@@ -70,6 +70,7 @@ HEADERS += \
     os/servicefilterproxy.h \
     os/servicehelper.h \
     perf/perfdataprovider.h \
+    perf/historybuffer.h \
     perf/graphwidget.h \
     perf/sidepanelitem.h \
     perf/sidepanel.h \
