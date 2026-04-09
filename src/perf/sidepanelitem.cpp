@@ -64,7 +64,7 @@ void SidePanelItem::SetSelected(bool selected)
     if (this->m_selected == selected)
         return;
     this->m_selected = selected;
-    this->repaint();
+    this->update();
 }
 
 void SidePanelItem::SetGraphColor(QColor line, QColor fill)
@@ -169,12 +169,12 @@ void SidePanelItem::enterEvent(QEvent *event)
 {
     QWidget::enterEvent(event);
     this->m_hovered = true;
-    this->repaint();
+    this->update();
 }
 
 void SidePanelItem::leaveEvent(QEvent *event)
 {
     QWidget::leaveEvent(event);
     this->m_hovered = false;
-    this->repaint();
+    this->update();
 }
