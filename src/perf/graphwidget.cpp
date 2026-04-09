@@ -112,6 +112,14 @@ void GraphWidget::paintEvent(QPaintEvent * /*event*/)
     const QRect r = this->rect();
     const int   w = r.width();
     const int   h = r.height();
+    const double right = qMax(0, w - 1);
+    const double bottom = qMax(0, h - 1);
+    const double contentLeft = (w > 2) ? 1.0 : 0.0;
+    const double contentTop = (h > 2) ? 1.0 : 0.0;
+    const double contentRight = qMax(contentLeft, right - 1.0);
+    const double contentBottom = qMax(contentTop, bottom - 1.0);
+    const double contentWidth = qMax(0.0, contentRight - contentLeft);
+    const double contentHeight = qMax(0.0, contentBottom - contentTop);
 
     // ── Background ────────────────────────────────────────────────────────────
     const QColor bg = this->palette().color(QPalette::Base);
@@ -120,7 +128,7 @@ void GraphWidget::paintEvent(QPaintEvent * /*event*/)
 
     // Fixed time axis slot geometry.
     const int sampleCount = qMax(2, this->m_sampleCapacity);
-    const double stepX = static_cast<double>(w) / static_cast<double>(sampleCount - 1);
+    const double stepX = contentWidth / static_cast<double>(sampleCount - 1);
 
     // ── Grid ──────────────────────────────────────────────────────────────────
     p.setPen(QPen(scheme->GraphGridColor, 1));
@@ -134,8 +142,8 @@ void GraphWidget::paintEvent(QPaintEvent * /*event*/)
     // Horizontal lines
     for (int i = 1; i < gridRows; ++i)
     {
-        const int y = h * i / gridRows;
-        p.drawLine(0, y, w, y);
+        const double y = contentTop + contentHeight * i / gridRows;
+        p.drawLine(QPointF(contentLeft, y), QPointF(contentRight, y));
     }
 
     // Vertical lines snap to time slots and phase-shift with sample updates.
@@ -148,10 +156,10 @@ void GraphWidget::paintEvent(QPaintEvent * /*event*/)
         if (((slot + phase) % gridSlotStep) != 0)
             continue;
 
-        const int x = static_cast<int>(slot * stepX + 0.5);
-        if (x <= 0 || x >= w || x == lastX)
+        const int x = static_cast<int>(contentLeft + slot * stepX + 0.5);
+        if (x <= contentLeft || x >= contentRight || x == lastX)
             continue;
-        p.drawLine(x, 0, x, h);
+        p.drawLine(QPointF(x, contentTop), QPointF(x, contentBottom));
         lastX = x;
     }
 
@@ -173,8 +181,8 @@ void GraphWidget::paintEvent(QPaintEvent * /*event*/)
     for (int i = 0; i < visibleCount; ++i)
     {
         const double val = qBound(0.0, this->m_data->at(visibleStart + i), this->m_maxVal);
-        const double fx  = (slotOffset + i) * stepX;
-        const double fy  = h - (val / this->m_maxVal) * h;
+        const double fx  = contentLeft + (slotOffset + i) * stepX;
+        const double fy  = contentBottom - (val / this->m_maxVal) * contentHeight;
 
         if (i == 0)
             path.moveTo(fx, fy);
@@ -184,8 +192,8 @@ void GraphWidget::paintEvent(QPaintEvent * /*event*/)
 
     // Filled area below the line (total user+kernel)
     QPainterPath fillPath = path;
-    fillPath.lineTo((slotOffset + visibleCount - 1) * stepX, h);
-    fillPath.lineTo(slotOffset * stepX, h);
+    fillPath.lineTo(contentLeft + (slotOffset + visibleCount - 1) * stepX, contentBottom);
+    fillPath.lineTo(contentLeft + slotOffset * stepX, contentBottom);
     fillPath.closeSubpath();
 
     p.setPen(Qt::NoPen);
@@ -203,16 +211,16 @@ void GraphWidget::paintEvent(QPaintEvent * /*event*/)
         for (int i = 0; i < visibleCount2; ++i)
         {
             const double val = qBound(0.0, this->m_overlayData->at(visibleStart2 + i), this->m_maxVal);
-            const double fx  = (slotOffset2 + i) * stepX;
-            const double fy  = h - (val / this->m_maxVal) * h;
+            const double fx  = contentLeft + (slotOffset2 + i) * stepX;
+            const double fy  = contentBottom - (val / this->m_maxVal) * contentHeight;
             if (i == 0)
                 kPath.moveTo(fx, fy);
             else
                 kPath.lineTo(fx, fy);
         }
         QPainterPath kFill = kPath;
-        kFill.lineTo((slotOffset2 + visibleCount2 - 1) * stepX, h);
-        kFill.lineTo(slotOffset2 * stepX, h);
+        kFill.lineTo(contentLeft + (slotOffset2 + visibleCount2 - 1) * stepX, contentBottom);
+        kFill.lineTo(contentLeft + slotOffset2 * stepX, contentBottom);
         kFill.closeSubpath();
         p.setPen(Qt::NoPen);
         p.setBrush(this->m_fillColor2);
@@ -227,7 +235,7 @@ void GraphWidget::paintEvent(QPaintEvent * /*event*/)
     // ── Border ────────────────────────────────────────────────────────────────
     p.setPen(QPen(this->m_lineColor.darker(150), 1));
     p.setBrush(Qt::NoBrush);
-    p.drawRect(r.adjusted(0, 0, -1, -1));
+    p.drawRect(QRectF(0.5, 0.5, qMax(0.0, right - 1.0), qMax(0.0, bottom - 1.0)));
 
     if (!this->m_overlayText.isEmpty())
     {
@@ -240,11 +248,11 @@ void GraphWidget::paintEvent(QPaintEvent * /*event*/)
 
     if (this->m_hoverLineEnabled && this->m_hoverSlot >= 0 && this->m_hoverSlot < sampleCount)
     {
-        const int x = static_cast<int>(this->m_hoverSlot * stepX + 0.5);
+        const int x = static_cast<int>(contentLeft + this->m_hoverSlot * stepX + 0.5);
         QColor hover = this->m_lineColor;
         hover.setAlpha(170);
         p.setPen(QPen(hover, 1));
-        p.drawLine(x, 0, x, h);
+        p.drawLine(QPointF(x, contentTop), QPointF(x, contentBottom));
     }
 }
 
@@ -316,8 +324,11 @@ QRect GraphWidget::hoverLineRect(int slot) const
         return {};
 
     const int sampleCount = qMax(2, this->m_sampleCapacity);
-    const double stepX = static_cast<double>(qMax(1, this->width())) / static_cast<double>(sampleCount - 1);
-    const int x = static_cast<int>(slot * stepX + 0.5);
+    const int width = qMax(1, this->width());
+    const double contentLeft = (width > 2) ? 1.0 : 0.0;
+    const double contentRight = qMax(contentLeft, static_cast<double>(width - 2));
+    const double stepX = (contentRight - contentLeft) / static_cast<double>(sampleCount - 1);
+    const int x = static_cast<int>(contentLeft + slot * stepX + 0.5);
     return QRect(x - 3, 0, 7, this->height()).intersected(this->rect());
 }
 
