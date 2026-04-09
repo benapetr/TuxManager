@@ -363,8 +363,6 @@ void GpuDetailWidget::onUpdated()
 
         if (engineIndex >= 0)
         {
-            const QString engName = this->m_provider->GpuEngineName(this->m_gpuIndex, engineIndex);
-            graph->SetSeriesNames(engName);
             value->setText(QString::number(this->m_provider->GpuEnginePercent(this->m_gpuIndex, engineIndex), 'f', 0) + "%");
         } else
         {
@@ -416,6 +414,7 @@ void GpuDetailWidget::bindEngineGraphSource(int slot)
         graph->SetDataSource(this->m_provider->GpuEngineHistory(this->m_gpuIndex, engineIndex), 100.0);
     } else
     {
+        graph->SetSeriesNames(tr("Value"));
         graph->SetDataSource(kEmptyHistory, 100.0);
     }
 }
