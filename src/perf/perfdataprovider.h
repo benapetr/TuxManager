@@ -132,6 +132,7 @@ namespace Perf
             QString NetworkIpv6(int i) const;
             double NetworkRxBytesPerSec(int i) const;
             double NetworkTxBytesPerSec(int i) const;
+            double NetworkMaxThroughputBytesPerSec(int i) const;
             const QVector<double> &NetworkRxHistory(int i) const;
             const QVector<double> &NetworkTxHistory(int i) const;
 
@@ -148,6 +149,7 @@ namespace Perf
             const QVector<double> &GpuMemUsageHistory(int i) const;
             const QVector<double> &GpuCopyTxHistory(int i) const;
             const QVector<double> &GpuCopyRxHistory(int i) const;
+            double GpuMaxCopyBytesPerSec(int i) const;
             qint64 GpuSharedMemUsedMiB(int i) const;
             qint64 GpuSharedMemTotalMiB(int i) const;
             const QVector<double> &GpuSharedMemHistory(int i) const;
@@ -215,6 +217,7 @@ namespace Perf
                 qint64          sharedMemTotalMiB { 0 };
                 double          copyTxBps { 0.0 };
                 double          copyRxBps { 0.0 };
+                double          maxCopyBps { 0.0 };
                 QVector<double> utilHistory;
                 QVector<double> memUsageHistory;
                 QVector<double> sharedMemHistory;
@@ -260,6 +263,7 @@ namespace Perf
                 quint64         prevTxBytes { 0 };
                 double          rxBps { 0.0 };
                 double          txBps { 0.0 };
+                double          maxThroughputBps { 0.0 };
                 QVector<double> rxHistory;
                 QVector<double> txHistory;
             };
@@ -395,6 +399,7 @@ namespace Perf
             static quint32 readLe32(const QByteArray &raw, int off);
 
             static void   appendHistory(QVector<double> &vec, double val);
+            static void   appendHistoryAndUpdateMax(QVector<double> &vec, double val, double &cachedMax, double minMax = 0.0);
             static quint64 parseCpuLine(const QList<QByteArray> &parts,  quint64 &outIdle, quint64 &outKernel);
     };
 } // namespace Perf

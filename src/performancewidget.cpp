@@ -306,15 +306,9 @@ void PerformanceWidget::onProviderUpdated()
 
             const double tx = this->m_provider->NetworkTxBytesPerSec(i);
             const double rx = this->m_provider->NetworkRxBytesPerSec(i);
-            const QVector<double> &rxHistory = this->m_provider->NetworkRxHistory(i);
-            const QVector<double> &txHistory = this->m_provider->NetworkTxHistory(i);
             const QString netSub = tr("U:%1 D:%2", "%1=upload rate %2=download rate")
                                    .arg(Misc::FormatBytesPerSecond(tx), Misc::FormatBytesPerSecond(rx));
-            double maxRate = 1024.0; // keep at least 1KB/s visual range
-            for (double v : rxHistory)
-                maxRate = qMax(maxRate, v);
-            for (double v : txHistory)
-                maxRate = qMax(maxRate, v);
+            const double maxRate = this->m_provider->NetworkMaxThroughputBytesPerSec(i);
             item->Update(netSub, maxRate);
         }
     }

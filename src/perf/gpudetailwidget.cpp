@@ -381,14 +381,7 @@ void GpuDetailWidget::onUpdated()
     this->m_sharedMemGraphMaxLabel->setText(Misc::FormatMiB(static_cast<quint64>(qMax<qint64>(0, sharedTotalMiB)), 1));
     this->m_sharedMemGraph->Tick();
 
-    double maxCopyRate = MAX_RATE;
-    if (this->m_copyTxHistory && this->m_copyRxHistory)
-    {
-        for (double v : *this->m_copyTxHistory)
-            maxCopyRate = std::max(maxCopyRate, v);
-        for (double v : *this->m_copyRxHistory)
-            maxCopyRate = std::max(maxCopyRate, v);
-    }
+    const double maxCopyRate = this->m_provider->GpuMaxCopyBytesPerSec(this->m_gpuIndex);
     this->m_copyBwGraph->SetMax(maxCopyRate);
     this->m_copyBwGraphMaxLabel->setText(Misc::FormatBytesPerSecond(maxCopyRate));
     this->m_copyBwGraph->Tick();

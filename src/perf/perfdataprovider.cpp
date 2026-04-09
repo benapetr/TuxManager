@@ -43,6 +43,8 @@ using namespace Perf;
 
 namespace
 {
+    static constexpr double kMinThroughputGraphBps = 1024.0;
+
     using NvmlReturn = unsigned int;
     using NvmlDevice = void *;
 
@@ -393,6 +395,13 @@ double PerfDataProvider::NetworkTxBytesPerSec(int i) const
     return this->m_networks.at(i).txBps;
 }
 
+double PerfDataProvider::NetworkMaxThroughputBytesPerSec(int i) const
+{
+    if (i < 0 || i >= this->m_networks.size())
+        return kMinThroughputGraphBps;
+    return this->m_networks.at(i).maxThroughputBps;
+}
+
 const QVector<double> &PerfDataProvider::NetworkRxHistory(int i) const
 {
     static const QVector<double> empty;
@@ -488,6 +497,13 @@ const QVector<double> &PerfDataProvider::GpuCopyRxHistory(int i) const
     if (i < 0 || i >= this->m_gpus.size())
         return empty;
     return this->m_gpus.at(i).copyRxHistory;
+}
+
+double PerfDataProvider::GpuMaxCopyBytesPerSec(int i) const
+{
+    if (i < 0 || i >= this->m_gpus.size())
+        return kMinThroughputGraphBps;
+    return this->m_gpus.at(i).maxCopyBps;
 }
 
 qint64 PerfDataProvider::GpuSharedMemUsedMiB(int i) const
@@ -1318,8 +1334,8 @@ bool PerfDataProvider::sampleNetworks()
         {
             n.rxBps = 0.0;
             n.txBps = 0.0;
-            appendHistory(n.rxHistory, 0.0);
-            appendHistory(n.txHistory, 0.0);
+            appendHistoryAndUpdateMax(n.rxHistory, 0.0, n.maxThroughputBps, kMinThroughputGraphBps);
+            appendHistoryAndUpdateMax(n.txHistory, 0.0, n.maxThroughputBps, kMinThroughputGraphBps);
             continue;
         }
 
@@ -1328,8 +1344,8 @@ bool PerfDataProvider::sampleNetworks()
         {
             n.prevRxBytes = c.rxBytes;
             n.prevTxBytes = c.txBytes;
-            appendHistory(n.rxHistory, 0.0);
-            appendHistory(n.txHistory, 0.0);
+            appendHistoryAndUpdateMax(n.rxHistory, 0.0, n.maxThroughputBps, kMinThroughputGraphBps);
+            appendHistoryAndUpdateMax(n.txHistory, 0.0, n.maxThroughputBps, kMinThroughputGraphBps);
             continue;
         }
 
@@ -1340,8 +1356,8 @@ bool PerfDataProvider::sampleNetworks()
 
         n.rxBps = static_cast<double>(dRx) * 1000.0 / static_cast<double>(dtMs);
         n.txBps = static_cast<double>(dTx) * 1000.0 / static_cast<double>(dtMs);
-        appendHistory(n.rxHistory, n.rxBps);
-        appendHistory(n.txHistory, n.txBps);
+        appendHistoryAndUpdateMax(n.rxHistory, n.rxBps, n.maxThroughputBps, kMinThroughputGraphBps);
+        appendHistoryAndUpdateMax(n.txHistory, n.txBps, n.maxThroughputBps, kMinThroughputGraphBps);
     }
 
     return true;
@@ -1554,8 +1570,8 @@ bool PerfDataProvider::sampleNvml()
                               ? (static_cast<double>(g.memUsedMiB) / static_cast<double>(g.memTotalMiB)) * 100.0
                               : 0.0;
         appendHistory(g.memUsageHistory, memPct);
-        appendHistory(g.copyTxHistory, g.copyTxBps);
-        appendHistory(g.copyRxHistory, g.copyRxBps);
+        appendHistoryAndUpdateMax(g.copyTxHistory, g.copyTxBps, g.maxCopyBps, kMinThroughputGraphBps);
+        appendHistoryAndUpdateMax(g.copyRxHistory, g.copyRxBps, g.maxCopyBps, kMinThroughputGraphBps);
 
         QHash<QString, GpuEngineSample> oldEngines;
         for (const GpuEngineSample &e : std::as_const(g.engines))
@@ -1662,8 +1678,8 @@ bool PerfDataProvider::sampleNvml()
             g.copyRxBps = 0.0;
             appendHistory(g.utilHistory, 0.0);
             appendHistory(g.memUsageHistory, 0.0);
-            appendHistory(g.copyTxHistory, 0.0);
-            appendHistory(g.copyRxHistory, 0.0);
+            appendHistoryAndUpdateMax(g.copyTxHistory, 0.0, g.maxCopyBps, kMinThroughputGraphBps);
+            appendHistoryAndUpdateMax(g.copyRxHistory, 0.0, g.maxCopyBps, kMinThroughputGraphBps);
             for (GpuEngineSample &e : g.engines)
             {
                 e.pct = 0.0;
@@ -2474,4 +2490,40 @@ void PerfDataProvider::appendHistory(QVector<double> &vec, double val)
     vec.append(val);
     while (vec.size() > HISTORY_SIZE)
         vec.removeFirst();
+}
+
+void PerfDataProvider::appendHistoryAndUpdateMax(QVector<double> &vec, double val, double &cachedMax, double minMax)
+{
+    double removed = 0.0;
+    bool removedWasCurrentMax = false;
+    if (vec.size() >= HISTORY_SIZE && !vec.isEmpty())
+    {
+        removed = vec.first();
+        removedWasCurrentMax = (removed >= cachedMax);
+    }
+
+    appendHistory(vec, val);
+
+    if (vec.isEmpty())
+    {
+        cachedMax = minMax;
+        return;
+    }
+
+    if (val >= cachedMax)
+    {
+        cachedMax = qMax(minMax, val);
+        return;
+    }
+
+    if (removedWasCurrentMax)
+    {
+        double recomputedMax = minMax;
+        for (double sample : std::as_const(vec))
+            recomputedMax = qMax(recomputedMax, sample);
+        cachedMax = recomputedMax;
+        return;
+    }
+
+    cachedMax = qMax(cachedMax, minMax);
 }

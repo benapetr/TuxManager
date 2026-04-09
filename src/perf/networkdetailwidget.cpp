@@ -143,12 +143,7 @@ void NetworkDetailWidget::onUpdated()
     this->ui->sendValueLabel->setText(Misc::FormatBytesPerSecond(txBps));
     this->ui->receiveValueLabel->setText(Misc::FormatBytesPerSecond(rxBps));
 
-    double maxRate = 1024.0;
-    for (double v : *this->m_rxHistory)
-        maxRate = std::max(maxRate, v);
-    for (double v : *this->m_txHistory)
-        maxRate = std::max(maxRate, v);
-
+    const double maxRate = this->m_provider->NetworkMaxThroughputBytesPerSec(this->m_networkIndex);
     this->ui->throughputGraphWidget->SetMax(maxRate);
     this->ui->throughputGraphWidget->Tick();
     this->ui->throughputGraphMaxLabel->setText(Misc::FormatBytesPerSecond(maxRate));
