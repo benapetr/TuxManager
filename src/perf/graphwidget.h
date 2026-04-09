@@ -116,6 +116,7 @@ namespace Perf
             QString         m_percentTooltipAbsoluteUnit;
             int             m_percentTooltipAbsolutePrecision { 2 };
 
+            QRect hoverLineRect(int slot) const;
             static int sampleIndexForSlot(int size, int slot, int sampleCount);
             QString formatValue(double v) const;
     };

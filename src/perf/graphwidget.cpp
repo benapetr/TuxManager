@@ -258,14 +258,16 @@ void GraphWidget::mouseMoveEvent(QMouseEvent *event)
     const double mouseX = event->pos().x();
 #endif
     const int slot = qBound(0, static_cast<int>(std::lround(mouseX / stepX)), sampleCount - 1);
+    const bool slotChanged = (slot != this->m_hoverSlot);
 
-    if (slot != this->m_hoverSlot)
+    if (slotChanged)
     {
+        const QRect oldRect = this->hoverLineRect(this->m_hoverSlot);
         this->m_hoverSlot = slot;
-        this->update();
+        this->update(oldRect.united(this->hoverLineRect(this->m_hoverSlot)));
     }
 
-    if (this->m_hoverTooltipEnabled)
+    if (this->m_hoverTooltipEnabled && slotChanged)
     {
         const int idx1 = sampleIndexForSlot(this->m_data ? this->m_data->size() : 0, slot, sampleCount);
         const int idx2 = sampleIndexForSlot(this->m_overlayData ? this->m_overlayData->size() : 0, slot, sampleCount);
@@ -300,11 +302,23 @@ void GraphWidget::mouseMoveEvent(QMouseEvent *event)
 
 void GraphWidget::leaveEvent(QEvent *event)
 {
+    const QRect oldRect = this->hoverLineRect(this->m_hoverSlot);
     this->m_hoverSlot = -1;
     if (this->m_hoverTooltipEnabled)
         QToolTip::hideText();
-    this->update();
+    this->update(oldRect);
     QWidget::leaveEvent(event);
+}
+
+QRect GraphWidget::hoverLineRect(int slot) const
+{
+    if (!this->m_hoverLineEnabled || slot < 0)
+        return {};
+
+    const int sampleCount = qMax(2, this->m_sampleCapacity);
+    const double stepX = static_cast<double>(qMax(1, this->width())) / static_cast<double>(sampleCount - 1);
+    const int x = static_cast<int>(slot * stepX + 0.5);
+    return QRect(x - 3, 0, 7, this->height()).intersected(this->rect());
 }
 
 int GraphWidget::sampleIndexForSlot(int size, int slot, int sampleCount)
