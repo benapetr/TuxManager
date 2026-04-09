@@ -2,7 +2,7 @@
 
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
-QMAKE ?= $(shell command -v qmake6 >/dev/null 2>&1 && echo qmake6 || command -v qmake >/dev/null 2>&1 && echo qmake)
+QMAKE ?= $(shell (command -v qmake6 >/dev/null 2>&1 && echo qmake6) || (command -v qmake >/dev/null 2>&1 && echo qmake))
 
 %:
 	dh $@
