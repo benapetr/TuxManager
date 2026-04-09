@@ -30,6 +30,8 @@
 
 using namespace Perf;
 
+#define MAX_RATE 1024.0
+
 namespace
 {
     const QVector<double> kEmptyHistory;
@@ -168,6 +170,7 @@ GpuDetailWidget::GpuDetailWidget(QWidget *parent) : QWidget(parent)
     this->m_copyBwGraph->SetSeriesNames(tr("TX"), tr("RX"));
     this->m_copyBwGraph->SetValueFormat(GraphWidget::ValueFormat::BytesPerSec);
     this->m_copyBwGraph->setMinimumHeight(70);
+    this->m_copyBwGraph->setToolTip(tr("Copy bandwidth: light trace = TX, dark trace = RX"));
     root->addWidget(this->m_copyBwGraph);
 
     auto *copyTimeAxis = new QHBoxLayout();
@@ -347,7 +350,8 @@ void GpuDetailWidget::onUpdated()
     this->m_driverValueLabel->setText(this->m_provider->GpuDriverVersion(this->m_gpuIndex));
     this->m_backendValueLabel->setText(this->m_provider->GpuBackendName(this->m_gpuIndex));
 
-    this->rebuildEngineSelectors();
+    // We assume that GPU engines don't change during runtime
+    //this->rebuildEngineSelectors();
 
     for (int slot = 0; slot < this->m_engineGraphs.size(); ++slot)
     {
@@ -377,14 +381,16 @@ void GpuDetailWidget::onUpdated()
     this->m_sharedMemGraphMaxLabel->setText(Misc::FormatMiB(static_cast<quint64>(qMax<qint64>(0, sharedTotalMiB)), 1));
     this->m_sharedMemGraph->Tick();
 
-    double maxCopyRate = 1024.0;
-    for (double v : *this->m_copyTxHistory)
-        maxCopyRate = std::max(maxCopyRate, v);
-    for (double v : *this->m_copyRxHistory)
-        maxCopyRate = std::max(maxCopyRate, v);
+    double maxCopyRate = MAX_RATE;
+    if (this->m_copyTxHistory && this->m_copyRxHistory)
+    {
+        for (double v : *this->m_copyTxHistory)
+            maxCopyRate = std::max(maxCopyRate, v);
+        for (double v : *this->m_copyRxHistory)
+            maxCopyRate = std::max(maxCopyRate, v);
+    }
     this->m_copyBwGraph->SetMax(maxCopyRate);
     this->m_copyBwGraphMaxLabel->setText(Misc::FormatBytesPerSecond(maxCopyRate));
-    this->m_copyBwGraph->setToolTip(tr("Copy bandwidth: light trace = TX, dark trace = RX"));
     this->m_copyBwGraph->Tick();
 }
 
@@ -439,7 +445,7 @@ void GpuDetailWidget::bindMemoryAndCopySources(bool hasSharedData)
     if (this->m_copyTxHistory != copyTxHistory)
     {
         this->m_copyTxHistory = copyTxHistory;
-        this->m_copyBwGraph->SetDataSource(*this->m_copyTxHistory, 1024.0);
+        this->m_copyBwGraph->SetDataSource(*this->m_copyTxHistory, MAX_RATE);
     }
 
     if (this->m_copyRxHistory != copyRxHistory)
