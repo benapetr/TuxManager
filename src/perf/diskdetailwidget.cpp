@@ -22,11 +22,8 @@
 #include "../misc.h"
 #include "../ui/widgetstyle.h"
 
-#include <algorithm>
 #include <QGridLayout>
 #include <QLabel>
-
-#define MAX_RATE 1024.0
 
 using namespace Perf;
 
@@ -146,7 +143,7 @@ void DiskDetailWidget::SetDisk(PerfDataProvider *provider, int index)
             this->ui->deviceValueLabel->setText("/dev/" + name);
 
             this->ui->activeGraphWidget->SetDataSource(*this->m_activeHistory, 100.0);
-            this->ui->transferGraphWidget->SetDataSource(*this->m_readHistory, MAX_RATE);
+            this->ui->transferGraphWidget->SetDataSource(*this->m_readHistory, 1024.0);
             this->ui->transferGraphWidget->SetOverlayDataSource(*this->m_writeHistory);
         }
         connect(this->m_provider, &PerfDataProvider::updated, this, &DiskDetailWidget::onUpdated);
@@ -179,11 +176,7 @@ void DiskDetailWidget::onUpdated()
 
     this->ui->activeGraphMaxLabel->setText(tr("100%"));
 
-    double maxRate = MAX_RATE;
-    for (double v : *this->m_readHistory)
-        maxRate = std::max(maxRate, v);
-    for (double v : *this->m_writeHistory)
-        maxRate = std::max(maxRate, v);
+    const double maxRate = this->m_provider->DiskMaxTransferBytesPerSec(this->m_diskIndex);
     this->ui->transferGraphWidget->SetMax(maxRate);
     this->ui->activeGraphWidget->Tick();
     this->ui->transferGraphWidget->Tick();

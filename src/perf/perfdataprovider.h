@@ -105,6 +105,7 @@ namespace Perf
             qint64 SwapFreeKb()  const { return this->m_swapFreeKb;  }
             double SwapInBytesPerSec()  const { return this->m_swapInBps;  }
             double SwapOutBytesPerSec() const { return this->m_swapOutBps; }
+            double SwapMaxActivityBytesPerSec() const { return this->m_swapMaxActivityBps; }
             const HistoryBuffer &SwapUsageHistory() const { return this->m_swapUsageHistory; }
             const HistoryBuffer &SwapInHistory()    const { return this->m_swapInHistory;    }
             const HistoryBuffer &SwapOutHistory()   const { return this->m_swapOutHistory;   }
@@ -117,6 +118,7 @@ namespace Perf
             double DiskActivePercent(int i) const;
             double DiskReadBytesPerSec(int i) const;
             double DiskWriteBytesPerSec(int i) const;
+            double DiskMaxTransferBytesPerSec(int i) const;
             qint64 DiskCapacityBytes(int i) const;
             qint64 DiskFormattedBytes(int i) const;
             bool DiskIsSystemDisk(int i) const;
@@ -188,6 +190,7 @@ namespace Perf
                 double         activePct     { 0.0 };
                 double         readBps       { 0.0 };
                 double         writeBps      { 0.0 };
+                double         maxTransferBps { 0.0 };
                 qint64         capacityBytes { 0 };
                 qint64         formattedBytes { 0 };
                 bool           isSystemDisk { false };
@@ -330,6 +333,7 @@ namespace Perf
             quint64          m_prevSwapOutPages { 0 };
             double           m_swapInBps  { 0.0 };
             double           m_swapOutBps { 0.0 };
+            double           m_swapMaxActivityBps { 0.0 };
             HistoryBuffer    m_swapUsageHistory { HISTORY_SIZE };
             HistoryBuffer    m_swapInHistory { HISTORY_SIZE };
             HistoryBuffer    m_swapOutHistory { HISTORY_SIZE };

@@ -30,8 +30,6 @@
 
 using namespace Perf;
 
-#define MAX_RATE 1024.0
-
 namespace
 {
     const HistoryBuffer kEmptyHistory;
@@ -435,7 +433,7 @@ void GpuDetailWidget::bindMemoryAndCopySources(bool hasSharedData)
     if (this->m_copyTxHistory != copyTxHistory)
     {
         this->m_copyTxHistory = copyTxHistory;
-        this->m_copyBwGraph->SetDataSource(*this->m_copyTxHistory, MAX_RATE);
+        this->m_copyBwGraph->SetDataSource(*this->m_copyTxHistory, 1024.0);
     }
 
     if (this->m_copyRxHistory != copyRxHistory)

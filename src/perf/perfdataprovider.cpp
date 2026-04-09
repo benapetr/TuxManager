@@ -294,6 +294,13 @@ double PerfDataProvider::DiskWriteBytesPerSec(int i) const
     return this->m_disks.at(i).writeBps;
 }
 
+double PerfDataProvider::DiskMaxTransferBytesPerSec(int i) const
+{
+    if (i < 0 || i >= this->m_disks.size())
+        return kMinThroughputGraphBps;
+    return this->m_disks.at(i).maxTransferBps;
+}
+
 qint64 PerfDataProvider::DiskCapacityBytes(int i) const
 {
     if (i < 0 || i >= this->m_disks.size())
@@ -796,8 +803,8 @@ bool PerfDataProvider::sampleMemory()
 
         this->m_prevSwapInPages = pswpin;
         this->m_prevSwapOutPages = pswpout;
-        appendHistory(this->m_swapInHistory, this->m_swapInBps);
-        appendHistory(this->m_swapOutHistory, this->m_swapOutBps);
+        appendHistoryAndUpdateMax(this->m_swapInHistory, this->m_swapInBps, this->m_swapMaxActivityBps, kMinThroughputGraphBps);
+        appendHistoryAndUpdateMax(this->m_swapOutHistory, this->m_swapOutBps, this->m_swapMaxActivityBps, kMinThroughputGraphBps);
     }
     return true;
 }
@@ -1091,8 +1098,8 @@ bool PerfDataProvider::sampleDisks()
             d.readBps = 0.0;
             d.writeBps = 0.0;
             appendHistory(d.activeHistory, 0.0);
-            appendHistory(d.readHistory, 0.0);
-            appendHistory(d.writeHistory, 0.0);
+            appendHistoryAndUpdateMax(d.readHistory, 0.0, d.maxTransferBps, kMinThroughputGraphBps);
+            appendHistoryAndUpdateMax(d.writeHistory, 0.0, d.maxTransferBps, kMinThroughputGraphBps);
             continue;
         }
 
@@ -1103,8 +1110,8 @@ bool PerfDataProvider::sampleDisks()
             d.prevWriteSecs = c.writeSectors;
             d.prevIoMs      = c.ioMs;
             appendHistory(d.activeHistory, 0.0);
-            appendHistory(d.readHistory, 0.0);
-            appendHistory(d.writeHistory, 0.0);
+            appendHistoryAndUpdateMax(d.readHistory, 0.0, d.maxTransferBps, kMinThroughputGraphBps);
+            appendHistoryAndUpdateMax(d.writeHistory, 0.0, d.maxTransferBps, kMinThroughputGraphBps);
             continue;
         }
 
@@ -1123,8 +1130,8 @@ bool PerfDataProvider::sampleDisks()
         d.writeBps = static_cast<double>(dWriteSecs) * kSectorBytes * 1000.0 / static_cast<double>(dtMs);
 
         appendHistory(d.activeHistory, d.activePct);
-        appendHistory(d.readHistory, d.readBps);
-        appendHistory(d.writeHistory, d.writeBps);
+        appendHistoryAndUpdateMax(d.readHistory, d.readBps, d.maxTransferBps, kMinThroughputGraphBps);
+        appendHistoryAndUpdateMax(d.writeHistory, d.writeBps, d.maxTransferBps, kMinThroughputGraphBps);
     }
 
     return true;

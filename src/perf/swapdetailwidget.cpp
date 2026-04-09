@@ -21,12 +21,9 @@
 #include "../misc.h"
 #include "../ui/widgetstyle.h"
 
-#include <algorithm>
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-
-#define MAX_RATE 1024.0
 
 using namespace Perf;
 
@@ -160,7 +157,7 @@ void SwapDetailWidget::SetProvider(PerfDataProvider *provider)
     this->m_inHistory = &this->m_provider->SwapInHistory();
 
     this->m_usageGraph->SetDataSource(*this->m_usageHistory, 100.0);
-    this->m_activityGraph->SetDataSource(*this->m_inHistory, MAX_RATE);
+    this->m_activityGraph->SetDataSource(*this->m_inHistory, 1024.0);
     this->m_activityGraph->SetOverlayDataSource(*this->m_outHistory);
 
     connect(this->m_provider, &PerfDataProvider::updated, this, &SwapDetailWidget::onUpdated);
@@ -206,12 +203,7 @@ void SwapDetailWidget::onUpdated()
 
     this->m_usageGraph->SetPercentTooltipAbsolute(static_cast<double>(totalKb) / (1024.0 * 1024.0), tr("GB"), 2);
 
-    double maxRate = MAX_RATE;
-    for (double v : *this->m_inHistory)
-        maxRate = std::max(maxRate, v);
-    for (double v : *this->m_outHistory)
-        maxRate = std::max(maxRate, v);
-
+    const double maxRate = this->m_provider->SwapMaxActivityBytesPerSec();
     this->m_activityGraph->SetMax(maxRate);
 
     this->m_usageGraph->Tick();
