@@ -14,12 +14,13 @@ CHECKSUM_MODE="skip"
 OUTPUT_DIR="$SCRIPT_DIR/arch"
 LOCAL_SOURCE_TARBALL=""
 GENERATE_SRCINFO="yes"
+PACKAGE_NAME="$APP_NAME"
 
 usage() {
     cat <<EOF
 Usage:
   $0 [--version x.y.z] [--pkgrel N] [--checksum auto|skip|VALUE]
-  $0 --mode local --source-tarball /abs/path/source.tar.gz [--version x.y.z] [--pkgrel N] [--output-dir /abs/path] [--no-srcinfo]
+  $0 --mode local --source-tarball /abs/path/source.tar.gz [--version x.y.z] [--pkgrel N] [--package-name name] [--output-dir /abs/path] [--no-srcinfo]
 EOF
 }
 
@@ -35,6 +36,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --pkgrel)
             PKGREL="$2"
+            shift 2
+            ;;
+        --package-name)
+            PACKAGE_NAME="$2"
             shift 2
             ;;
         --checksum)
@@ -75,7 +80,7 @@ mkdir -p "$OUTPUT_DIR"
 
 if [[ "$MODE" == "release" ]]; then
     SOURCE_URL="${APP_HOMEPAGE_URL}/archive/refs/tags/v${APP_VERSION}.tar.gz"
-    SOURCE_SPEC="${APP_NAME}-${APP_VERSION}.tar.gz::${SOURCE_URL}"
+    SOURCE_SPEC="${PACKAGE_NAME}-${APP_VERSION}.tar.gz::${SOURCE_URL}"
 
     case "$CHECKSUM_MODE" in
         auto)
@@ -103,12 +108,12 @@ else
     fi
 
     LOCAL_SOURCE_TARBALL="$(cd "$(dirname "$LOCAL_SOURCE_TARBALL")" && pwd)/$(basename "$LOCAL_SOURCE_TARBALL")"
-    SOURCE_SPEC="${APP_NAME}-${APP_VERSION}.tar.gz::file://${LOCAL_SOURCE_TARBALL}"
+    SOURCE_SPEC="${PACKAGE_NAME}-${APP_VERSION}.tar.gz::file://${LOCAL_SOURCE_TARBALL}"
     CHECKSUM_VALUE="$(b2sum "$LOCAL_SOURCE_TARBALL" | awk '{print $1}')"
 fi
 
 cat > "$OUTPUT_DIR/PKGBUILD" <<EOF
-pkgname=${APP_NAME}
+pkgname=${PACKAGE_NAME}
 pkgver=${APP_VERSION}
 pkgrel=${PKGREL}
 pkgdesc="${DESCRIPTION}"

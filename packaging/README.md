@@ -192,6 +192,7 @@ The GitHub workflow in `.github/workflows/build-arch-aur.yml` does two things:
 
 - builds a local Arch package from the current source checkout on every push and pull request
 - renders and publishes `packaging/arch/` to AUR on `v*` tags
+- also supports guarded manual publish via `workflow_dispatch`
 
 Required repository secret:
 
@@ -200,6 +201,18 @@ Required repository secret:
 Release requirement:
 
 - create version tags in the form `v1.2.3`
+
+Manual publish inputs:
+
+- `version`: required for manual publish, without the leading `v`
+- `aur_package_name`: optional package name override for test publishes
+
+Manual publish guardrails:
+
+- the selected `version` must match `packaging/config` and `src/globals.h`
+- the matching Git tag must already exist on `origin`
+- canonical `tux-manager` publishes are only allowed when the selected tag is an ancestor of the checked out branch head
+- if `AUR_SSH_PRIVATE_KEY` is not configured, the publish step is skipped cleanly
 
 ## Install
 
