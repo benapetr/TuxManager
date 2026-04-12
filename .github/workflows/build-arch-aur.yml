@@ -22,20 +22,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configure (qmake6)
+      - name: Create build user
         run: |
-          mkdir -p build
-          cd build
-          qmake6 ../src/TuxManager.pro
+          useradd --create-home builder
+          chown -R builder:builder "${GITHUB_WORKSPACE}"
 
-      - name: Build
-        run: make -C build -j"$(nproc)"
+      - name: Build local Arch package from source checkout
+        run: |
+          runuser -u builder -- bash -lc "
+            set -euo pipefail
+            cd '${GITHUB_WORKSPACE}/packaging'
+            ./package-arch.sh
+          "
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: tux-manager-arch-build
-          path: build/tux-manager
+          name: tux-manager-arch-package
+          path: packaging/output/*.pkg.tar.*
           if-no-files-found: error
 
   publish-aur:
@@ -65,15 +69,12 @@ jobs:
           set -euo pipefail
 
           tag_version="${GITHUB_REF_NAME#v}"
-          pkgbuild_version="$(sed -n 's/^pkgver=//p' packaging/arch/PKGBUILD)"
           config_version="$(sed -n 's/^APP_VERSION=\"\\(.*\\)\"$/\\1/p' packaging/config)"
           code_version="$(sed -n 's/^#define TUX_MANAGER_VERSION_STRING[[:space:]]*\"\\(.*\\)\"$/\\1/p' src/globals.h)"
 
-          test -n "${pkgbuild_version}"
           test -n "${config_version}"
           test -n "${code_version}"
 
-          test "${tag_version}" = "${pkgbuild_version}"
           test "${tag_version}" = "${config_version}"
           test "${tag_version}" = "${code_version}"
 
@@ -82,15 +83,13 @@ jobs:
           useradd --create-home builder
           chown -R builder:builder "${GITHUB_WORKSPACE}"
 
-      - name: Pin release checksum in PKGBUILD
+      - name: Render release PKGBUILD and .SRCINFO
         run: |
-          set -euo pipefail
-
-          package_url="$(sed -n 's/^url=\"\\(.*\\)\"$/\\1/p' packaging/arch/PKGBUILD)"
-          archive_url="${package_url}/archive/refs/tags/${GITHUB_REF_NAME}.tar.gz"
-          archive_b2sum="$(curl -fsSL "${archive_url}" | b2sum | awk '{print $1}')"
-
-          sed -i "s/^b2sums=.*/b2sums=('${archive_b2sum}')/" packaging/arch/PKGBUILD
+          runuser -u builder -- bash -lc "
+            set -euo pipefail
+            cd '${GITHUB_WORKSPACE}/packaging'
+            ./render-arch-files.sh --version '${GITHUB_REF_NAME#v}' --checksum auto
+          "
 
       - name: Verify Arch package and refresh .SRCINFO
         run: |

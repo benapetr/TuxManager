@@ -7,7 +7,8 @@ This directory contains Linux packaging scripts for Tux Manager.
 - Debian/Ubuntu (`.deb`) via `package-deb.sh`
 - Fedora/RHEL/Alma/Rocky (`.rpm` + `.src.rpm`) via `package-rpm.sh`
 - AppImage (`.AppImage`) via `package-appimage.sh`
-- Arch Linux / AUR metadata via `arch/PKGBUILD` and `.github/workflows/build-arch-aur.yml`
+- Arch Linux (`.pkg.tar.*`) via `package-arch.sh`
+- Arch Linux / AUR metadata via `arch/PKGBUILD`, `.SRCINFO`, and `.github/workflows/build-arch-aur.yml`
 
 ## Unsupported targets
 - Flatpak (`.flatpak`) via `package-flatpak.sh` - runs in container and doesn't allow access to host's /proc
@@ -85,9 +86,9 @@ sudo pacman -S --needed base-devel git qt6-base
 ```
 
 Notes:
-- Direct local builds use `qmake6` from `qt6-base`.
+- The local Arch packaging script is `package-arch.sh`.
 - `makepkg` is provided by `base-devel`.
-- The AUR package metadata lives in `packaging/arch/`.
+- Release AUR metadata is rendered into `packaging/arch/` from `packaging/config`.
 
 ## Usage
 
@@ -165,35 +166,32 @@ Output (in `packaging/output/`):
 
 ### Build On Arch Linux
 
-To build the application directly from a local repo checkout:
+To build an Arch package from the current local repo checkout:
 
 ```bash
-mkdir build && cd build
-qmake6 ../src/TuxManager.pro
-make -j$(nproc)
-./tux-manager
+cd packaging
+./package-arch.sh
 ```
 
-To test the AUR package recipe after the matching `vX.Y.Z` tag exists upstream:
+Optional:
 
 ```bash
-cd packaging/arch
-makepkg -s
+./package-arch.sh --version 1.2.3
 ```
 
-Output:
+Output (in `packaging/output/`):
 - `tux-manager-<version>-1-x86_64.pkg.tar.zst`
 
 Notes:
-- The AUR recipe builds from the release tarball referenced by `packaging/arch/PKGBUILD`.
-- Use version tags in the form `v1.2.3` so the source archive exists for AUR users.
+- This builds from the current local checkout rather than a remote release tarball.
+- The release `PKGBUILD` and `.SRCINFO` under `packaging/arch/` are generated for AUR publication.
 
 ### Publish To AUR With GitHub Actions
 
 The GitHub workflow in `.github/workflows/build-arch-aur.yml` does two things:
 
-- builds the application in an Arch container on every push and pull request
-- publishes `packaging/arch/` to AUR on `v*` tags
+- builds a local Arch package from the current source checkout on every push and pull request
+- renders and publishes `packaging/arch/` to AUR on `v*` tags
 
 Required repository secret:
 
@@ -234,15 +232,8 @@ chmod +x packaging/output/tux-manager-*.AppImage
 
 ### Arch Linux / AUR
 
-If you built the package with `makepkg`:
+If you built the package with `package-arch.sh`:
 
 ```bash
-sudo pacman -U packaging/arch/tux-manager-*.pkg.tar.zst
-```
-
-Or build and install in one step:
-
-```bash
-cd packaging/arch
-makepkg -si
+sudo pacman -U packaging/output/tux-manager-*.pkg.tar.zst
 ```

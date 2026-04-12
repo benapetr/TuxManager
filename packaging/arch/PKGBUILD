@@ -1,7 +1,7 @@
 pkgname=tux-manager
 pkgver=1.0.3
 pkgrel=1
-pkgdesc="Linux system monitor inspired by Windows Task Manager"
+pkgdesc="Tux Manager - Linux system monitor inspired by Windows Task Manager"
 arch=('x86_64')
 url="https://github.com/tasoo-oos/TuxManager"
 license=('GPL-3.0-or-later')

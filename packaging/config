@@ -8,6 +8,7 @@ APP_NAME="tux-manager"
 APP_VERSION="1.0.3"
 MAINTAINER="Petr Bena <petr@bena.rocks>"
 DESCRIPTION="Tux Manager - Linux system monitor inspired by Windows Task Manager"
+APP_HOMEPAGE_URL="https://github.com/tasoo-oos/TuxManager"
 
 # Icon path (relative to project root)
 APP_ICON_PATH="src/tux_manager_256.ico"

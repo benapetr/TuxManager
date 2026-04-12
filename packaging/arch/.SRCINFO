@@ -1,5 +1,5 @@
 pkgbase = tux-manager
-	pkgdesc = Linux system monitor inspired by Windows Task Manager
+	pkgdesc = Tux Manager - Linux system monitor inspired by Windows Task Manager
 	pkgver = 1.0.3
 	pkgrel = 1
 	url = https://github.com/tasoo-oos/TuxManager
