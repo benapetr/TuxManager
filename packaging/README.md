@@ -188,7 +188,7 @@ Notes:
 
 ### Publish To AUR With GitHub Actions
 
-The GitHub workflow in `.github/workflows/build-arch-aur.yml` does two things:
+The GitHub workflow in `.github/workflows/build-arch-aur.yml` does three things:
 
 - builds a local Arch package from the current source checkout on every push and pull request
 - renders and publishes `packaging/arch/` to AUR on `v*` tags
@@ -213,6 +213,13 @@ Manual publish guardrails:
 - the matching Git tag must already exist on `origin`
 - canonical `tux-manager` publishes are only allowed when the selected tag is an ancestor of the checked out branch head
 - if `AUR_SSH_PRIVATE_KEY` is not configured, the publish step is skipped cleanly
+
+To sync the checked-in release metadata under `packaging/arch/` from `packaging/config`:
+
+```bash
+cd packaging
+./update-arch-release-metadata.sh
+```
 
 ## Install
 

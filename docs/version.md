@@ -19,5 +19,5 @@ Derived/generated version locations (usually do not edit manually):
 2. `packaging/package-rpm.sh` uses `APP_VERSION` from `packaging/config` (or `--version`) and `RELEASE`.
 3. `packaging/package-flatpak.sh` uses `APP_VERSION` from `packaging/config` (or `--version`) for bundle naming.
 4. `packaging/package-arch.sh` uses `APP_VERSION` from `packaging/config` (or `--version`) for local Arch package builds.
-5. `packaging/arch/PKGBUILD` and `packaging/arch/.SRCINFO` are rendered from `packaging/config` by `packaging/render-arch-files.sh`.
+5. `packaging/arch/PKGBUILD` and `packaging/arch/.SRCINFO` are rendered from `packaging/config` by `packaging/update-arch-release-metadata.sh` / `packaging/render-arch-files.sh`.
 6. `debian/tux-manager/DEBIAN/control` and other files under `debian/tux-manager*` are build artifacts.

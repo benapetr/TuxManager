@@ -122,6 +122,7 @@ url="${APP_HOMEPAGE_URL}"
 license=('GPL-3.0-or-later')
 depends=('qt6-base')
 makedepends=('qt6-base')
+options=('!debug')
 source=("${SOURCE_SPEC}")
 b2sums=('${CHECKSUM_VALUE}')
 

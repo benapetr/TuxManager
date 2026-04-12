@@ -158,7 +158,7 @@ jobs:
           runuser -u builder -- bash -lc "
             set -euo pipefail
             cd '${GITHUB_WORKSPACE}/packaging'
-            ./render-arch-files.sh --version '${{ steps.params.outputs.version }}' --package-name '${{ steps.params.outputs.aur_package_name }}' --checksum auto
+            ./render-arch-files.sh --version '${{ steps.params.outputs.version }}' --package-name '${{ steps.params.outputs.aur_package_name }}' --checksum auto --no-srcinfo
           "
 
       - name: Verify Arch package and refresh .SRCINFO

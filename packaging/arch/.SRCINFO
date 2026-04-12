@@ -7,6 +7,7 @@ pkgbase = tux-manager
 	license = GPL-3.0-or-later
 	makedepends = qt6-base
 	depends = qt6-base
+	options = !debug
 	source = tux-manager-1.0.3.tar.gz::https://github.com/tasoo-oos/TuxManager/archive/refs/tags/v1.0.3.tar.gz
 	b2sums = SKIP
 

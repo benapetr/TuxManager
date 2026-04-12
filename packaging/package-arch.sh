@@ -82,7 +82,8 @@ echo "Step 2: Rendering Arch packaging metadata..."
     --version "$APP_VERSION" \
     --pkgrel "$PKGREL" \
     --source-tarball "$SOURCE_TARBALL" \
-    --output-dir "$MAKEPKG_DIR"
+    --output-dir "$MAKEPKG_DIR" \
+    --no-srcinfo
 
 echo ""
 echo "Step 3: Building package with makepkg..."

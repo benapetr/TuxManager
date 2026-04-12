@@ -7,6 +7,7 @@ url="https://github.com/tasoo-oos/TuxManager"
 license=('GPL-3.0-or-later')
 depends=('qt6-base')
 makedepends=('qt6-base')
+options=('!debug')
 source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/v${pkgver}.tar.gz")
 b2sums=('SKIP')
 
