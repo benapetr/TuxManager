@@ -123,13 +123,13 @@ jobs:
           set -euo pipefail
 
           tag_version="${{ steps.params.outputs.version }}"
-          config_version="$(awk -F'"' '/^APP_VERSION=/{print $2}' packaging/config)"
+          source packaging/config
           code_version="$(awk -F'"' '/^#define TUX_MANAGER_VERSION_STRING/{print $2}' src/globals.h)"
 
-          test -n "${config_version}"
+          test -n "${APP_VERSION}"
           test -n "${code_version}"
 
-          test "${tag_version}" = "${config_version}"
+          test "${tag_version}" = "${APP_VERSION}"
           test "${tag_version}" = "${code_version}"
 
       - name: Validate release tag exists
@@ -153,13 +153,20 @@ jobs:
           useradd --create-home builder
           chown -R builder:builder "${GITHUB_WORKSPACE}"
 
-      - name: Render release PKGBUILD and .SRCINFO
+      - name: Prepare release PKGBUILD
         run: |
-          runuser -u builder -- bash -lc "
-            set -euo pipefail
-            cd '${GITHUB_WORKSPACE}/packaging'
-            ./render-arch-files.sh --version '${{ steps.params.outputs.version }}' --package-name '${{ steps.params.outputs.aur_package_name }}' --checksum auto --no-srcinfo
-          "
+          set -euo pipefail
+          cd "${GITHUB_WORKSPACE}/packaging/arch"
+          version='${{ steps.params.outputs.version }}'
+          aur_package_name='${{ steps.params.outputs.aur_package_name }}'
+          source_url="${aur_package_name}-${version}.tar.gz::https://github.com/benapetr/TuxManager/archive/refs/tags/v${version}.tar.gz"
+          checksum="$(curl -fsSL "https://github.com/benapetr/TuxManager/archive/refs/tags/v${version}.tar.gz" | b2sum | awk '{print $1}')"
+
+          sed -i "s/^pkgname=.*/pkgname=${aur_package_name}/" PKGBUILD
+          sed -i "s/^pkgver=.*/pkgver=${version}/" PKGBUILD
+          sed -i "s|^source=.*|source=(\"${source_url}\")|" PKGBUILD
+          sed -i "s|^b2sums=.*|b2sums=('${checksum}')|" PKGBUILD
+          chown builder:builder PKGBUILD
 
       - name: Verify Arch package and refresh .SRCINFO
         run: |

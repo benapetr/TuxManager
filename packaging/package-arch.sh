@@ -76,14 +76,13 @@ tar \
 tar -C "$STAGING_ROOT" -czf "$SOURCE_TARBALL" "$SOURCE_DIR_NAME"
 
 echo ""
-echo "Step 2: Rendering Arch packaging metadata..."
-"$SCRIPT_DIR/render-arch-files.sh" \
-    --mode local \
-    --version "$APP_VERSION" \
-    --pkgrel "$PKGREL" \
-    --source-tarball "$SOURCE_TARBALL" \
-    --output-dir "$MAKEPKG_DIR" \
-    --no-srcinfo
+echo "Step 2: Patching PKGBUILD for local build..."
+LOCAL_CHECKSUM="$(b2sum "$SOURCE_TARBALL" | awk '{print $1}')"
+cp "$SCRIPT_DIR/arch/PKGBUILD" "$MAKEPKG_DIR/PKGBUILD"
+sed -i "s/^pkgver=.*/pkgver=${APP_VERSION}/" "$MAKEPKG_DIR/PKGBUILD"
+sed -i "s/^pkgrel=.*/pkgrel=${PKGREL}/" "$MAKEPKG_DIR/PKGBUILD"
+sed -i "s|^source=.*|source=(\"${APP_NAME}-${APP_VERSION}.tar.gz::file://${SOURCE_TARBALL}\")|" "$MAKEPKG_DIR/PKGBUILD"
+sed -i "s|^b2sums=.*|b2sums=('${LOCAL_CHECKSUM}')|" "$MAKEPKG_DIR/PKGBUILD"
 
 echo ""
 echo "Step 3: Building package with makepkg..."

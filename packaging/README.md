@@ -214,12 +214,8 @@ Manual publish guardrails:
 - canonical `tux-manager` publishes are only allowed when the selected tag is an ancestor of the checked out branch head
 - if `AUR_SSH_PRIVATE_KEY` is not configured, the publish step is skipped cleanly
 
-To sync the checked-in release metadata under `packaging/arch/` from `packaging/config`:
-
-```bash
-cd packaging
-./update-arch-release-metadata.sh
-```
+When bumping the version, edit `pkgver` in `packaging/arch/PKGBUILD` and update
+`pkgver` and the version in `source` in `packaging/arch/.SRCINFO` to match.
 
 ## Install
 
