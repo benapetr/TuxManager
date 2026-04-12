@@ -32,7 +32,7 @@
               categories = [ "System" "Monitor" ];
               terminal = false;
             };
-            icon = ./src/tux_manager_256.ico;
+            icon = ./res/tux_manager_icon.svg;
           in
           pkgs.stdenv.mkDerivation {
             pname = "tux-manager";
@@ -47,7 +47,7 @@
               cp tux-manager $out/bin/tux-manager
 
               mkdir -p $out/share/icons/hicolor/scalable/apps/
-              cp ${icon} $out/share/icons/hicolor/scalable/apps/tux-manager.ico
+              cp ${icon} $out/share/icons/hicolor/scalable/apps/tux-manager.svg
 
               mkdir -p $out/share/applications
               ln -s ${desktopItem}/share/applications/* $out/share/applications/
