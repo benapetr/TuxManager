@@ -32,7 +32,7 @@
               categories = [ "System" "Monitor" ];
               terminal = false;
             };
-            icon = ./res/tux_manager_icon.svg;
+            icon = ./src/tux_manager_icon.svg;
           in
           pkgs.stdenv.mkDerivation {
             pname = "tux-manager";
