@@ -154,6 +154,16 @@ Output (in `packaging/output/`):
 
 The repo now includes Arch packaging metadata in `packaging/arch/`.
 
+To build the application directly from a local repo checkout on Arch:
+
+```bash
+sudo pacman -S --needed base-devel qt6-base
+mkdir build && cd build
+qmake6 ../src/TuxManager.pro
+make -j$(nproc)
+./tux-manager
+```
+
 To test the AUR recipe locally after the matching `vX.Y.Z` tag exists upstream:
 
 ```bash
@@ -161,6 +171,8 @@ sudo pacman -S --needed base-devel qt6-base
 cd packaging/arch
 makepkg -s
 ```
+
+This second path builds the Arch package defined by `packaging/arch/PKGBUILD`. It pulls the release tarball from the matching Git tag, so it is meant for tagged releases rather than arbitrary local commits.
 
 ### Publish To AUR With GitHub Actions
 

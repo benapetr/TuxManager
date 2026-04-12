@@ -21,6 +21,16 @@ make -j$(nproc)
 ./tux-manager
 ```
 
+### Arch Linux
+
+```bash
+sudo pacman -S --needed base-devel qt6-base
+mkdir build && cd build
+qmake6 ../src/TuxManager.pro
+make -j$(nproc)
+./tux-manager
+```
+
 ## Core philosophy and goals of this project
 
 * KISS - keep it simple stupid
