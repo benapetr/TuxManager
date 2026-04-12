@@ -21,7 +21,7 @@ yay -S tuxmanager
 Add the following to your `flake.nix`:
 ```nix
 inputs.tuxManager.url = "github:benapetr/TuxManager/";
-inputs.tuxManager.inputs.nixpkgs.follows = "nixpkgs"; # optional, deduplicates depenencies
+inputs.tuxManager.inputs.nixpkgs.follows = "nixpkgs"; # optional, deduplicates dependencies
 ```
 You can then access the package at: `inputs.tuxManager.packages.${pkgs.stdenv.hostPlatform.system}.default`
 
