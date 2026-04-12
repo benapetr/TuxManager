@@ -69,8 +69,8 @@ jobs:
           set -euo pipefail
 
           tag_version="${GITHUB_REF_NAME#v}"
-          config_version="$(sed -n 's/^APP_VERSION=\"\\(.*\\)\"$/\\1/p' packaging/config)"
-          code_version="$(sed -n 's/^#define TUX_MANAGER_VERSION_STRING[[:space:]]*\"\\(.*\\)\"$/\\1/p' src/globals.h)"
+          config_version="$(awk -F'"' '/^APP_VERSION=/{print $2}' packaging/config)"
+          code_version="$(awk -F'"' '/^#define TUX_MANAGER_VERSION_STRING/{print $2}' src/globals.h)"
 
           test -n "${config_version}"
           test -n "${code_version}"
