@@ -76,13 +76,46 @@ tar \
 tar -C "$STAGING_ROOT" -czf "$SOURCE_TARBALL" "$SOURCE_DIR_NAME"
 
 echo ""
-echo "Step 2: Patching PKGBUILD for local build..."
+echo "Step 2: Generating local-build PKGBUILD..."
 LOCAL_CHECKSUM="$(b2sum "$SOURCE_TARBALL" | awk '{print $1}')"
-cp "$SCRIPT_DIR/arch/PKGBUILD" "$MAKEPKG_DIR/PKGBUILD"
-sed -i "s/^pkgver=.*/pkgver=${APP_VERSION}/" "$MAKEPKG_DIR/PKGBUILD"
-sed -i "s/^pkgrel=.*/pkgrel=${PKGREL}/" "$MAKEPKG_DIR/PKGBUILD"
-sed -i "s|^source=.*|source=(\"${APP_NAME}-${APP_VERSION}.tar.gz::file://${SOURCE_TARBALL}\")|" "$MAKEPKG_DIR/PKGBUILD"
-sed -i "s|^b2sums=.*|b2sums=('${LOCAL_CHECKSUM}')|" "$MAKEPKG_DIR/PKGBUILD"
+cat > "$MAKEPKG_DIR/PKGBUILD" <<PKGEOF
+pkgname=${APP_NAME}
+pkgver=${APP_VERSION}
+pkgrel=${PKGREL}
+pkgdesc="${DESCRIPTION}"
+arch=('x86_64')
+url="${APP_HOMEPAGE_URL}"
+license=('GPL-3.0-or-later')
+depends=('qt6-base')
+makedepends=('qt6-base')
+options=('!debug')
+source=("${APP_NAME}-${APP_VERSION}.tar.gz::file://${SOURCE_TARBALL}")
+b2sums=('${LOCAL_CHECKSUM}')
+
+build() {
+    cd "\${srcdir}/TuxManager-${APP_VERSION}"
+
+    mkdir -p build
+    cd build
+
+    qmake6 ../src/TuxManager.pro
+    make -j"\$(nproc)"
+}
+
+package() {
+    cd "\${srcdir}/TuxManager-${APP_VERSION}"
+
+    install -Dm755 "build/tux-manager" "\${pkgdir}/usr/bin/tux-manager"
+    install -Dm644 README.md "\${pkgdir}/usr/share/doc/\${pkgname}/README.md"
+    install -Dm644 LICENSE "\${pkgdir}/usr/share/licenses/\${pkgname}/LICENSE"
+    install -Dm644 packaging/flatpak/io.github.benapetr.TuxManager.desktop \
+        "\${pkgdir}/usr/share/applications/io.github.benapetr.TuxManager.desktop"
+    install -Dm644 packaging/flatpak/io.github.benapetr.TuxManager.svg \
+        "\${pkgdir}/usr/share/icons/hicolor/scalable/apps/io.github.benapetr.TuxManager.svg"
+    install -Dm644 packaging/flatpak/io.github.benapetr.TuxManager.metainfo.xml \
+        "\${pkgdir}/usr/share/metainfo/io.github.benapetr.TuxManager.metainfo.xml"
+}
+PKGEOF
 
 echo ""
 echo "Step 3: Building package with makepkg..."

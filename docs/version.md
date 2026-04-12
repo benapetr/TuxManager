@@ -12,15 +12,12 @@ Canonical/manual version definitions:
    Flatpak/AppStream release metadata.
 5. `flake.nix` (`version = "..."`)
    Nix package version (currently separate from packaging/config).
-6. `packaging/arch/PKGBUILD` (`pkgver`)
-   Arch Linux package version.
-7. `packaging/arch/.SRCINFO` (`pkgver`, `source`)
-   Arch Linux source info — update `pkgver` and the version in `source` to match `PKGBUILD`.
 
 Derived/generated version locations (usually do not edit manually):
 
 1. `packaging/package-deb.sh` derives `DEB_VERSION` from `APP_VERSION` (+ distro suffix).
 2. `packaging/package-rpm.sh` uses `APP_VERSION` from `packaging/config` (or `--version`) and `RELEASE`.
 3. `packaging/package-flatpak.sh` uses `APP_VERSION` from `packaging/config` (or `--version`) for bundle naming.
-4. `packaging/package-arch.sh` uses `APP_VERSION` from `packaging/config` (or `--version`) for local Arch package builds.
-5. `debian/tux-manager/DEBIAN/control` and other files under `debian/tux-manager*` are build artifacts.
+4. `packaging/package-arch.sh` generates `PKGBUILD` from `packaging/config` for local Arch package builds.
+5. The AUR publish workflow generates `PKGBUILD` and `.SRCINFO` at publish time from `packaging/config`.
+6. `debian/tux-manager/DEBIAN/control` and other files under `debian/tux-manager*` are build artifacts.

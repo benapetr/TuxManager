@@ -214,9 +214,6 @@ Manual publish guardrails:
 - canonical `tux-manager` publishes are only allowed when the selected tag is an ancestor of the checked out branch head
 - if `AUR_SSH_PRIVATE_KEY` is not configured, the publish step is skipped cleanly
 
-When bumping the version, edit `pkgver` in `packaging/arch/PKGBUILD` and update
-`pkgver` and the version in `source` in `packaging/arch/.SRCINFO` to match.
-
 ## Install
 
 ### Debian/Ubuntu
