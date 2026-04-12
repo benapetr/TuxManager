@@ -7,6 +7,7 @@ This directory contains Linux packaging scripts for Tux Manager.
 - Debian/Ubuntu (`.deb`) via `package-deb.sh`
 - Fedora/RHEL/Alma/Rocky (`.rpm` + `.src.rpm`) via `package-rpm.sh`
 - AppImage (`.AppImage`) via `package-appimage.sh`
+- Arch Linux / AUR metadata via `arch/PKGBUILD` and `.github/workflows/build-arch-aur.yml`
 
 ## Unsupported targets
 - Flatpak (`.flatpak`) via `package-flatpak.sh` - runs in container and doesn't allow access to host's /proc
@@ -148,6 +149,33 @@ Optional:
 
 Output (in `packaging/output/`):
 - `tux-manager-<version>-<arch>.AppImage`
+
+### Build On Arch Linux
+
+The repo now includes Arch packaging metadata in `packaging/arch/`.
+
+To test the AUR recipe locally after the matching `vX.Y.Z` tag exists upstream:
+
+```bash
+sudo pacman -S --needed base-devel qt6-base
+cd packaging/arch
+makepkg -s
+```
+
+### Publish To AUR With GitHub Actions
+
+The GitHub workflow in `.github/workflows/build-arch-aur.yml` does two things:
+
+- builds the application in an Arch container on every push and pull request
+- publishes `packaging/arch/` to AUR on `v*` tags
+
+Required repository secret:
+
+- `AUR_SSH_PRIVATE_KEY`: SSH private key for the AUR account that owns the package
+
+Release requirement:
+
+- create version tags in the form `v1.2.3`
 
 ## Install
 

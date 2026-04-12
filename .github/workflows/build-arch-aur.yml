@@ -1,0 +1,146 @@
+name: Build And Publish (Arch/AUR)
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Arch build
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:base-devel
+
+    steps:
+      - name: Install build dependencies
+        run: |
+          pacman -Syu --noconfirm --needed \
+            git \
+            qt6-base
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure (qmake6)
+        run: |
+          mkdir -p build
+          cd build
+          qmake6 ../src/TuxManager.pro
+
+      - name: Build
+        run: make -C build -j"$(nproc)"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tux-manager-arch-build
+          path: build/tux-manager
+          if-no-files-found: error
+
+  publish-aur:
+    name: Publish to AUR
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:base-devel
+
+    steps:
+      - name: Install publish dependencies
+        run: |
+          pacman -Syu --noconfirm --needed \
+            curl \
+            git \
+            openssh \
+            qt6-base
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate release metadata
+        run: |
+          set -euo pipefail
+
+          tag_version="${GITHUB_REF_NAME#v}"
+          pkgbuild_version="$(sed -n 's/^pkgver=//p' packaging/arch/PKGBUILD)"
+          config_version="$(sed -n 's/^APP_VERSION=\"\\(.*\\)\"$/\\1/p' packaging/config)"
+          code_version="$(sed -n 's/^#define TUX_MANAGER_VERSION_STRING[[:space:]]*\"\\(.*\\)\"$/\\1/p' src/globals.h)"
+
+          test -n "${pkgbuild_version}"
+          test -n "${config_version}"
+          test -n "${code_version}"
+
+          test "${tag_version}" = "${pkgbuild_version}"
+          test "${tag_version}" = "${config_version}"
+          test "${tag_version}" = "${code_version}"
+
+      - name: Create build user
+        run: |
+          useradd --create-home builder
+          chown -R builder:builder "${GITHUB_WORKSPACE}"
+
+      - name: Pin release checksum in PKGBUILD
+        run: |
+          set -euo pipefail
+
+          package_url="$(sed -n 's/^url=\"\\(.*\\)\"$/\\1/p' packaging/arch/PKGBUILD)"
+          archive_url="${package_url}/archive/refs/tags/${GITHUB_REF_NAME}.tar.gz"
+          archive_b2sum="$(curl -fsSL "${archive_url}" | b2sum | awk '{print $1}')"
+
+          sed -i "s/^b2sums=.*/b2sums=('${archive_b2sum}')/" packaging/arch/PKGBUILD
+
+      - name: Verify Arch package and refresh .SRCINFO
+        run: |
+          runuser -u builder -- bash -lc "
+            set -euo pipefail
+            cd '${GITHUB_WORKSPACE}/packaging/arch'
+            rm -rf src pkg
+            makepkg --clean --cleanbuild --force --noconfirm
+            makepkg --printsrcinfo > .SRCINFO
+          "
+
+      - name: Configure SSH for AUR
+        env:
+          AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+
+          test -n "${AUR_SSH_PRIVATE_KEY}"
+
+          install -dm700 "${HOME}/.ssh"
+          printf '%s\n' "${AUR_SSH_PRIVATE_KEY}" > "${HOME}/.ssh/aur"
+          chmod 600 "${HOME}/.ssh/aur"
+          ssh-keyscan aur.archlinux.org >> "${HOME}/.ssh/known_hosts"
+
+      - name: Push packaging metadata to AUR
+        env:
+          AUR_PACKAGE_NAME: tux-manager
+        run: |
+          set -euo pipefail
+
+          aur_dir="$(mktemp -d)"
+          aur_url="ssh://aur@aur.archlinux.org/${AUR_PACKAGE_NAME}.git"
+          export GIT_SSH_COMMAND="ssh -i ${HOME}/.ssh/aur -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes"
+
+          if ! git clone "${aur_url}" "${aur_dir}"; then
+            git init "${aur_dir}"
+            git -C "${aur_dir}" branch -m master
+            git -C "${aur_dir}" remote add origin "${aur_url}"
+          fi
+
+          find "${aur_dir}" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -a packaging/arch/. "${aur_dir}/"
+
+          git -C "${aur_dir}" config user.name "github-actions[bot]"
+          git -C "${aur_dir}" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C "${aur_dir}" add .
+
+          if git -C "${aur_dir}" diff --cached --quiet; then
+            exit 0
+          fi
+
+          git -C "${aur_dir}" commit -m "Update to ${GITHUB_REF_NAME#v}"
+          git -C "${aur_dir}" push origin HEAD:master

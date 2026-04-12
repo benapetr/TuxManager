@@ -4,14 +4,16 @@ Canonical/manual version definitions:
 
 1. `src/globals.h`
    Application/CLI version shown by `--version` and used by `QApplication::setApplicationVersion`.
-2. `packaging/config` (`APP_VERSION`)  
+2. `packaging/config` (`APP_VERSION`)
    Source version used by all packaging scripts (`package-deb.sh`, `package-rpm.sh`, `package-flatpak.sh`).
-3. `debian/changelog` (top entry version)  
+3. `debian/changelog` (top entry version)
    Debian source package version/changelog entry.
-4. `packaging/flatpak/io.github.benapetr.TuxManager.metainfo.xml` (`<release version="...">`)  
+4. `packaging/flatpak/io.github.benapetr.TuxManager.metainfo.xml` (`<release version="...">`)
    Flatpak/AppStream release metadata.
-5. `flake.nix` (`version = "..."`)  
+5. `flake.nix` (`version = "..."`)
    Nix package version (currently separate from packaging/config).
+6. `packaging/arch/PKGBUILD` (`pkgver`)
+   Arch/AUR package version used by the GitHub publish workflow.
 
 Derived/generated version locations (usually do not edit manually):
 
