@@ -9,6 +9,25 @@ A Linux Task Manager alternative built with Qt6, inspired by the Windows Task Ma
 ## GPU view
 ![Screenshot](screenshots/gpu.png)
 
+## Installing
+
+### AUR
+Use an AUR helper like paru or yay:
+```bash
+yay -S tuxmanager
+```
+
+### Nix flake
+Add the following to your `flake.nix`:
+```nix
+inputs.tuxManager.url = "github:benapetr/TuxManager/";
+inputs.tuxManager.inputs.nixpkgs.follows = "nixpkgs"; # optional, minimizes evaluation times
+```
+You can then access the package at: `inputs.tuxManager.packages.${pkgs.stdenv.hostPlatform.system}.default`
+
+### Others
+You'll need to [build it](#building) yourself.
+
 ## Building
 
 ### qmake
