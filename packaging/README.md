@@ -76,6 +76,19 @@ Notes:
 - The script reuses the desktop/icon metadata from `packaging/flatpak/`.
 - The resulting AppImage is written to `packaging/output/`.
 
+### Arch Linux / AUR
+
+Required build tools/packages:
+
+```bash
+sudo pacman -S --needed base-devel git qt6-base
+```
+
+Notes:
+- Direct local builds use `qmake6` from `qt6-base`.
+- `makepkg` is provided by `base-devel`.
+- The AUR package metadata lives in `packaging/arch/`.
+
 ## Usage
 
 From repo root:
@@ -152,15 +165,28 @@ Output (in `packaging/output/`):
 
 ### Build On Arch Linux
 
-The repo now includes Arch packaging metadata in `packaging/arch/`.
-
-To test the AUR recipe locally after the matching `vX.Y.Z` tag exists upstream:
+To build the application directly from a local repo checkout:
 
 ```bash
-sudo pacman -S --needed base-devel qt6-base
+mkdir build && cd build
+qmake6 ../src/TuxManager.pro
+make -j$(nproc)
+./tux-manager
+```
+
+To test the AUR package recipe after the matching `vX.Y.Z` tag exists upstream:
+
+```bash
 cd packaging/arch
 makepkg -s
 ```
+
+Output:
+- `tux-manager-<version>-1-x86_64.pkg.tar.zst`
+
+Notes:
+- The AUR recipe builds from the release tarball referenced by `packaging/arch/PKGBUILD`.
+- Use version tags in the form `v1.2.3` so the source archive exists for AUR users.
 
 ### Publish To AUR With GitHub Actions
 
@@ -204,4 +230,19 @@ flatpak run io.github.benapetr.TuxManager
 ```bash
 chmod +x packaging/output/tux-manager-*.AppImage
 ./packaging/output/tux-manager-*.AppImage
+```
+
+### Arch Linux / AUR
+
+If you built the package with `makepkg`:
+
+```bash
+sudo pacman -U packaging/arch/tux-manager-*.pkg.tar.zst
+```
+
+Or build and install in one step:
+
+```bash
+cd packaging/arch
+makepkg -si
 ```
