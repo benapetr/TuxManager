@@ -20,17 +20,39 @@
       {
         formatter = pkgs.nixfmt-rfc-style;
 
-        packages.default = pkgs.stdenv.mkDerivation {
+        packages.default =
+          let
+            desktopItem = pkgs.makeDesktopItem {
+              type = "Application";
+              name = "tux Manager";
+              desktopName = "Tux Manager";
+              comment = "Linux system monitor inspired by Windows Task Manager";
+              exec = "tux-manager";
+              icon = "tux-manager";
+              categories = [ "System" "Monitor" ];
+              terminal = false;
+            };
+            icon = ./src/tux_manager_256.ico;
+          in
+          pkgs.stdenv.mkDerivation {
             pname = "tux-manager";
             version = "1.0.3";
             src = ./.;
             nativeBuildInputs = with pkgs.kdePackages; [ qmake wrapQtAppsHook ];
-            buildInputs = with pkgs.kdePackages; [ qtbase ] ;
+            buildInputs = with pkgs.kdePackages; [ qtbase ];
             configurePhase = "qmake6 $src/src";
             buildPhase = "make -j$NIX_BUILD_CORES";
-            installPhase = "mkdir -p $out/bin && cp tux-manager $out/bin/tux-manager";
+            installPhase = ''
+              mkdir -p $out/bin
+              cp tux-manager $out/bin/tux-manager
 
-        };
+              mkdir -p $out/share/icons/hicolor/scalable/apps/
+              cp ${icon} $out/share/icons/hicolor/scalable/apps/tux-manager.ico
+
+              mkdir -p $out/share/applications
+              ln -s ${desktopItem}/share/applications/* $out/share/applications/
+            '';
+          };
       }
     );
 }
