@@ -89,12 +89,22 @@ UsersWidget::UsersWidget(QWidget *parent) : QWidget(parent), ui(new Ui::UsersWid
     this->ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 
     QHeaderView *hv = this->ui->treeWidget->header();
+    hv->setSectionsClickable(true);
+    hv->setSortIndicatorShown(true);
     hv->setSectionResizeMode(0, QHeaderView::Stretch);
     hv->setSectionResizeMode(1, QHeaderView::ResizeToContents);
     hv->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+    hv->setSortIndicator(this->m_sortColumn, this->m_sortOrder);
 
     connect(this->m_refreshTimer, &QTimer::timeout, this, &UsersWidget::onTimerTick);
     connect(this->ui->treeWidget, &QTreeWidget::customContextMenuRequested, this, &UsersWidget::onContextMenu);
+    connect(hv, &QHeaderView::sortIndicatorChanged, this, [this](int column, Qt::SortOrder order)
+    {
+        this->m_sortColumn = column;
+        this->m_sortOrder = order;
+        if (this->m_active && !CFG->RefreshPaused)
+            this->onTimerTick();
+    });
 }
 
 UsersWidget::~UsersWidget()
@@ -222,7 +232,39 @@ void UsersWidget::rebuildTree(const QList<OS::Process> &allProcs)
     QList<uid_t> uids = agg.keys();
     std::sort(uids.begin(), uids.end(), [&](uid_t a, uid_t b)
     {
-        return agg.value(a).cpuPct > agg.value(b).cpuPct;
+        const UserAgg &left = agg[a];
+        const UserAgg &right = agg[b];
+
+        auto compare = [&](auto lhs, auto rhs)
+        {
+            if (lhs == rhs)
+                return false;
+            return (this->m_sortOrder == Qt::AscendingOrder) ? (lhs < rhs) : (lhs > rhs);
+        };
+
+        switch (this->m_sortColumn)
+        {
+            case 0:
+                if (left.name != right.name)
+                    return compare(left.name, right.name);
+                break;
+            case 1:
+                if (!qFuzzyCompare(left.cpuPct + 1.0, right.cpuPct + 1.0))
+                    return compare(left.cpuPct, right.cpuPct);
+                break;
+            case 2:
+                if (left.memKb != right.memKb)
+                    return compare(left.memKb, right.memKb);
+                break;
+            default:
+                break;
+        }
+
+        if (!qFuzzyCompare(left.cpuPct + 1.0, right.cpuPct + 1.0))
+            return left.cpuPct > right.cpuPct;
+        if (left.memKb != right.memKb)
+            return left.memKb > right.memKb;
+        return left.name.localeAwareCompare(right.name) < 0;
     });
 
     for (int userIndex = 0; userIndex < uids.size(); ++userIndex)
@@ -256,9 +298,40 @@ void UsersWidget::rebuildTree(const QList<OS::Process> &allProcs)
         }
 
         QList<OS::Process> procs = a.procs;
-        std::sort(procs.begin(), procs.end(), [](const OS::Process &x, const OS::Process &y)
+        std::sort(procs.begin(), procs.end(), [&](const OS::Process &x, const OS::Process &y)
         {
-            return x.CPUPercent > y.CPUPercent;
+            auto compare = [&](auto lhs, auto rhs)
+            {
+                if (lhs == rhs)
+                    return false;
+                return (this->m_sortOrder == Qt::AscendingOrder) ? (lhs < rhs) : (lhs > rhs);
+            };
+
+            switch (this->m_sortColumn)
+            {
+                case 0:
+                    if (x.Name != y.Name)
+                        return compare(x.Name, y.Name);
+                    break;
+                case 1:
+                    if (!qFuzzyCompare(x.CPUPercent + 1.0, y.CPUPercent + 1.0))
+                        return compare(x.CPUPercent, y.CPUPercent);
+                    break;
+                case 2:
+                    if (x.VMRssKb != y.VMRssKb)
+                        return compare(x.VMRssKb, y.VMRssKb);
+                    break;
+                default:
+                    break;
+            }
+
+            if (!qFuzzyCompare(x.CPUPercent + 1.0, y.CPUPercent + 1.0))
+                return x.CPUPercent > y.CPUPercent;
+            if (x.VMRssKb != y.VMRssKb)
+                return x.VMRssKb > y.VMRssKb;
+            if (x.Name != y.Name)
+                return x.Name.localeAwareCompare(y.Name) < 0;
+            return x.PID < y.PID;
         });
 
         for (int processIndex = 0; processIndex < procs.size(); ++processIndex)

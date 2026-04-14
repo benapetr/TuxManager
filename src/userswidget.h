@@ -22,6 +22,7 @@
 #include "os/process.h"
 
 #include <QHash>
+#include <Qt>
 #include <QTimer>
 #include <QWidget>
 
@@ -56,6 +57,8 @@ class UsersWidget : public QWidget
         QHash<pid_t, quint64> m_prevTicks;
         quint64          m_prevCpuTotalTicks { 0 };
         int              m_numCpus { 1 };
+        int              m_sortColumn { 1 };
+        Qt::SortOrder    m_sortOrder { Qt::DescendingOrder };
 
         void rebuildTree(const QList<OS::Process> &allProcs);
 };

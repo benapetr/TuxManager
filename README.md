@@ -2,12 +2,17 @@
 
 A Linux Task Manager alternative built with Qt6, inspired by the Windows Task Manager but designed to go further - providing deep visibility into system processes, performance metrics, users, and services.
 
-## Memory view
-![Screenshot](screenshots/readme.png)
-## CPU view
-![Screenshot](screenshots/cpu.png)
-## GPU view
-![Screenshot](screenshots/gpu.png)
+## Screenshots
+
+| CPU | Memory |
+| --- | --- |
+| <img src="screenshots/ubuntu/cpu.png" alt="CPU view" width="420"> | <img src="screenshots/ubuntu/mem.png" alt="Memory view" width="420"> |
+| Disk | Swap |
+| <img src="screenshots/ubuntu/disk.png" alt="Disk view" width="420"> | <img src="screenshots/ubuntu/swap.png" alt="Swap view" width="420"> |
+| Processes | Process tree |
+| <img src="screenshots/ubuntu/process.png" alt="Processes view" width="420"> | <img src="screenshots/ubuntu/process_tree.png" alt="Process tree view" width="420"> |
+| Users | Services |
+| <img src="screenshots/ubuntu/user.png" alt="Users view" width="420"> | <img src="screenshots/ubuntu/systemctl.png" alt="Services view" width="420"> |
 
 ## Installing
 
