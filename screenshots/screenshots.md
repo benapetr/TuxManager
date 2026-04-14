@@ -1,7 +1,5 @@
 # Tux Manager Screenshots
 
-Full-size screenshots are listed here so the main README can stay compact.
-
 ## Dark Theme
 
 ### CPU View
