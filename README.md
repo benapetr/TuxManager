@@ -4,9 +4,9 @@ A Linux Task Manager alternative built with Qt6, inspired by the Windows Task Ma
 
 ## Screenshots (Dark Theme)
 
-| Memory | CPU | GPU |
+| CPU | Memory | GPU |
 | --- | --- | --- |
-| <img src="screenshots/readme.png" alt="Memory view" width="280"> | <img src="screenshots/cpu.png" alt="CPU view" width="280"> | <img src="screenshots/gpu.png" alt="GPU view" width="280"> |
+| <img src="screenshots/cpu.png" alt="CPU view" width="280"> | <img src="screenshots/readme.png" alt="Memory view" width="280"> | <img src="screenshots/gpu.png" alt="GPU view" width="280"> |
 
 ## Screenshots (Light Theme)
 
