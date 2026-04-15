@@ -102,7 +102,7 @@ void Network::refreshNetworkMetadata(bool force)
     struct IfAddrInfo
     {
         QString ipv4;
-        QStringList ipv6Addresses;
+        QStringList ipv6;
     };
     QHash<QString, IfAddrInfo> ifaddrByName;
     struct ifaddrs *ifaddr = nullptr;
@@ -136,8 +136,8 @@ void Network::refreshNetworkMetadata(bool force)
             else if (fam == AF_INET6)
             {
                 const QString ipv6 = QString::fromLatin1(host);
-                if (!info.ipv6Addresses.contains(ipv6))
-                    info.ipv6Addresses.append(ipv6);
+                if (!info.ipv6.contains(ipv6))
+                    info.ipv6.append(ipv6);
             }
         }
         ::freeifaddrs(ifaddr);
@@ -149,7 +149,7 @@ void Network::refreshNetworkMetadata(bool force)
         n->Type = networkTypeFromArpType(arpType);
         n->LinkSpeedMbps = readLinkSpeedMbps(n->Name);
         n->IPv4 = ifaddrByName.value(n->Name).ipv4;
-        n->IPv6Addresses = ifaddrByName.value(n->Name).ipv6Addresses;
+        n->IPv6 = ifaddrByName.value(n->Name).ipv6;
     }
 }
 

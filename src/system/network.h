@@ -35,7 +35,7 @@ class Network
             QString         Name;      ///< Interface name, e.g. enp5s0
             QString         Type;      ///< Ethernet/Wi-Fi/Other
             QString         IPv4;
-            QStringList     IPv6Addresses;
+            QStringList     IPv6;
             bool            IsActive { true };
             int             LinkSpeedMbps { 0 };
             quint64         PrevRxBytes { 0 };

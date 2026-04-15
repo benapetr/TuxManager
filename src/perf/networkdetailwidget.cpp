@@ -128,7 +128,7 @@ void NetworkDetailWidget::SetNetwork(int index)
         this->ui->typeValueLabel->setText(network.Type);
         this->ui->speedValueLabel->setText(network.LinkSpeedMbps > 0 ? QString::number(network.LinkSpeedMbps) + tr(" Mbps") : tr("Unknown"));
         this->ui->ipv4ValueLabel->setText(network.IPv4.isEmpty() ? tr("—") : network.IPv4);
-        this->ui->ipv6ValueLabel->setText(network.IPv6Addresses.isEmpty() ? tr("—") : network.IPv6Addresses.join('\n'));
+        this->ui->ipv6ValueLabel->setText(network.IPv6.isEmpty() ? tr("—") : network.IPv6.join('\n'));
 
         this->ui->throughputGraphWidget->SetDataSource(network.RxHistory, 1024.0);
         this->ui->throughputGraphWidget->SetOverlayDataSource(network.TxHistory);
