@@ -20,8 +20,10 @@
 #include "../logger.h"
 
 #include <dlfcn.h>
+#include <QDir>
 #include <QFileInfo>
 #include <QProcess>
+#include <QRegularExpression>
 #include <QStandardPaths>
 
 using namespace OS;
@@ -427,3 +429,138 @@ bool ServiceHelper::ManageUnit(const QString &unit, UnitAction action, QString *
     LOG_DEBUG(QString("Managed service %1 via systemctl fallback").arg(unit));
     return true;
 }
+
+bool ServiceHelper::IsRunitAvailable(QString *reason)
+{
+    if (!QFileInfo::exists("/run/runit"))
+    {
+        if (reason)
+            *reason = QObject::tr("runit runtime directory not present");
+        return false;
+    }
+
+    if (QStandardPaths::findExecutable("sv").isEmpty())
+    {
+        if (reason)
+            *reason = QObject::tr("sv not found");
+        return false;
+    }
+
+    if (reason)
+        reason->clear();
+    return true;
+}
+
+bool ServiceHelper::RunSv(const QStringList &args,
+                           QString          &stdoutText,
+                           QString          &stderrText,
+                           int              &exitCode,
+                           int               timeoutMs)
+{
+    stdoutText.clear();
+    stderrText.clear();
+    exitCode = -1;
+
+    const QString exe = QStandardPaths::findExecutable("sv");
+    if (exe.isEmpty())
+    {
+        stderrText = QObject::tr("sv not found");
+        return false;
+    }
+
+    QProcess p;
+    p.start(exe, args);
+    if (!p.waitForStarted(500))
+    {
+        stderrText = QObject::tr("Failed to start sv");
+        return false;
+    }
+
+    if (!p.waitForFinished(timeoutMs))
+    {
+        p.kill();
+        p.waitForFinished(200);
+        stderrText = QObject::tr("sv timed out");
+        return false;
+    }
+
+    stdoutText = QString::fromUtf8(p.readAllStandardOutput());
+    stderrText = QString::fromUtf8(p.readAllStandardError());
+    exitCode = p.exitCode();
+    return p.exitStatus() == QProcess::NormalExit;
+}
+
+bool ServiceHelper::ListServicesViaRunit(QList<ServiceRecord> &records, QString *error)
+{
+    records.clear();
+
+    QDir sv_dir("/var/service");
+    sv_dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
+    const QStringList service_names = sv_dir.entryList();
+    if (service_names.isEmpty())
+    {
+        if (error)
+            *error = QObject::tr("No services found in /var/service");
+        return false;
+    }
+
+    QStringList args;
+    args.append("status");
+    for (const QString &name : service_names)
+        args.append("/var/service/" + name);
+
+    QString stdout_text;
+    QString stderr_text;
+    int exit_code = -1;
+    // sv exits non-zero when any service is down (failure count, capped at 99).
+    // Valid output lines are still emitted for all services, so we parse
+    // stdout regardless of exit code; only a process-start failure is fatal.
+    if (!RunSv(args, stdout_text, stderr_text, exit_code))
+    {
+        if (error)
+            *error = stderr_text.isEmpty() ? QObject::tr("Failed to run sv status") : stderr_text;
+        return false;
+    }
+
+    // Each stdout line looks like one of:
+    //   run: sshd: (pid 1234) 3601s; run: log: (pid 1220) 3601s
+    //   down: dhcpcd: 0s, normally up
+    //   finish: crond: (pid 456) 5s
+    //   fail: nonexistent: unable to change to service directory: ...
+    static const QRegularExpression line_re(
+        "^(run|down|finish|fail|warn):\\s+(\\S+):\\s+(.*)$");
+
+    const QStringList lines = stdout_text.split('\n', Qt::SkipEmptyParts);
+    for (const QString &raw_line : lines)
+    {
+        // Strip the optional log-service section that follows a ';'
+        const QString line = raw_line.section(';', 0, 0).trimmed();
+        const QRegularExpressionMatch m = line_re.match(line);
+        if (!m.hasMatch())
+            continue;
+
+        const QString sv_state = m.captured(1);
+        if (sv_state == "fail" || sv_state == "warn")
+            continue;
+
+        ServiceRecord rec;
+        rec.unit = m.captured(2);
+        rec.loadState = "loaded";
+        rec.subState = sv_state;
+        rec.description = m.captured(3).trimmed();
+
+        if (sv_state == "run")
+            rec.activeState = "active";
+        else if (sv_state == "finish")
+            rec.activeState = "deactivating";
+        else
+            rec.activeState = "inactive";
+
+        records.append(rec);
+    }
+
+    if (error)
+        error->clear();
+    return true;
+}
+

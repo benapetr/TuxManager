@@ -23,81 +23,100 @@
 
 using namespace OS;
 
-QList<Service> Service::LoadAll(QString *error)
+namespace
 {
-    QList<Service> out;
-
-    QString reason;
-    if (!ServiceHelper::IsSystemdAvailable(&reason))
+    QList<Service> recordsToServices(const QList<ServiceHelper::ServiceRecord> &rows)
     {
-        if (error)
-            *error = reason;
-        return out;
-    }
-
-    QList<ServiceHelper::ServiceRecord> rows;
-    if (ServiceHelper::ListServicesViaSystemdDbus(rows, error))
-    {
+        QList<Service> out;
         out.reserve(rows.size());
         for (const auto &r : rows)
         {
             Service s;
-            s.Unit = r.unit;
+            s.Unit        = r.unit;
             s.Description = r.description;
-            s.LoadState = r.loadState;
+            s.LoadState   = r.loadState;
             s.ActiveState = r.activeState;
-            s.SubState = r.subState;
+            s.SubState    = r.subState;
             out.append(s);
         }
+        return out;
+    }
+} // namespace
+
+QList<Service> Service::LoadAll(QString *error)
+{
+    QList<Service> out;
+
+    if (ServiceHelper::IsSystemdAvailable())
+    {
+        QList<ServiceHelper::ServiceRecord> rows;
+        if (ServiceHelper::ListServicesViaSystemdDbus(rows, error))
+        {
+            if (error)
+                error->clear();
+            return recordsToServices(rows);
+        }
+
+        // Fallback for environments where sd-bus API isn't available but
+        // systemctl is. This keeps the app functional on more minimal installs.
+        QString stdout_text;
+        QString stderr_text;
+        int exit_code = -1;
+        const QStringList args {
+            "list-units",
+            "--type=service",
+            "--all",
+            "--no-pager",
+            "--no-legend",
+            "--plain"
+        };
+        if (!ServiceHelper::RunSystemctl(args, stdout_text, stderr_text, exit_code) || exit_code != 0)
+        {
+            if (error)
+                *error = stderr_text.isEmpty()
+                         ? QObject::tr("Unable to query services via sd-bus or systemctl")
+                         : stderr_text;
+            return out;
+        }
+
+        static const QRegularExpression line_re(
+            "^(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s*(.*)$");
+        const QStringList lines = stdout_text.split('\n', Qt::SkipEmptyParts);
+        for (const QString &raw_line : lines)
+        {
+            const QString line = raw_line.trimmed();
+            if (line.isEmpty())
+                continue;
+
+            const QRegularExpressionMatch m = line_re.match(line);
+            if (!m.hasMatch())
+                continue;
+
+            Service s;
+            s.Unit        = m.captured(1);
+            s.LoadState   = m.captured(2);
+            s.ActiveState = m.captured(3);
+            s.SubState    = m.captured(4);
+            s.Description = m.captured(5).trimmed();
+            out.append(s);
+        }
+
         if (error)
             error->clear();
         return out;
     }
 
-    // Fallback for environments where sd-bus API isn't available but systemctl
-    // is. This still keeps the app functional on more minimal installs.
-    QString stdoutText;
-    QString stderrText;
-    int exitCode = -1;
-    const QStringList args {
-        "list-units",
-        "--type=service",
-        "--all",
-        "--no-pager",
-        "--no-legend",
-        "--plain"
-    };
-    if (!ServiceHelper::RunSystemctl(args, stdoutText, stderrText, exitCode, kSystemctlQueryTimeoutMs) || exitCode != 0)
+    if (ServiceHelper::IsRunitAvailable())
     {
+        QList<ServiceHelper::ServiceRecord> rows;
+        if (!ServiceHelper::ListServicesViaRunit(rows, error))
+            return out;
         if (error)
-            *error = stderrText.isEmpty()
-                     ? QObject::tr("Unable to query services via sd-bus or systemctl")
-                     : stderrText;
-        return out;
-    }
-
-    const QRegularExpression lineRe("^(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s*(.*)$");
-    const QStringList lines = stdoutText.split('\n', Qt::SkipEmptyParts);
-    for (const QString &rawLine : lines)
-    {
-        const QString line = rawLine.trimmed();
-        if (line.isEmpty())
-            continue;
-
-        const QRegularExpressionMatch m = lineRe.match(line);
-        if (!m.hasMatch())
-            continue;
-
-        Service s;
-        s.Unit        = m.captured(1);
-        s.LoadState   = m.captured(2);
-        s.ActiveState = m.captured(3);
-        s.SubState    = m.captured(4);
-        s.Description = m.captured(5).trimmed();
-        out.append(s);
+            error->clear();
+        return recordsToServices(rows);
     }
 
     if (error)
-        error->clear();
+        *error = QObject::tr("No supported service manager found (systemd or runit)");
     return out;
 }

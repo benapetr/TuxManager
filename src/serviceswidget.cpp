@@ -19,7 +19,6 @@
 #include "serviceswidget.h"
 #include "ui_serviceswidget.h"
 
-#include "os/servicehelper.h"
 #include "configuration.h"
 #include "ui/uihelper.h"
 
@@ -34,14 +33,9 @@
 
 void ServiceRefreshWorker::fetch(quint64 token)
 {
-    QString reason;
-    const bool systemdAvailable = OS::ServiceHelper::IsSystemdAvailable(&reason);
     QString error;
-    QList<OS::Service> services;
-    if (systemdAvailable)
-        services = OS::Service::LoadAll(&error);
-
-    emit fetched(token, systemdAvailable, reason, services, error);
+    const QList<OS::Service> services = OS::Service::LoadAll(&error);
+    emit fetched(token, error.isEmpty(), error, services, error);
 }
 
 ServicesWidget::ServicesWidget(QWidget *parent)
@@ -174,7 +168,7 @@ void ServicesWidget::onRefreshFinished(quint64 token, bool systemdAvailable, con
     {
         this->ui->tableView->setVisible(false);
         this->ui->unavailableLabel->setVisible(true);
-        this->ui->unavailableLabel->setText(tr("systemd required (%1)").arg(reason));
+        this->ui->unavailableLabel->setText(tr("Services unavailable: %1").arg(reason));
         this->ui->statusLabel->setText(tr("Services unavailable"));
     } else if (!error.isEmpty())
     {

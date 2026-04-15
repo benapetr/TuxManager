@@ -1,5 +1,6 @@
 # 1.0.4
   * Services control (via d-bus / systemctl)
+  * Services tab now supports runit (Void Linux) in addition to systemd
   * Option to display stats for each swap device separately
   * Dynamically load / unload swap devices as they are added / disabled
   * Notify user when they try to send signal to processes owned by different UID

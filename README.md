@@ -56,6 +56,15 @@ make -j$(nproc)
 ./tux-manager
 ```
 
+## Services
+
+The Services tab auto-detects the active init system at runtime:
+
+* **systemd** — queries via the sd-bus API (with `systemctl` as fallback)
+* **runit** — queries via `sv status` (Void Linux and other runit-based distros)
+
+No configuration is needed; detection is based on `/run/systemd/system` and `/run/runit`.
+
 ## Core philosophy and goals of this project
 
 * KISS - keep it simple stupid

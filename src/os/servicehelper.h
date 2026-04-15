@@ -62,6 +62,15 @@ namespace OS
                                    UnitAction     action,
                                    QString       *error = nullptr);
 
+            static bool IsRunitAvailable(QString *reason = nullptr);
+            static bool RunSv(const QStringList &args,
+                              QString          &stdoutText,
+                              QString          &stderrText,
+                              int              &exitCode,
+                              int               timeoutMs = 10000);
+            static bool ListServicesViaRunit(QList<ServiceRecord> &records,
+                                             QString              *error = nullptr);
+
         private:
             ServiceHelper() = delete;
     };
