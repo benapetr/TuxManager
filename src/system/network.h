@@ -23,6 +23,7 @@
 #include "../historybuffer.h"
 #include <memory>
 #include <QElapsedTimer>
+#include <QStringList>
 #include <QVector>
 #include <vector>
 
@@ -34,7 +35,7 @@ class Network
             QString         Name;      ///< Interface name, e.g. enp5s0
             QString         Type;      ///< Ethernet/Wi-Fi/Other
             QString         IPv4;
-            QString         IPv6;
+            QStringList     IPv6Addresses;
             bool            IsActive { true };
             int             LinkSpeedMbps { 0 };
             quint64         PrevRxBytes { 0 };
