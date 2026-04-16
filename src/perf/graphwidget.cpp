@@ -58,10 +58,11 @@ void GraphWidget::SetMax(double maxVal)
     this->m_maxVal = (maxVal > 0.0) ? maxVal : 100.0;
 }
 
-void GraphWidget::Tick()
+void GraphWidget::Tick(bool requestUpdate)
 {
     ++this->m_historyTick;
-    this->update();
+    if (requestUpdate)
+        this->update();
 }
 
 void GraphWidget::ClearDataSource()
@@ -93,6 +94,15 @@ void GraphWidget::SetColor(QColor line, QColor fill, QColor fill2)
 void GraphWidget::SetSampleCapacity(int samples)
 {
     this->m_sampleCapacity = qMax(2, samples);
+    this->update();
+}
+
+void GraphWidget::SetOverlayText(const QString &text)
+{
+    if (this->m_overlayText == text)
+        return;
+
+    this->m_overlayText = text;
     this->update();
 }
 

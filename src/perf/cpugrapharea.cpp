@@ -98,13 +98,16 @@ void CpuGraphArea::SetShowKernelTime(bool show)
 
 void CpuGraphArea::UpdateData()
 {
+    const bool overallVisible = (this->m_mode == GraphMode::Overall);
+
     // ── Aggregate graph ───────────────────────────────────────────────────────
-    this->m_overallGraph->Tick();
+    this->m_overallGraph->Tick(overallVisible);
 
     // ── Per-core grid ─────────────────────────────────────────────────────────
     const int cores = Metrics::GetCPU()->CoreCount();
     if (cores > 0)
     {
+        const bool perCoreVisible = !overallVisible;
         const bool coreGraphsRebuilt = (this->m_coreGraphs.size() != cores);
         this->ensureCoreGraphs(cores);
         if (coreGraphsRebuilt)
@@ -114,12 +117,16 @@ void CpuGraphArea::UpdateData()
         {
             GraphWidget *g = this->m_coreGraphs.at(i);
             if (!coreGraphsRebuilt)
-                g->Tick();
-            const double coreMhz = Metrics::GetCPU()->CoreCurrentMhz(i);
-            if (coreMhz > 0.0)
-                g->SetOverlayText(tr("%1 GHz").arg(coreMhz / 1000.0, 0, 'f', 2));
-            else
-                g->SetOverlayText(QString());
+                g->Tick(perCoreVisible);
+
+            if (perCoreVisible)
+            {
+                const double coreMhz = Metrics::GetCPU()->CoreCurrentMhz(i);
+                if (coreMhz > 0.0)
+                    g->SetOverlayText(tr("%1 GHz").arg(coreMhz / 1000.0, 0, 'f', 2));
+                else
+                    g->SetOverlayText(QString());
+            }
         }
     }
 }

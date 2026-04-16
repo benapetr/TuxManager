@@ -86,13 +86,16 @@ void SwapGraphArea::ApplyColorScheme()
 
 void SwapGraphArea::UpdateData()
 {
+    const bool overallVisible = (this->m_mode == GraphMode::Overall);
+
     this->m_overallGraph->SetPercentTooltipAbsolute(static_cast<double>(Metrics::GetSwap()->SwapTotalKb()) / (1024.0 * 1024.0), tr("GB"), 2);
-    this->m_overallGraph->Tick();
+    this->m_overallGraph->Tick(overallVisible);
 
     const int deviceCount = Metrics::GetSwap()->SwapCount();
     if (this->m_deviceGraphs.size() != deviceCount)
         this->RebindDevices();
 
+    const bool perDeviceVisible = !overallVisible;
     for (int i = 0; i < deviceCount && i < this->m_deviceGraphs.size(); ++i)
     {
         GraphWidget *g = this->m_deviceGraphs.at(i);
@@ -100,7 +103,7 @@ void SwapGraphArea::UpdateData()
             continue;
         const Swap::SwapInfo &swap = Metrics::GetSwap()->FromIndex(i);
         g->SetPercentTooltipAbsolute(static_cast<double>(swap.TotalKb) / (1024.0 * 1024.0), tr("GB"), 2);
-        g->Tick();
+        g->Tick(perDeviceVisible);
     }
 }
 

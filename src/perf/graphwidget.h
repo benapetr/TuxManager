@@ -55,8 +55,9 @@ namespace Perf
 
             void SetMax(double maxVal = 100.0);
 
-            //! Push graph timeline on X axis into future
-            void Tick();
+            //! Push graph timeline on X axis into future.
+            //! Hidden graphs can advance without scheduling a repaint.
+            void Tick(bool requestUpdate = true);
 
             void ClearDataSource();
             void ClearOverlayDataSource();
@@ -80,7 +81,7 @@ namespace Perf
             //! Select value formatting mode for tooltip text rendering.
             void SetValueFormat(ValueFormat fmt) { this->m_valueFormat = fmt; }
             //! Draw a fixed helper label in the graph area (for per-core frequency etc.).
-            void SetOverlayText(const QString &text) { this->m_overlayText = text; update(); }
+            void SetOverlayText(const QString &text);
             //! For percent histories, also show absolute value in tooltips using max*percent.
             void SetPercentTooltipAbsolute(double maxAbsoluteValue, const QString &unitLabel, int precision = 2);
 
