@@ -55,7 +55,7 @@ namespace Perf
         private:
             enum class Segment { None, Used, Dirty, Cached, Free };
 
-            void    segmentWidths(int &wUsed, int &wDirty, int &wCached, int &wFree) const;
+            void    segmentWidths(const QRect &r, int &wUsed, int &wDirty, int &wCached, int &wFree) const;
             Segment segmentAtPos(const QPoint &pos) const;
             QString segmentTooltip(Segment seg) const;
 

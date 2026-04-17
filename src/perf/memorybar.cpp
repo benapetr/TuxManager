@@ -51,7 +51,7 @@ void MemoryBar::paintEvent(QPaintEvent * /*event*/)
     QPainter p(this);
     const QRect r = this->rect().adjusted(0, 0, -1, -1);   // leave 1px for border
     int wUsed = 0, wDirty = 0, wCached = 0, wFree = 0;
-    this->segmentWidths(wUsed, wDirty, wCached, wFree);
+    this->segmentWidths(r, wUsed, wDirty, wCached, wFree);
 
     int x = r.left();
     const int y = r.top();
@@ -93,9 +93,8 @@ bool MemoryBar::event(QEvent *event)
     return QWidget::event(event);
 }
 
-void MemoryBar::segmentWidths(int &wUsed, int &wDirty, int &wCached, int &wFree) const
+void MemoryBar::segmentWidths(const QRect &r, int &wUsed, int &wDirty, int &wCached, int &wFree) const
 {
-    const QRect r = this->rect().adjusted(0, 0, -1, -1);
     const double w = static_cast<double>(r.width());
     const double t = static_cast<double>(this->m_total);
 
@@ -117,7 +116,7 @@ MemoryBar::Segment MemoryBar::segmentAtPos(const QPoint &pos) const
         return Segment::None;
 
     int wUsed = 0, wDirty = 0, wCached = 0, wFree = 0;
-    this->segmentWidths(wUsed, wDirty, wCached, wFree);
+    this->segmentWidths(r, wUsed, wDirty, wCached, wFree);
 
     const int x = pos.x() - r.left();
     if (x < wUsed)
@@ -157,8 +156,7 @@ QString MemoryBar::segmentTooltip(Segment seg) const
     const double pct = (this->m_total > 0)
                        ? static_cast<double>(value) * 100.0 / static_cast<double>(this->m_total)
                        : 0.0;
-    return tr("%1: %2 (%3%)")
-            .arg(label)
-            .arg(Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, value)), 1))
-            .arg(QString::number(pct, 'f', 1));
+    return tr("%1: %2 (%3%)").arg(label,
+                                  Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, value)), 1),
+                                  QString::number(pct, 'f', 1));
 }

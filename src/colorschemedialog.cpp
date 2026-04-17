@@ -25,6 +25,7 @@
 #include <QFrame>
 #include <QHBoxLayout>
 #include <QPushButton>
+#include <utility>
 
 ColorSchemeDialog::ColorSchemeDialog(QWidget *parent) : QDialog(parent), ui(new Ui::ColorSchemeDialog)
 {
@@ -100,7 +101,7 @@ ColorScheme ColorSchemeDialog::BuildScheme() const
 void ColorSchemeDialog::refreshUi()
 {
     const bool enabled = this->ui->customCheck->isChecked();
-    for (const RowWidgets &row : this->m_rows)
+    for (const RowWidgets &row : std::as_const(this->m_rows))
     {
         row.Preview->setEnabled(enabled);
         row.PickButton->setEnabled(enabled);
