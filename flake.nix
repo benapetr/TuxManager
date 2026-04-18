@@ -55,6 +55,11 @@
               mkdir -p $out/share/applications
               ln -s ${desktopItem}/share/applications/* $out/share/applications/
             '';
+
+            postFixup = ''
+              # fixes issue where nvml isn't found
+              wrapProgram $out/bin/tux-manager --prefix LD_LIBRARY_PATH = /run/opengl-driver/lib
+            '';
           };
       }
     );
