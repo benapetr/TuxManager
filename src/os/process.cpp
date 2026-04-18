@@ -32,6 +32,15 @@ using namespace OS;
 
 namespace
 {
+    //! Calls sysconf once and caches the result - this can't change in runtime
+    long cachedPageSize()
+    {
+        static long s_pageSize = sysconf(_SC_PAGESIZE);
+        if (s_pageSize <= 0)
+            s_pageSize = 4096L;
+        return s_pageSize;
+    }
+
     QString cachedUserNameForUid(uid_t uid)
     {
         static QHash<uid_t, QString> s_userNameByUid;
@@ -115,7 +124,7 @@ bool Process::loadOneStatAndUid(pid_t pid, Process &out)
     out.StartTimeTicks = f[19].toULongLong();
     out.vmSizeKb       = f[20].toULongLong() / 1024ULL;
 
-    const long pageSize = sysconf(_SC_PAGESIZE);
+    const long pageSize = cachedPageSize();
     out.VMRssKb        = static_cast<quint64>(f[21].toLongLong()) * static_cast<quint64>(pageSize) / 1024ULL;
 
     // ── UID via stat() on /proc/pid directory ─────────────────────────────────
