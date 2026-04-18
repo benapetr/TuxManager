@@ -20,9 +20,47 @@
 #include "proc.h"
 #include "../configuration.h"
 #include "../misc.h"
+
+#include <algorithm>
+
 #include <unistd.h>
 
 using namespace OS;
+
+namespace
+{
+    bool lessThanIdentity(const Process &lhs, const Process &rhs)
+    {
+        return lhs.GetIdentity() < rhs.GetIdentity();
+    }
+
+    bool processDataEquals(const Process &lhs, const Process &rhs)
+    {
+        return lhs.PID == rhs.PID
+               && lhs.PPID == rhs.PPID
+               && lhs.Name == rhs.Name
+               && lhs.CmdLine == rhs.CmdLine
+               && lhs.State == rhs.State
+               && lhs.UID == rhs.UID
+               && lhs.User == rhs.User
+               && lhs.Priority == rhs.Priority
+               && lhs.Nice == rhs.Nice
+               && lhs.Threads == rhs.Threads
+               && lhs.VMRssKb == rhs.VMRssKb
+               && lhs.vmSizeKb == rhs.vmSizeKb
+               && lhs.CPUTicks == rhs.CPUTicks
+               && lhs.CPUPercent == rhs.CPUPercent
+               && lhs.StartTimeTicks == rhs.StartTimeTicks
+               && lhs.IsKernelThread == rhs.IsKernelThread
+               && lhs.IOReadBytes == rhs.IOReadBytes
+               && lhs.IOWriteBytes == rhs.IOWriteBytes
+               && lhs.IOReadBps == rhs.IOReadBps
+               && lhs.IOWriteBps == rhs.IOWriteBps
+               && lhs.IOTotalsAvailable == rhs.IOTotalsAvailable
+               && lhs.IORatesAvailable == rhs.IORatesAvailable
+               && lhs.IOPermissionDenied == rhs.IOPermissionDenied;
+    }
+}
 
 // ── Construction ──────────────────────────────────────────────────────────────
 
@@ -173,9 +211,81 @@ void ProcessModel::Refresh()
 
 void ProcessModel::SetProcesses(const QList<Process> &processes)
 {
-    this->beginResetModel();
-    this->m_processes = processes;
-    this->endResetModel();
+    QList<Process> sortedProcesses = processes;
+    std::sort(sortedProcesses.begin(), sortedProcesses.end(), lessThanIdentity);
+
+    int row = 0;
+    while (row < this->m_processes.size() || row < sortedProcesses.size())
+    {
+        if (row >= this->m_processes.size())
+        {
+            const int insertFirst = row;
+            int insertLast = insertFirst;
+            while (insertLast + 1 < sortedProcesses.size())
+                ++insertLast;
+
+            this->beginInsertRows(QModelIndex(), insertFirst, insertLast);
+            for (int i = insertFirst; i <= insertLast; ++i)
+                this->m_processes.insert(i, sortedProcesses.at(i));
+            this->endInsertRows();
+            break;
+        }
+
+        if (row >= sortedProcesses.size())
+        {
+            const int removeFirst = row;
+            const int removeLast = this->m_processes.size() - 1;
+            this->beginRemoveRows(QModelIndex(), removeFirst, removeLast);
+            while (this->m_processes.size() > removeFirst)
+                this->m_processes.removeAt(removeFirst);
+            this->endRemoveRows();
+            break;
+        }
+
+        const Process::Identity currentId = this->m_processes.at(row).GetIdentity();
+        const Process::Identity incomingId = sortedProcesses.at(row).GetIdentity();
+
+        if (currentId == incomingId)
+        {
+            if (!processDataEquals(this->m_processes.at(row), sortedProcesses.at(row)))
+            {
+                this->m_processes[row] = sortedProcesses.at(row);
+                emit dataChanged(this->index(row, 0),
+                                 this->index(row, ColCount - 1),
+                                 { Qt::DisplayRole, Qt::UserRole, Qt::TextAlignmentRole });
+            }
+            ++row;
+            continue;
+        }
+
+        if (currentId < incomingId)
+        {
+            int removeLast = row;
+            while (removeLast + 1 < this->m_processes.size()
+                   && this->m_processes.at(removeLast + 1).GetIdentity() < incomingId)
+            {
+                ++removeLast;
+            }
+
+            this->beginRemoveRows(QModelIndex(), row, removeLast);
+            for (int i = removeLast; i >= row; --i)
+                this->m_processes.removeAt(i);
+            this->endRemoveRows();
+            continue;
+        }
+
+        int insertLast = row;
+        while (insertLast + 1 < sortedProcesses.size()
+               && sortedProcesses.at(insertLast + 1).GetIdentity() < currentId)
+        {
+            ++insertLast;
+        }
+
+        this->beginInsertRows(QModelIndex(), row, insertLast);
+        for (int i = row; i <= insertLast; ++i)
+            this->m_processes.insert(i, sortedProcesses.at(i));
+        this->endInsertRows();
+    }
 }
 
 QList<Process> ProcessModel::RefreshSnapshot()

@@ -73,6 +73,23 @@ QString Process::GetStateString(char state)
     }
 }
 
+Process::Identity Process::GetIdentity() const
+{
+    return { this->PID, this->StartTimeTicks };
+}
+
+bool OS::operator<(const Process::Identity &lhs, const Process::Identity &rhs)
+{
+    if (lhs.PID != rhs.PID)
+        return lhs.PID < rhs.PID;
+    return lhs.StartTimeTicks < rhs.StartTimeTicks;
+}
+
+bool OS::operator==(const Process::Identity &lhs, const Process::Identity &rhs)
+{
+    return lhs.PID == rhs.PID && lhs.StartTimeTicks == rhs.StartTimeTicks;
+}
+
 // ── Private: load a single process ───────────────────────────────────────────
 
 bool Process::loadOneStatAndUid(pid_t pid, Process &out)
