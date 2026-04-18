@@ -24,7 +24,7 @@
           let
             desktopItem = pkgs.makeDesktopItem {
               type = "Application";
-              name = "tux Manager";
+              name = "Tux Manager";
               desktopName = "Tux Manager";
               comment = "Linux system monitor inspired by Windows Task Manager";
               exec = "tux-manager";
@@ -38,10 +38,13 @@
             pname = "tux-manager";
             version = "1.0.4";
             src = ./.;
+            
             nativeBuildInputs = with pkgs.kdePackages; [ qmake wrapQtAppsHook ];
             buildInputs = with pkgs.kdePackages; [ qtbase ];
+
             configurePhase = "qmake6 $src/src";
             buildPhase = "make -j$NIX_BUILD_CORES";
+
             installPhase = ''
               mkdir -p $out/bin
               cp tux-manager $out/bin/tux-manager
