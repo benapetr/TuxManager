@@ -59,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(this->m_usersWidget, &UsersWidget::goToProcessRequested, this, [this](pid_t pid)
     {
         this->ui->tabWidget->setCurrentIndex(0);
+        this->m_processesWidget->ClearSearchFilter();
         this->m_processesWidget->SelectProcessByPid(pid);
     });
 }

@@ -89,6 +89,11 @@ ProcessesWidget::~ProcessesWidget()
     delete this->ui;
 }
 
+void ProcessesWidget::ClearSearchFilter()
+{
+    this->ui->searchEdit->clear();
+}
+
 bool ProcessesWidget::SelectProcessByPid(pid_t pid)
 {
     return this->m_treeViewMode ? this->selectProcessInTree(pid) : this->selectProcessInTable(pid);

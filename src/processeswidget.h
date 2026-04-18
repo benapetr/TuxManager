@@ -55,6 +55,7 @@ class ProcessesWidget : public QWidget
         ~ProcessesWidget();
         void SetActive(bool active);
         bool IsActive() const { return this->m_active; }
+        void ClearSearchFilter();
         bool SelectProcessByPid(pid_t pid);
 
     private slots:
