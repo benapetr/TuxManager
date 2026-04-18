@@ -55,7 +55,9 @@ namespace Perf
         private:
             enum class Segment { None, Used, Dirty, Cached, Free };
 
+            //! Calculates widths for individual segments based on usage so that they fill entire rect
             void    segmentWidths(const QRect &r, int &wUsed, int &wDirty, int &wCached, int &wFree) const;
+            //! Used by tooltip - calculates which segment is the mouse pointer hovering
             Segment segmentAtPos(const QPoint &pos) const;
             QString segmentTooltip(Segment seg) const;
 

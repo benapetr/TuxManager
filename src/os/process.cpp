@@ -20,6 +20,7 @@
 
 #include <QDir>
 #include <QFile>
+#include <QHash>
 
 #include <pwd.h>
 #include <sys/stat.h>
@@ -28,6 +29,24 @@
 using namespace OS;
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
+
+namespace
+{
+    QString cachedUserNameForUid(uid_t uid)
+    {
+        static QHash<uid_t, QString> s_userNameByUid;
+
+        const auto it = s_userNameByUid.constFind(uid);
+        if (it != s_userNameByUid.cend())
+            return it.value();
+
+        const struct passwd *pw = getpwuid(uid);
+        const QString userName = pw ? QString::fromUtf8(pw->pw_name)
+                                    : QString::number(uid);
+        s_userNameByUid.insert(uid, userName);
+        return userName;
+    }
+}
 
 QString Process::GetStateString(char state)
 {
@@ -97,8 +116,7 @@ bool Process::loadOneStatAndUid(pid_t pid, Process &out)
     out.vmSizeKb       = f[20].toULongLong() / 1024ULL;
 
     const long pageSize = sysconf(_SC_PAGESIZE);
-    out.VMRssKb        = static_cast<quint64>(f[21].toLongLong())
-                         * static_cast<quint64>(pageSize) / 1024ULL;
+    out.VMRssKb        = static_cast<quint64>(f[21].toLongLong()) * static_cast<quint64>(pageSize) / 1024ULL;
 
     // ── UID via stat() on /proc/pid directory ─────────────────────────────────
     // The /proc/<pid> directory is owned by the process's real UID — far more
@@ -161,9 +179,8 @@ bool Process::loadIO(Process &proc)
 
 void Process::loadUserAndCmdline(Process &proc)
 {
-    // Resolve UID → username (getpwuid is not thread-safe but fine here)
-    const struct passwd *pw = getpwuid(proc.UID);
-    proc.User = pw ? QString::fromUtf8(pw->pw_name) : QString::number(proc.UID);
+    // Cache UID -> username/fallback string to avoid repeated getpwuid() lookups.
+    proc.User = cachedUserNameForUid(proc.UID);
 
     // ── /proc/pid/cmdline ────────────────────────────────────────────────────
     // Kernel threads have no cmdline; use bracketed name as display string.
@@ -197,8 +214,7 @@ QList<Process> Process::LoadAll(const LoadOptions &options)
     QList<Process> list;
 
     const QDir procDir("/proc");
-    const QStringList entries =
-        procDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+    const QStringList entries = procDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 
     list.reserve(entries.size());
     for (const QString &entry : entries)

@@ -135,28 +135,28 @@ QString MemoryBar::segmentTooltip(Segment seg) const
     qint64 value = 0;
     QString label;
 
-    if (seg == Segment::Used)
+    switch (seg)
     {
-        value = this->m_used;
-        label = tr("Used");
-    } else if (seg == Segment::Dirty)
-    {
-        value = this->m_dirty;
-        label = tr("Dirty");
-    } else if (seg == Segment::Cached)
-    {
-        value = qMax(0LL, this->m_cached - this->m_dirty);
-        label = tr("Free (cached)");
-    } else if (seg == Segment::Free)
-    {
-        value = this->m_free;
-        label = tr("Free");
+        case Segment::Used:
+            value = this->m_used;
+            label = tr("Used");
+            break;
+        case Segment::Dirty:
+            value = this->m_dirty;
+            label = tr("Dirty");
+            break;
+        case Segment::Cached:
+            value = qMax(0LL, this->m_cached - this->m_dirty);
+            label = tr("Free (cached)");
+            break;
+        case Segment::Free:
+            value = this->m_free;
+            label = tr("Free");
+            break;
+        case Segment::None:
+            break;
     }
 
-    const double pct = (this->m_total > 0)
-                       ? static_cast<double>(value) * 100.0 / static_cast<double>(this->m_total)
-                       : 0.0;
-    return tr("%1: %2 (%3%)").arg(label,
-                                  Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, value)), 1),
-                                  QString::number(pct, 'f', 1));
+    const double pct = (this->m_total > 0) ? static_cast<double>(value) * 100.0 / static_cast<double>(this->m_total) : 0.0;
+    return tr("%1: %2 (%3%)").arg(label, Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, value)), 1), QString::number(pct, 'f', 1));
 }
