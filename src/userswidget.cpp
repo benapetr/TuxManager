@@ -37,7 +37,7 @@ namespace
     struct UserAgg
     {
         QString name;
-        QList<OS::Process> procs;
+        QVector<const OS::Process *> procs;
         double cpuPct { 0.0 };
         quint64 memKb { 0 };
     };
@@ -240,7 +240,7 @@ void UsersWidget::rebuildTree(const QList<OS::Process> &allProcs)
             it = agg.insert(p.UID, a);
         }
 
-        it->procs.append(p);
+        it->procs.append(&p);
         it->cpuPct += p.CPUPercent;
         it->memKb += p.VMRssKb;
     }
@@ -320,9 +320,11 @@ void UsersWidget::rebuildTree(const QList<OS::Process> &allProcs)
                 processItems.insert(processId(child), child);
         }
 
-        QList<OS::Process> procs = a.procs;
-        std::sort(procs.begin(), procs.end(), [&](const OS::Process &x, const OS::Process &y)
+        QVector<const OS::Process *> procs = a.procs;
+        std::sort(procs.begin(), procs.end(), [&](const OS::Process *lhs, const OS::Process *rhs)
         {
+            const OS::Process &x = *lhs;
+            const OS::Process &y = *rhs;
             auto compare = [&](auto lhs, auto rhs)
             {
                 if (lhs == rhs)
@@ -359,7 +361,7 @@ void UsersWidget::rebuildTree(const QList<OS::Process> &allProcs)
 
         for (int processIndex = 0; processIndex < procs.size(); ++processIndex)
         {
-            const OS::Process &p = procs.at(processIndex);
+            const OS::Process &p = *procs.at(processIndex);
             QTreeWidgetItem *procItem = processItems.take(p.PID);
             if (!procItem)
                 procItem = new QTreeWidgetItem();
