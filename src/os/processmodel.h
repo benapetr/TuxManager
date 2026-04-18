@@ -68,6 +68,7 @@ namespace OS
             /// Reload process data and return it without resetting the table model.
             /// Useful for alternate views (e.g. tree) to avoid unnecessary table updates.
             QList<Process> RefreshSnapshot();
+            void SetProcesses(const QList<Process> &processes);
             void SetShowKernelTasks(bool show) { this->m_showKernelTasks = show; }
             void SetShowOtherUsersProcs(bool show) { this->m_showOtherUsersProcs = show; }
             void SetIOMetricsEnabled(bool enabled);

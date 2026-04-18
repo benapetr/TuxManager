@@ -41,12 +41,14 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 #include <QFileInfo>
+#include <QMetaObject>
 
 #include <algorithm>
 #include <functional>
 #include <signal.h>
+#include <unistd.h>
 
-ProcessesWidget::ProcessesWidget(QWidget *parent)
+ProcessesWidget::ProcessesWidget(OS::ProcessRefreshService *processRefreshService, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::ProcessesWidget)
     , m_model(new OS::ProcessModel(this))
@@ -54,6 +56,7 @@ ProcessesWidget::ProcessesWidget(QWidget *parent)
     , m_proxy(new OS::ProcessFilterProxy(this))
     , m_treeProxy(new QSortFilterProxyModel(this))
     , m_refreshTimer(new QTimer(this))
+    , m_processRefreshService(processRefreshService)
 {
     this->ui->setupUi(this);
 
@@ -67,6 +70,7 @@ ProcessesWidget::ProcessesWidget(QWidget *parent)
     connect(this->ui->runNewTaskButton, &QPushButton::clicked, this, &ProcessesWidget::runNewTask);
     connect(this->ui->openTerminalButton, &QPushButton::clicked, this, &ProcessesWidget::openTerminal);
     connect(this->m_refreshTimer, &QTimer::timeout, this, &ProcessesWidget::onTimerTick);
+    connect(this->m_processRefreshService, &OS::ProcessRefreshService::snapshotReady, this, &ProcessesWidget::onRefreshFinished);
 
     // Update status bar whenever the proxy's visible row count changes
     // (model reset after refresh, or filter toggle)
@@ -301,21 +305,11 @@ void ProcessesWidget::setupTable()
 
 void ProcessesWidget::setTreeViewMode(bool enabled)
 {
-    const bool wasTreeMode = this->m_treeViewMode;
     this->m_treeViewMode = enabled;
     CFG->ProcessTreeView = enabled;
 
-    if (enabled && !wasTreeMode)
-    {
-        // Always assume stale data when switching modes.
-        this->m_lastProcessSnapshot = this->m_model->RefreshSnapshot();
-        this->m_treeModel->SetProcesses(this->m_lastProcessSnapshot);
-    } else if (!enabled && wasTreeMode)
-    {
-        // Always assume stale data when switching modes.
-        this->m_model->Refresh();
-        this->m_lastProcessSnapshot = this->m_model->GetProcesses();
-    }
+    if (enabled)
+        this->m_treeModel->SetProcesses(this->m_lastProcessSnapshot.isEmpty() ? this->m_model->GetProcesses() : this->m_lastProcessSnapshot);
 
     if (!this->m_viewStack)
         return;
@@ -332,11 +326,12 @@ void ProcessesWidget::SetActive(bool active)
     if (active)
     {
         // Refresh immediately when user switches to Processes tab.
-        this->onTimerTick();
+        this->startRefresh();
         this->m_refreshTimer->start(CFG->RefreshRateMs);
     } else
     {
         this->m_refreshTimer->stop();
+        this->m_refreshPending = false;
     }
 }
 
@@ -346,12 +341,65 @@ void ProcessesWidget::onTimerTick()
 {
     if (CFG->RefreshPaused)
         return;
+    this->startRefresh();
+}
+
+void ProcessesWidget::startRefresh()
+{
+    if (CFG->RefreshPaused)
+    {
+        this->m_refreshPending = false;
+        return;
+    }
 
     if (this->m_tableContextMenuOpen)
+    {
+        this->m_refreshPending = true;
         return;
+    }
+
+    if (this->m_refreshInFlight)
+    {
+        this->m_refreshPending = true;
+        return;
+    }
+
+    this->m_refreshInFlight = true;
+    this->m_refreshPending = false;
+    ++this->m_refreshToken;
+
+    OS::Process::LoadOptions options;
+    options.IncludeKernelTasks = this->m_proxy->ShowKernelTasks;
+    options.IncludeOtherUsers = this->m_proxy->ShowOtherUsersProcs;
+    options.MyUID = ::getuid();
+    options.CollectIOMetrics = CFG->IOMetricsEnabled;
+    options.IsSuperuser = CFG->IsSuperuser;
+    options.EffectiveUID = CFG->EUID;
+
+    this->m_processRefreshService->RequestSnapshot(OS::ProcessRefreshService::Consumer::Processes,
+                                                   this->m_refreshToken,
+                                                   options);
+}
+
+void ProcessesWidget::onRefreshFinished(int consumer, quint64 token, const QList<OS::Process> &processes)
+{
+    if (consumer != static_cast<int>(OS::ProcessRefreshService::Consumer::Processes) || token != this->m_refreshToken)
+        return;
+
+    this->m_refreshInFlight = false;
+
+    if (!this->m_active)
+        return;
+
+    if (this->m_tableContextMenuOpen)
+    {
+        this->m_refreshPending = true;
+        return;
+    }
 
     UIHelper::TableSelectionSnapshot tableSnapshot;
     QList<pid_t> treeSelection;
+    QSet<pid_t> expandedPids;
     pid_t treeCurrentPid = 0;
     int treeScroll = 0;
 
@@ -361,7 +409,6 @@ void ProcessesWidget::onTimerTick()
     } else
     {
         treeSelection = this->selectedPids();
-        QSet<pid_t> expandedPids;
         this->captureExpandedTreePids(QModelIndex(), expandedPids);
 
         if (QItemSelectionModel *sel = this->m_treeView->selectionModel())
@@ -376,18 +423,15 @@ void ProcessesWidget::onTimerTick()
         }
         if (QScrollBar *sb = this->m_treeView->verticalScrollBar())
             treeScroll = sb->value();
-
-        this->m_lastProcessSnapshot = this->m_model->RefreshSnapshot();
-        this->m_treeModel->SetProcesses(this->m_lastProcessSnapshot);
-
-        this->restoreTreeStateDeferred(expandedPids, treeSelection, treeCurrentPid, treeScroll);
-        return;
     }
+    this->m_lastProcessSnapshot = processes;
+    this->m_model->SetProcesses(this->m_lastProcessSnapshot);
 
-    this->m_model->Refresh();
-    this->m_lastProcessSnapshot = this->m_model->GetProcesses();
-
-    if (!this->m_treeViewMode)
+    if (this->m_treeViewMode)
+    {
+        this->m_treeModel->SetProcesses(this->m_lastProcessSnapshot);
+        this->restoreTreeStateDeferred(expandedPids, treeSelection, treeCurrentPid, treeScroll);
+    } else
     {
         UIHelper::RestoreTableSelection(
             this->ui->tableView,
@@ -397,6 +441,12 @@ void ProcessesWidget::onTimerTick()
             [this](const QModelIndex &sourceIndex) -> QModelIndex { return this->m_proxy->mapFromSource(sourceIndex); },
             [this](const QModelIndex &sourceKeyIndex) -> QVariant { return this->m_model->data(sourceKeyIndex, Qt::UserRole); },
             tableSnapshot);
+    }
+
+    if (this->m_active && this->m_refreshPending && !CFG->RefreshPaused)
+    {
+        this->m_refreshPending = false;
+        QMetaObject::invokeMethod(this, &ProcessesWidget::startRefresh, Qt::QueuedConnection);
     }
 }
 
@@ -501,10 +551,9 @@ void ProcessesWidget::updateIOMetricsEnabledState(bool triggerImmediateRefresh)
     const bool changed = (CFG->IOMetricsEnabled != enabled);
 
     CFG->IOMetricsEnabled = enabled;
-    this->m_model->SetIOMetricsEnabled(enabled);
 
     if (changed && enabled && triggerImmediateRefresh && this->m_active && !CFG->RefreshPaused && !this->m_tableContextMenuOpen)
-        this->onTimerTick();
+        this->startRefresh();
 }
 
 void ProcessesWidget::onTableContextMenu(const QPoint &pos)
@@ -636,6 +685,8 @@ void ProcessesWidget::onTableContextMenu(const QPoint &pos)
 
     this->m_contextMenuTargetIndex = QModelIndex();
     this->m_tableContextMenuOpen = false;
+    if (this->m_active && this->m_refreshPending && !CFG->RefreshPaused)
+        this->startRefresh();
 }
 
 void ProcessesWidget::onTreeContextMenu(const QPoint &pos)
@@ -692,6 +743,8 @@ void ProcessesWidget::onTreeContextMenu(const QPoint &pos)
     UIHelper::ApplyRefreshIntervalAction(picked, refreshIntervalActions, pausedRefreshAction, this->m_refreshTimer, this->m_active);
 
     this->m_tableContextMenuOpen = false;
+    if (this->m_active && this->m_refreshPending && !CFG->RefreshPaused)
+        this->startRefresh();
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

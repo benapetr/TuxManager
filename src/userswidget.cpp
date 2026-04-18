@@ -21,10 +21,10 @@
 
 #include "configuration.h"
 #include "misc.h"
-#include "os/proc.h"
 #include "ui/uihelper.h"
 
 #include <QHeaderView>
+#include <QMetaObject>
 #include <QMenu>
 #include <QScrollBar>
 #include <QSignalBlocker>
@@ -73,13 +73,13 @@ namespace
     }
 } // namespace
 
-UsersWidget::UsersWidget(QWidget *parent) : QWidget(parent), ui(new Ui::UsersWidget), m_refreshTimer(new QTimer(this))
+UsersWidget::UsersWidget(OS::ProcessRefreshService *processRefreshService, QWidget *parent)
+    : QWidget(parent)
+    , ui(new Ui::UsersWidget)
+    , m_processRefreshService(processRefreshService)
+    , m_refreshTimer(new QTimer(this))
 {
     this->ui->setupUi(this);
-
-    this->m_numCpus = static_cast<int>(::sysconf(_SC_NPROCESSORS_ONLN));
-    if (this->m_numCpus < 1)
-        this->m_numCpus = 1;
 
     this->ui->treeWidget->setColumnCount(3);
     this->ui->treeWidget->setHeaderLabels({ tr("User / Process"), tr("CPU"), tr("Memory") });
@@ -97,6 +97,10 @@ UsersWidget::UsersWidget(QWidget *parent) : QWidget(parent), ui(new Ui::UsersWid
     hv->setSortIndicator(this->m_sortColumn, this->m_sortOrder);
 
     connect(this->m_refreshTimer, &QTimer::timeout, this, &UsersWidget::onTimerTick);
+    connect(this->m_processRefreshService,
+            &OS::ProcessRefreshService::snapshotReady,
+            this,
+            &UsersWidget::onRefreshFinished);
     connect(this->ui->treeWidget, &QTreeWidget::customContextMenuRequested, this, &UsersWidget::onContextMenu);
     connect(hv, &QHeaderView::sortIndicatorChanged, this, [this](int column, Qt::SortOrder order)
     {
@@ -120,11 +124,12 @@ void UsersWidget::SetActive(bool active)
     this->m_active = active;
     if (active)
     {
-        this->onTimerTick();
+        this->startRefresh();
         this->m_refreshTimer->start(CFG->RefreshRateMs);
     } else
     {
         this->m_refreshTimer->stop();
+        this->m_refreshPending = false;
     }
 }
 
@@ -132,39 +137,57 @@ void UsersWidget::onTimerTick()
 {
     if (CFG->RefreshPaused)
         return;
+    this->startRefresh();
+}
 
-    const quint64 totalJiffies = OS::Proc::ReadTotalCpuJiffies();
-    const quint64 periodJiffies = (this->m_prevCpuTotalTicks > 0 && totalJiffies > this->m_prevCpuTotalTicks)
-                                  ? (totalJiffies - this->m_prevCpuTotalTicks)
-                                  : 0;
+void UsersWidget::startRefresh()
+{
+    if (CFG->RefreshPaused)
+    {
+        this->m_refreshPending = false;
+        return;
+    }
+
+    if (this->m_refreshInFlight)
+    {
+        this->m_refreshPending = true;
+        return;
+    }
+
+    this->m_refreshInFlight = true;
+    this->m_refreshPending = false;
+    ++this->m_refreshToken;
 
     OS::Process::LoadOptions opts;
     opts.IncludeKernelTasks = false;
     opts.IncludeOtherUsers = true;
     opts.MyUID = ::getuid();
+    opts.CollectIOMetrics = false;
+    opts.IsSuperuser = CFG->IsSuperuser;
+    opts.EffectiveUID = CFG->EUID;
 
-    QList<OS::Process> fresh = OS::Process::LoadAll(opts);
+    this->m_processRefreshService->RequestSnapshot(OS::ProcessRefreshService::Consumer::Users,
+                                                   this->m_refreshToken,
+                                                   opts);
+}
 
-    if (periodJiffies > 0)
+void UsersWidget::onRefreshFinished(int consumer, quint64 token, const QList<OS::Process> &processes)
+{
+    if (consumer != static_cast<int>(OS::ProcessRefreshService::Consumer::Users) || token != this->m_refreshToken)
+        return;
+
+    this->m_refreshInFlight = false;
+
+    if (!this->m_active)
+        return;
+
+    this->rebuildTree(processes);
+
+    if (this->m_active && this->m_refreshPending && !CFG->RefreshPaused)
     {
-        const double periodPerCpu = static_cast<double>(periodJiffies) / this->m_numCpus;
-        for (OS::Process &proc : fresh)
-        {
-            const auto it = this->m_prevTicks.constFind(proc.PID);
-            if (it == this->m_prevTicks.cend() || proc.CPUTicks < it.value())
-                continue;
-
-            const double pct = static_cast<double>(proc.CPUTicks - it.value()) / periodPerCpu * 100.0;
-            proc.CPUPercent = qMin(pct, 100.0 * this->m_numCpus);
-        }
+        this->m_refreshPending = false;
+        QMetaObject::invokeMethod(this, &UsersWidget::startRefresh, Qt::QueuedConnection);
     }
-
-    this->m_prevTicks.clear();
-    for (const OS::Process &proc : fresh)
-        this->m_prevTicks.insert(proc.PID, proc.CPUTicks);
-    this->m_prevCpuTotalTicks = totalJiffies;
-
-    this->rebuildTree(fresh);
 }
 
 void UsersWidget::onContextMenu(const QPoint &pos)

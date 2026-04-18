@@ -35,6 +35,7 @@ SOURCES += \
     serviceswidget.cpp \
     os/proc.cpp \
     os/process.cpp \
+    os/processrefreshservice.cpp \
     os/processtreemodel.cpp \
     os/processmodel.cpp \
     os/processfilterproxy.cpp \
@@ -85,6 +86,7 @@ HEADERS += \
     serviceswidget.h \
     os/proc.h \
     os/process.h \
+    os/processrefreshservice.h \
     os/processtreemodel.h \
     os/processmodel.h \
     os/processfilterproxy.h \

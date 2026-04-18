@@ -22,9 +22,11 @@
 #include "os/processmodel.h"
 #include "os/processtreemodel.h"
 #include "os/processfilterproxy.h"
+#include "os/processrefreshservice.h"
 
 #include <QModelIndex>
 #include <QHeaderView>
+#include <QSet>
 #include <QSortFilterProxyModel>
 #include <QStackedWidget>
 #include <QTimer>
@@ -49,7 +51,7 @@ class ProcessesWidget : public QWidget
     Q_OBJECT
 
     public:
-        explicit ProcessesWidget(QWidget *parent = nullptr);
+        explicit ProcessesWidget(OS::ProcessRefreshService *processRefreshService, QWidget *parent = nullptr);
         ~ProcessesWidget();
         void SetActive(bool active);
         bool IsActive() const { return this->m_active; }
@@ -57,6 +59,7 @@ class ProcessesWidget : public QWidget
 
     private slots:
         void onTimerTick();
+        void onRefreshFinished(int consumer, quint64 token, const QList<OS::Process> &processes);
         void onHeaderContextMenu(const QPoint &pos);
         void onTableContextMenu(const QPoint &pos);
         void onTreeContextMenu(const QPoint &pos);
@@ -69,17 +72,22 @@ class ProcessesWidget : public QWidget
         OS::ProcessFilterProxy   *m_proxy;
         QSortFilterProxyModel    *m_treeProxy;
         QTimer                   *m_refreshTimer;
+        OS::ProcessRefreshService *m_processRefreshService { nullptr };
         QStackedWidget           *m_viewStack { nullptr };
         QTreeView                *m_treeView { nullptr };
         bool                      m_active { false };
         bool                      m_tableContextMenuOpen { false };
         bool                      m_treeViewMode { false };
+        bool                      m_refreshInFlight { false };
+        bool                      m_refreshPending { false };
         bool                      m_tableHeaderPersistenceEnabled { false };
         bool                      m_treeHeaderPersistenceEnabled { false };
+        quint64                   m_refreshToken { 0 };
         QList<OS::Process>        m_lastProcessSnapshot;
         QModelIndex               m_contextMenuTargetIndex;
 
         void setupTable();
+        void startRefresh();
         void setTreeViewMode(bool enabled);
         void showHeaderContextMenu(QHeaderView *header, int columnCount, const std::function<QString(int)> &titleForColumn, const QPoint &pos);
         void saveTableHeaderState() const;

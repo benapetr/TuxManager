@@ -20,6 +20,7 @@
 #define OS_PROCESS_H
 
 #include <QList>
+#include <QMetaType>
 #include <QString>
 #include <sys/types.h>
 
@@ -76,5 +77,8 @@ namespace OS
             static void loadUserAndCmdline(Process &proc);
     };
 } // namespace Os
+
+Q_DECLARE_METATYPE(OS::Process)
+Q_DECLARE_METATYPE(QList<OS::Process>)
 
 #endif // OS_PROCESS_H

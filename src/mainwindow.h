@@ -21,6 +21,7 @@
 
 #include <QMainWindow>
 #include <QCloseEvent>
+#include "os/processrefreshservice.h"
 #include "processeswidget.h"
 #include "performancewidget.h"
 #include "userswidget.h"
@@ -49,6 +50,7 @@ class MainWindow : public QMainWindow
 
         Ui::MainWindow *ui;
 
+        OS::ProcessRefreshService *m_processRefreshService;
         ProcessesWidget   *m_processesWidget;
         PerformanceWidget *m_performanceWidget;
         UsersWidget       *m_usersWidget;

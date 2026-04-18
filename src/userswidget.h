@@ -20,6 +20,7 @@
 #define USERSWIDGET_H
 
 #include "os/process.h"
+#include "os/processrefreshservice.h"
 
 #include <QHash>
 #include <Qt>
@@ -38,7 +39,7 @@ class UsersWidget : public QWidget
     Q_OBJECT
 
     public:
-        explicit UsersWidget(QWidget *parent = nullptr);
+        explicit UsersWidget(OS::ProcessRefreshService *processRefreshService, QWidget *parent = nullptr);
         ~UsersWidget();
         void SetActive(bool active);
         bool IsActive() const { return this->m_active; }
@@ -48,18 +49,21 @@ class UsersWidget : public QWidget
 
     private slots:
         void onTimerTick();
+        void onRefreshFinished(int consumer, quint64 token, const QList<OS::Process> &processes);
         void onContextMenu(const QPoint &pos);
 
     private:
         Ui::UsersWidget *ui;
+        OS::ProcessRefreshService *m_processRefreshService { nullptr };
         QTimer          *m_refreshTimer { nullptr };
         bool             m_active { false };
-        QHash<pid_t, quint64> m_prevTicks;
-        quint64          m_prevCpuTotalTicks { 0 };
-        int              m_numCpus { 1 };
+        bool             m_refreshInFlight { false };
+        bool             m_refreshPending { false };
+        quint64          m_refreshToken { 0 };
         int              m_sortColumn { 1 };
         Qt::SortOrder    m_sortOrder { Qt::DescendingOrder };
 
+        void startRefresh();
         void rebuildTree(const QList<OS::Process> &allProcs);
 };
 

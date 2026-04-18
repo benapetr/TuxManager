@@ -168,8 +168,13 @@ void ProcessModel::Refresh()
 {
     QList<Process> fresh = this->RefreshSnapshot();
 
+    this->SetProcesses(fresh);
+}
+
+void ProcessModel::SetProcesses(const QList<Process> &processes)
+{
     this->beginResetModel();
-    this->m_processes = std::move(fresh);
+    this->m_processes = processes;
     this->endResetModel();
 }
 
