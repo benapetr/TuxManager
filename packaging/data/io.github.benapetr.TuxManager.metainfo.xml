@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.benapetr.TuxManager</id>
+  <name>Tux Manager</name>
+  <summary>Linux system monitor inspired by Windows Task Manager</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <developer id="io.github.benapetr">
+    <name>Petr Bena</name>
+  </developer>
+  <url type="homepage">https://github.com/benapetr/TuxManager</url>
+  <url type="bugtracker">https://github.com/benapetr/TuxManager/issues</url>
+  <url type="vcs-browser">https://github.com/benapetr/TuxManager</url>
+  <description>
+    <p>
+      A Linux Task Manager alternative built with Qt6, inspired by the Windows Task Manager but designed to go further - providing deep visibility into system processes, performance metrics, users, and services.
+    </p>
+  </description>
+  <categories>
+    <category>System</category>
+    <category>Monitor</category>
+  </categories>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/benapetr/TuxManager/refs/heads/master/screenshots/ubuntu/process.png</image>
+      <caption>Processes view</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/benapetr/TuxManager/refs/heads/master/screenshots/ubuntu/cpu.png</image>
+      <caption>CPU view</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/benapetr/TuxManager/refs/heads/master/screenshots/ubuntu/mem.png</image>
+      <caption>Memory view</caption>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="1.0.4" date="2026-04-13"/>
+    <release version="1.0.3" date="2026-04-10"/>
+    <release version="1.0.2" date="2026-04-08"/>
+    <release version="1.0.1" date="2026-04-06"/>
+    <release version="1.0.0" date="2026-03-13"/>
+  </releases>
+  <content_rating type="oars-1.1"/>
+  <launchable type="desktop-id">io.github.benapetr.TuxManager.desktop</launchable>
+</component>
