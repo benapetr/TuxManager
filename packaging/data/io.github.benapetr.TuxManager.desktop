@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Tux Manager
+GenericName=System Monitor
+Comment=Linux system monitor inspired by Windows Task Manager
+Exec=tux-manager
+Icon=tux_manager_icon
+Keywords=task;manager;process;cpu;memory;
+Categories=System;Monitor;
+Terminal=false
