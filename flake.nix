@@ -20,21 +20,7 @@
       {
         formatter = pkgs.nixfmt-rfc-style;
 
-        packages.default =
-          let
-            desktopItem = pkgs.makeDesktopItem {
-              type = "Application";
-              name = "Tux Manager";
-              desktopName = "Tux Manager";
-              comment = "Linux system monitor inspired by Windows Task Manager";
-              exec = "tux-manager";
-              icon = "tux-manager";
-              categories = [ "System" "Monitor" ];
-              terminal = false;
-            };
-            icon = ./src/tux_manager_icon.svg;
-          in
-          pkgs.stdenv.mkDerivation {
+        packages.default = pkgs.stdenv.mkDerivation {
             pname = "tux-manager";
             version = "1.0.4";
             src = ./.;
@@ -50,10 +36,10 @@
               cp tux-manager $out/bin/tux-manager
 
               mkdir -p $out/share/icons/hicolor/scalable/apps/
-              cp ${icon} $out/share/icons/hicolor/scalable/apps/tux-manager.svg
+              cp ./src/tux_manager_icon.svg $out/share/icons/hicolor/scalable/apps/tux_manager_icon.svg
 
               mkdir -p $out/share/applications
-              ln -s ${desktopItem}/share/applications/* $out/share/applications/
+              cp ./packaging/data/io.github.benapetr.TuxManager.desktop $out/share/applications/io.github.benapetr.TuxManager.desktop
             '';
 
             postFixup = ''
