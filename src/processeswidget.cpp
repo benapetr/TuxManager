@@ -1189,10 +1189,13 @@ QString ProcessesWidget::findTerminalExecutable()
         "xterm"
     };
     static const QStringList trustedPrefixes {
+        // FHS:
         "/usr/bin/",
         "/bin/",
         "/sbin/",
-        "/usr/sbin/"
+        "/usr/sbin/",
+        // NixOS/Home-manager:
+        "/nix/store/"
     };
 
     for (const QString &candidate : terminalCandidates)
