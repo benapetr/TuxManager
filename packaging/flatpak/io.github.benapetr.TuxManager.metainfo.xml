@@ -20,6 +20,7 @@
   </developer>
   <url type="homepage">https://github.com/benapetr/TuxManager</url>
   <releases>
+    <release version="1.0.6" date="2026-05-04" />
     <release version="1.0.5" date="2026-04-22" />
     <release version="1.0.4" date="2026-04-13" />
     <release version="1.0.3" date="2026-04-10" />

@@ -1,4 +1,6 @@
 # Future
+  * Memory view now shows compressed memory when zswap is used
+  * Implemented Intel GPU backend
 
 # 1.0.5
   * Perf -> Network:
