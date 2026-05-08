@@ -275,6 +275,9 @@ void GraphWidget::paintEvent(QPaintEvent * /*event*/)
         p.setPen(QPen(hover, 1));
         p.drawLine(QPointF(x, contentTop), QPointF(x, contentBottom));
     }
+
+    if (this->m_isHovered)
+        updateTooltip();
 }
 
 void GraphWidget::mouseMoveEvent(QMouseEvent *event)
@@ -296,41 +299,14 @@ void GraphWidget::mouseMoveEvent(QMouseEvent *event)
         this->update(oldRect.united(this->hoverLineRect(this->m_hoverSlot)));
     }
 
-    if (this->m_hoverTooltipEnabled && slotChanged)
-    {
-        const int idx1 = sampleIndexForSlot(this->m_data ? this->m_data->Size() : 0, slot, sampleCount);
-        const int idx2 = sampleIndexForSlot(this->m_overlayData ? this->m_overlayData->Size() : 0, slot, sampleCount);
-
-        if (idx1 >= 0 || idx2 >= 0)
-        {
-            QString tip;
-            if (idx1 >= 0)
-                tip += tr("%1: %2").arg(this->m_primaryName, this->formatValue(this->m_data->At(idx1)));
-            if (idx2 >= 0)
-            {
-                if (!tip.isEmpty())
-                    tip += "\n";
-                tip += tr("%1: %2").arg(this->m_secondaryName, this->formatValue(this->m_overlayData->At(idx2)));
-            }
-            const int secAgo = sampleCount - 1 - slot;
-            if (!tip.isEmpty())
-                tip += tr("\n%1 s ago").arg(secAgo);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            QToolTip::showText(event->globalPosition().toPoint(), tip, this);
-#else
-            QToolTip::showText(event->globalPos(), tip, this);
-#endif
-        } else
-        {
-            QToolTip::hideText();
-        }
-    }
+    this->m_isHovered = true;
 
     QWidget::mouseMoveEvent(event);
 }
 
 void GraphWidget::leaveEvent(QEvent *event)
 {
+    this->m_isHovered = false;
     const QRect oldRect = this->hoverLineRect(this->m_hoverSlot);
     this->m_hoverSlot = -1;
     if (this->m_hoverTooltipEnabled)
@@ -392,5 +368,39 @@ QString GraphWidget::formatValue(double v) const
             if (this->m_maxVal <= 100.0)
                 return QString::number(v, 'f', 1) + tr("%");
             return QString::number(v, 'f', 2);
+    }
+}
+
+void GraphWidget::updateTooltip()
+{
+    if (this->m_hoverTooltipEnabled)
+    {
+        const int sampleCount = qMax(2, this->m_sampleCapacity);
+        const double stepX = static_cast<double>(qMax(1, this->width())) / static_cast<double>(sampleCount - 1);
+        const double mouseX = mapFromGlobal(QCursor::pos()).x();
+        const int slot = qBound(0, static_cast<int>(std::lround(mouseX / stepX)), sampleCount - 1);
+
+        const int idx1 = sampleIndexForSlot(this->m_data ? this->m_data->Size() : 0, slot, sampleCount);
+        const int idx2 = sampleIndexForSlot(this->m_overlayData ? this->m_overlayData->Size() : 0, slot, sampleCount);
+
+        if (idx1 >= 0 || idx2 >= 0)
+        {
+            QString tip;
+            if (idx1 >= 0)
+                tip += tr("%1: %2").arg(this->m_primaryName, this->formatValue(this->m_data->At(idx1)));
+            if (idx2 >= 0)
+            {
+                if (!tip.isEmpty())
+                    tip += "\n";
+                tip += tr("%1: %2").arg(this->m_secondaryName, this->formatValue(this->m_overlayData->At(idx2)));
+            }
+            const int secAgo = sampleCount - 1 - slot;
+            if (!tip.isEmpty())
+                tip += tr("\n%1 s ago").arg(secAgo);
+            QToolTip::showText(QCursor::pos(), tip, this);
+        } else
+        {
+            QToolTip::hideText();
+        }
     }
 }

@@ -116,6 +116,7 @@ namespace Perf
             bool            m_gridEnabled { true };
             int             m_sampleCapacity { 60 };  ///< Matches the default history window in seconds.
             int             m_historyTick { 0 };      ///< Advances as samples arrive; used for grid phase.
+            bool            m_isHovered { false };
             int             m_hoverSlot { -1 };
             bool            m_hoverLineEnabled { true };
             bool            m_hoverTooltipEnabled { true };
@@ -131,6 +132,7 @@ namespace Perf
             QRect hoverLineRect(int slot) const;
             static int sampleIndexForSlot(int size, int slot, int sampleCount);
             QString formatValue(double v) const;
+            void updateTooltip();
     };
 } // namespace Perf
 
