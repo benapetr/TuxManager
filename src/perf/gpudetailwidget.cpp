@@ -112,7 +112,6 @@ GpuDetailWidget::GpuDetailWidget(QWidget *parent) : QWidget(parent), ui(new Ui::
     configureGraph(this->ui->copyBwGraphWidget);
     this->ui->copyBwGraphWidget->SetSeriesNames(tr("TX"), tr("RX"));
     this->ui->copyBwGraphWidget->SetValueFormat(GraphWidget::ValueFormat::BytesPerSec);
-    this->ui->copyBwGraphWidget->setToolTip(tr("Copy bandwidth: light trace = TX, dark trace = RX"));
     UIHelper::EnableCopyWidgetContextMenu(this->ui->copyBwGraphWidget);
 
     UIHelper::EnableCopyLabelContextMenu(this->ui->utilValueLabel);
