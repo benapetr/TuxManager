@@ -41,8 +41,6 @@ class PerformanceWidget : public QWidget
 {
     Q_OBJECT
     
-    static PerformanceWidget *s_instance;
-
     public:
         explicit PerformanceWidget(QWidget *parent = nullptr);
         ~PerformanceWidget();
@@ -57,6 +55,8 @@ class PerformanceWidget : public QWidget
         void onSidePanelContextMenu(Perf::SidePanelItem *item, const QPoint &globalPos);
 
     private:
+        static PerformanceWidget *s_instance;
+        
         Ui::PerformanceWidget      *ui;
         Perf::SidePanel            *m_sidePanel;
         QStackedWidget             *m_stack;
