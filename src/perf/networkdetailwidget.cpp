@@ -176,7 +176,7 @@ void NetworkDetailWidget::onGraphContextMenuRequested(const QPoint &pos)
     connect(bytesAction, &QAction::triggered, this, &NetworkDetailWidget::onShowBytesTriggered);
 
     menu.addSeparator();
-    UIHelper::AddCopyWidgetAction(&menu, this->ui->throughputGraphWidget, tr("Copy graph"));
+    UIHelper::AddGraphContextMenuItems(&menu, this->ui->throughputGraphWidget);
 
     menu.exec(this->ui->throughputGraphWidget->mapToGlobal(pos));
 }

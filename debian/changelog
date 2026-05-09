@@ -1,3 +1,10 @@
+tux-manager (1.0.6) unstable; urgency=medium
+
+  * Memory view now shows compressed memory when zswap is used
+  * Implemented Intel GPU backend
+
+ -- Petr Bena <petr@bena.rocks>  Sun, 04 May 2026 12:00:00 +0200
+
 tux-manager (1.0.5) unstable; urgency=medium
 
   * Perf -> Network:

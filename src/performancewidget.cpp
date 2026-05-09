@@ -74,8 +74,12 @@ namespace
 // Construction
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+PerformanceWidget *PerformanceWidget::s_instance = nullptr;
+
 PerformanceWidget::PerformanceWidget(QWidget *parent) : QWidget(parent), ui(new Ui::PerformanceWidget)
 {
+    s_instance = this;
+
     // Ensure the metrics are initialized before we start enumerating devices
     Metrics::Get();
 
@@ -122,6 +126,7 @@ PerformanceWidget::PerformanceWidget(QWidget *parent) : QWidget(parent), ui(new 
 
 PerformanceWidget::~PerformanceWidget()
 {
+    s_instance = nullptr;
     delete this->ui;
 }
 
@@ -377,9 +382,6 @@ void PerformanceWidget::SetActive(bool active)
 void PerformanceWidget::onSidePanelContextMenu(Perf::SidePanelItem * /*item*/, const QPoint &globalPos)
 {
     QMenu menu(this);
-    QHash<QAction *, int> graphWindowActions;
-    QHash<QAction *, int> refreshIntervalActions;
-    QAction *pausedRefreshAction = nullptr;
 
     QAction *cpu = menu.addAction(tr("CPU"));
     cpu->setCheckable(true);
@@ -414,38 +416,14 @@ void PerformanceWidget::onSidePanelContextMenu(Perf::SidePanelItem * /*item*/, c
     showGrid->setChecked(CFG->SidePanelGridEnabled);
 
     menu.addSeparator();
-    QMenu *timeMenu = menu.addMenu(tr("Graph time"));
-    QVector<int> intervals = CFG->DataWindowAvailableIntervals;
-    if (intervals.isEmpty())
-        intervals.append(CFG->PerfGraphWindowSec);
+    UIHelper::AddRefreshIntervalContextMenu(&menu, nullptr, this->m_active);
+    UIHelper::AddGraphWindowContextMenu(&menu);
 
-    for (int sec : intervals)
-    {
-        QAction *a = timeMenu->addAction(Misc::SimplifyTime(sec));
-        a->setCheckable(true);
-        a->setChecked(CFG->PerfGraphWindowSec == sec);
-        graphWindowActions.insert(a, sec);
-    }
-
-    QMenu *refreshMenu = menu.addMenu(tr("Refresh interval"));
-    UIHelper::PopulateRefreshIntervalMenu(refreshMenu, refreshIntervalActions, pausedRefreshAction);
+    menu.addSeparator();
     UIHelper::AddGlobalContextMenuItems(&menu, this);
 
     QAction *picked = menu.exec(globalPos);
     if (!picked)
-        return;
-
-    if (graphWindowActions.contains(picked))
-    {
-        const int requestedWindow = graphWindowActions.value(picked);
-        CFG->PerfGraphWindowSec = requestedWindow;
-        this->applyGraphWindowSeconds();
-        if (this->m_active)
-            this->onProviderUpdated();
-        return;
-    }
-
-    if (UIHelper::ApplyRefreshIntervalAction(picked, refreshIntervalActions, pausedRefreshAction))
         return;
 
     if (picked == customizeOrder)

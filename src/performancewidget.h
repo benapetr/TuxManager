@@ -40,19 +40,23 @@ QT_END_NAMESPACE
 class PerformanceWidget : public QWidget
 {
     Q_OBJECT
-
+    
     public:
         explicit PerformanceWidget(QWidget *parent = nullptr);
         ~PerformanceWidget();
         void SetActive(bool active);
         bool IsActive() const { return this->m_active; }
         void ApplyColorScheme();
-
-    private slots:
+        static PerformanceWidget *Get() { return s_instance; };
         void onProviderUpdated();
+        void applyGraphWindowSeconds();
+        
+    private slots:
         void onSidePanelContextMenu(Perf::SidePanelItem *item, const QPoint &globalPos);
 
     private:
+        static PerformanceWidget *s_instance;
+        
         Ui::PerformanceWidget      *ui;
         Perf::SidePanel            *m_sidePanel;
         QStackedWidget             *m_stack;
@@ -81,7 +85,6 @@ class PerformanceWidget : public QWidget
         void setupGpuPanels();
         void applySidePanelOrder();
         void tagTimeAxisLabels();
-        void applyGraphWindowSeconds();
         void applyPanelVisibility();
         void applySidePanelGridEnabled();
         void updateSamplingPolicy();

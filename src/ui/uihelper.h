@@ -56,20 +56,19 @@ namespace UIHelper
                                const std::function<QVariant(const QModelIndex &sourceKeyIndex)> &sourceKeyResolver,
                                const TableSelectionSnapshot &snapshot);
 
-    void PopulateRefreshIntervalMenu(QMenu *menu, QHash<QAction *, int> &intervalActions, QAction *&pausedAction);
     void AddGlobalContextMenuItems(QMenu *menu, QWidget *parent = nullptr);
+    //! Adds context actions relevant to graphs to a context menu.
+    void AddGraphContextMenuItems(QMenu *menu, QWidget *graphArea);
+    //! Adds context menu relevant to graphs to a widget.
+    void EnableGraphContextMenu(QWidget *widget);
+    //! Adds a "Graph time" contex menu to an existing menu that gives options to change the timespan of a graph.
+    void AddGraphWindowContextMenu(QMenu *menu);
+    //! Adds a "Refresh interval" contex menu to an existing menu that gives options to change the refresh rate.
+    void AddRefreshIntervalContextMenu(QMenu *menu, QTimer *timer = nullptr, bool timerOwnerActive = false);
     //! Adds a context menu with a Copy action that copies the label text to the clipboard.
     void EnableCopyLabelContextMenu(QLabel *label);
     //! Adds a Copy graph action to an existing menu that copies the widget snapshot to the clipboard.
     QAction *AddCopyWidgetAction(QMenu *menu, QWidget *widget, const QString &text = QString());
-    //! Adds a context menu with a Copy graph action that copies the widget snapshot to the clipboard.
-    void EnableCopyWidgetContextMenu(QWidget *widget, const QString &text = QString());
-
-    bool ApplyRefreshIntervalAction(QAction *picked,
-                                    const QHash<QAction *, int> &intervalActions,
-                                    QAction *pausedAction,
-                                    QTimer *timer = nullptr,
-                                    bool timerOwnerActive = true);
 }
 
 #endif // UI_UIHELPER_H

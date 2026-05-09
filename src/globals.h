@@ -19,7 +19,7 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-#define TUX_MANAGER_VERSION_STRING     "1.0.5"
+#define TUX_MANAGER_VERSION_STRING     "1.0.6"
 #define TUX_MANAGER_PRODUCT_NAME       "TuxManager"
 
 /// Number of historical samples kept per metric (max graph window: 15 min at 1 Hz).

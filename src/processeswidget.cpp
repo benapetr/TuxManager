@@ -565,8 +565,6 @@ void ProcessesWidget::onTableContextMenu(const QPoint &pos)
 {
     // Pause refresh during context menu so we don't loose the selection
     this->m_tableContextMenuOpen = true;
-    QHash<QAction *, int> refreshIntervalActions;
-    QAction *pausedRefreshAction = nullptr;
 
     const QModelIndex clickedIndex = this->ui->tableView->indexAt(pos);
     const QModelIndex targetIndex = clickedIndex.isValid() ? clickedIndex : this->ui->tableView->currentIndex();
@@ -681,12 +679,10 @@ void ProcessesWidget::onTableContextMenu(const QPoint &pos)
     connect(reniceAction, &QAction::triggered, this, &ProcessesWidget::reniceSelected);
 
     menu.addSeparator();
-    QMenu *refreshMenu = menu.addMenu(tr("Refresh interval"));
-    UIHelper::PopulateRefreshIntervalMenu(refreshMenu, refreshIntervalActions, pausedRefreshAction);
+    UIHelper::AddRefreshIntervalContextMenu(&menu, this->m_refreshTimer, this->m_active);
     UIHelper::AddGlobalContextMenuItems(&menu, this);
 
-    QAction *picked = menu.exec(this->ui->tableView->viewport()->mapToGlobal(pos));
-    UIHelper::ApplyRefreshIntervalAction(picked, refreshIntervalActions, pausedRefreshAction, this->m_refreshTimer, this->m_active);
+    menu.exec(this->ui->tableView->viewport()->mapToGlobal(pos));
 
     this->m_contextMenuTargetIndex = QModelIndex();
     this->m_tableContextMenuOpen = false;
@@ -698,8 +694,6 @@ void ProcessesWidget::onTreeContextMenu(const QPoint &pos)
 {
     this->m_tableContextMenuOpen = true;
     QMenu menu(this);
-    QHash<QAction *, int> refreshIntervalActions;
-    QAction *pausedRefreshAction = nullptr;
 
     QMenu *viewMenu = menu.addMenu(tr("View"));
     QAction *kernelAct = viewMenu->addAction(tr("Kernel tasks"));
@@ -740,12 +734,10 @@ void ProcessesWidget::onTreeContextMenu(const QPoint &pos)
     connect(reniceAction, &QAction::triggered, this, &ProcessesWidget::reniceSelected);
 
     menu.addSeparator();
-    QMenu *refreshMenu = menu.addMenu(tr("Refresh interval"));
-    UIHelper::PopulateRefreshIntervalMenu(refreshMenu, refreshIntervalActions, pausedRefreshAction);
+    UIHelper::AddRefreshIntervalContextMenu(&menu, this->m_refreshTimer, this->m_active);
     UIHelper::AddGlobalContextMenuItems(&menu, this);
 
-    QAction *picked = menu.exec(this->m_treeView->viewport()->mapToGlobal(pos));
-    UIHelper::ApplyRefreshIntervalAction(picked, refreshIntervalActions, pausedRefreshAction, this->m_refreshTimer, this->m_active);
+    menu.exec(this->m_treeView->viewport()->mapToGlobal(pos));
 
     this->m_tableContextMenuOpen = false;
     if (this->m_active && this->m_refreshPending && !CFG->RefreshPaused)
@@ -1189,10 +1181,13 @@ QString ProcessesWidget::findTerminalExecutable()
         "xterm"
     };
     static const QStringList trustedPrefixes {
+        // FHS:
         "/usr/bin/",
         "/bin/",
         "/sbin/",
-        "/usr/sbin/"
+        "/usr/sbin/",
+        // NixOS/Home-manager:
+        "/nix/store/"
     };
 
     for (const QString &candidate : terminalCandidates)
