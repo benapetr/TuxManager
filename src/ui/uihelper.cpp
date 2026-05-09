@@ -104,6 +104,7 @@ void UIHelper::RestoreTableSelection(QTableView *view,
 {
     if (!view || !view->model())
         return;
+
     if (!sourceIndexForRow || !sourceToProxy || !sourceKeyResolver)
         return;
 
@@ -133,8 +134,9 @@ void UIHelper::RestoreTableSelection(QTableView *view,
     }
 
     if (restoredCurrentProxy.isValid())
+    {
         selectionModel->setCurrentIndex(restoredCurrentProxy, QItemSelectionModel::NoUpdate);
-    else
+    } else
     {
         const QModelIndexList selectedRows = selectionModel->selectedRows(keyColumn);
         if (!selectedRows.isEmpty())
@@ -210,19 +212,18 @@ void UIHelper::AddRefreshIntervalContextMenu(QMenu *menu, QTimer *timer, bool ti
         a->setChecked(!CFG->RefreshPaused && CFG->RefreshRateMs == ms);
         intervalActions.insert(a, ms);
 
-        QObject::connect(a, &QAction::triggered, menu, [menu, a, intervalActions, timer, timerOwnerActive]()
+        QObject::connect(a, &QAction::triggered, menu, [ a, intervalActions, timer, timerOwnerActive]()
         {          
             const int ms = intervalActions.value(a);
             CFG->RefreshPaused = false;
             CFG->RefreshRateMs = ms;
             Metrics::Get()->SetInterval(ms);
             PerformanceWidget *pw = PerformanceWidget::Get();
-            if (pw && pw->IsActive()) {
+            if (pw && pw->IsActive())
                 pw->onProviderUpdated();
-            }
-            if (timer && timerOwnerActive) {
+
+            if (timer && timerOwnerActive)
                 timer->start(ms);
-            }
         });
     }
 
@@ -232,15 +233,15 @@ void UIHelper::AddRefreshIntervalContextMenu(QMenu *menu, QTimer *timer, bool ti
     pausedAction->setCheckable(true);
     pausedAction->setChecked(CFG->RefreshPaused);
 
-    QObject::connect(pausedAction, &QAction::triggered, menu, [menu, timer, timerOwnerActive](){
+    QObject::connect(pausedAction, &QAction::triggered, menu, [ timer, timerOwnerActive]()
+    {
         CFG->RefreshPaused = true;
         PerformanceWidget *pw = PerformanceWidget::Get();
-        if (pw && pw->IsActive()) {
+        if (pw && pw->IsActive())
             pw->onProviderUpdated();
-        }
-        if (timer && timerOwnerActive) {
+
+        if (timer && timerOwnerActive)
             timer->stop();
-        }
     });
 }
 
