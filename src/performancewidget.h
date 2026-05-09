@@ -29,6 +29,7 @@
 
 #include <QHash>
 #include <QPoint>
+#include <QSplitter>
 #include <QStackedWidget>
 #include <QVector>
 #include <QWidget>
@@ -60,6 +61,7 @@ class PerformanceWidget : public QWidget
         Ui::PerformanceWidget      *ui;
         Perf::SidePanel            *m_sidePanel;
         QStackedWidget             *m_stack;
+        QSplitter                  *m_splitter { nullptr };
         QHash<Perf::SidePanelItem *, QWidget *> m_detailByItem;
         Perf::SidePanelItem        *m_cpuItem { nullptr };
         Perf::SidePanelItem        *m_memoryItem { nullptr };

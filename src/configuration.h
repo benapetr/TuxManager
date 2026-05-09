@@ -96,6 +96,7 @@ class Configuration : public QObject
         bool PerfNetworkUseBits { true };
         int PerfGraphWindowSec { 60 };
         QStringList PerfSidePanelGroupOrder;
+        QByteArray PerformanceSplitterState;   ///< Saved via QSplitter::saveState()
 
     private:
         explicit Configuration(QObject *parent = nullptr);

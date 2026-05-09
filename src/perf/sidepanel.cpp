@@ -48,7 +48,6 @@ SidePanel::SidePanel(QWidget *parent) : QWidget(parent)
     this->setLayout(outerLayout);
 
     this->setMinimumWidth(150);
-    this->setMaximumWidth(200);
 }
 
 void SidePanel::ApplyColorScheme()
