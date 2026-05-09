@@ -36,11 +36,55 @@
 #include <QLabel>
 #include <QMenu>
 #include <QPalette>
+#include <QPainter>
 #include <QRegularExpression>
 #include <QSplitter>
+#include <QSplitterHandle>
 
 namespace
 {
+    class PerformanceSplitterHandle : public QSplitterHandle
+    {
+        public:
+            explicit PerformanceSplitterHandle(Qt::Orientation orientation, QSplitter *parent)
+                : QSplitterHandle(orientation, parent)
+            {}
+
+        protected:
+            void paintEvent(QPaintEvent *) override
+            {
+                // This brings back the line effect that we lost when we moved to a splitter
+                QPainter painter(this);
+                const QColor lineColor = ColorScheme::DetectDarkMode()
+                    ? QColor(0x55, 0x55, 0x55)
+                    : QColor(0xb8, 0xb8, 0xb8);
+                painter.setPen(lineColor);
+
+                // The splitter handle is wider than the visible separator so it remains
+                // easy to grab. Draw only a single centered pixel column; painting at x=0
+                // can disappear after Qt clips/repositions the handle during resizing.
+                const int x = this->width() / 2;
+                painter.drawLine(x, 0, x, this->height());
+            }
+    };
+
+    class PerformanceSplitter : public QSplitter
+    {
+        public:
+            explicit PerformanceSplitter(QWidget *parent = nullptr) : QSplitter(Qt::Horizontal, parent)
+            {
+                // This is the draggable area, not the visual line width. The handle paints
+                // its own 1 px divider in the middle of this 5 px hit target.
+                this->setHandleWidth(5);
+            }
+
+        protected:
+            QSplitterHandle *createHandle() override
+            {
+                return new PerformanceSplitterHandle(this->orientation(), this);
+            }
+    };
+
     QList<Perf::SidePanelGroup> sanitizeSidePanelGroupOrder(const QStringList &storedOrder)
     {
         const QList<Perf::SidePanelGroup> defaults = Perf::DefaultSidePanelGroupOrder();
@@ -140,7 +184,7 @@ void PerformanceWidget::setupLayout()
     // The .ui gives us a bare QHBoxLayout (horizontalLayout) — populate it.
     QHBoxLayout *lay = qobject_cast<QHBoxLayout *>(this->layout());
 
-    this->m_splitter = new QSplitter(Qt::Horizontal, this);
+    this->m_splitter = new PerformanceSplitter(this);
     this->m_splitter->setChildrenCollapsible(false);
     this->m_splitter->addWidget(this->m_sidePanel);
     this->m_splitter->addWidget(this->m_stack);
@@ -151,7 +195,7 @@ void PerformanceWidget::setupLayout()
     if (!saved_state.isEmpty())
         this->m_splitter->restoreState(saved_state);
     else
-        this->m_splitter->setSizes({ 220, 680 });
+        this->m_splitter->setSizes({ 162, 680 });
 
     connect(this->m_splitter, &QSplitter::splitterMoved, this, [this](int, int)
     {
@@ -552,6 +596,8 @@ void PerformanceWidget::ApplyColorScheme()
         if (detail)
             detail->ApplyColorScheme();
 
+    if (this->m_splitter)
+        this->m_splitter->update();
     this->m_sidePanel->update();
     this->update();
 }
