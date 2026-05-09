@@ -73,7 +73,7 @@ MemoryDetailWidget::MemoryDetailWidget(QWidget *parent) : QWidget(parent), ui(ne
     this->ui->graphWidget->SetGridRows(4);
     this->ui->graphWidget->SetSeriesNames(tr("Used memory"));
     this->ui->graphWidget->SetValueFormat(GraphWidget::ValueFormat::Percent);
-    UIHelper::EnableCopyWidgetContextMenu(this->ui->graphWidget);
+    UIHelper::EnableGraphContextMenu(this->ui->graphWidget);
     UIHelper::EnableCopyLabelContextMenu(this->ui->statInUseValue);
     UIHelper::EnableCopyLabelContextMenu(this->ui->statAvailValue);
     UIHelper::EnableCopyLabelContextMenu(this->ui->statCompressedValue);

@@ -232,8 +232,6 @@ void ServicesWidget::onHeaderContextMenu(const QPoint &pos)
 void ServicesWidget::onTableContextMenu(const QPoint &pos)
 {
     this->m_tableContextMenuOpen = true;
-    QHash<QAction *, int> refreshIntervalActions;
-    QAction *pausedRefreshAction = nullptr;
 
     const QModelIndex clickedIndex = this->ui->tableView->indexAt(pos);
     const QModelIndex targetIndex = clickedIndex.isValid() ? clickedIndex : this->ui->tableView->currentIndex();
@@ -320,12 +318,10 @@ void ServicesWidget::onTableContextMenu(const QPoint &pos)
     });
 
     menu.addSeparator();
-    QMenu *refreshMenu = menu.addMenu(tr("Refresh interval"));
-    UIHelper::PopulateRefreshIntervalMenu(refreshMenu, refreshIntervalActions, pausedRefreshAction);
+    UIHelper::AddRefreshIntervalContextMenu(&menu, this->m_refreshTimer, this->m_active);
     UIHelper::AddGlobalContextMenuItems(&menu, this);
 
-    QAction *picked = menu.exec(this->ui->tableView->viewport()->mapToGlobal(pos));
-    UIHelper::ApplyRefreshIntervalAction(picked, refreshIntervalActions, pausedRefreshAction, this->m_refreshTimer, this->m_active);
+    menu.exec(this->ui->tableView->viewport()->mapToGlobal(pos));
 
     this->m_tableContextMenuOpen = false;
 }

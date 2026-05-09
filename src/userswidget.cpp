@@ -193,8 +193,6 @@ void UsersWidget::onRefreshFinished(int consumer, quint64 token, const QList<OS:
 void UsersWidget::onContextMenu(const QPoint &pos)
 {
     QMenu menu(this);
-    QHash<QAction *, int> refreshIntervalActions;
-    QAction *pausedRefreshAction = nullptr;
 
     const QTreeWidgetItem *item = this->ui->treeWidget->itemAt(pos);
     const bool isProcessItem = item && item->parent();
@@ -212,12 +210,10 @@ void UsersWidget::onContextMenu(const QPoint &pos)
         menu.addSeparator();
     }
 
-    QMenu *refreshMenu = menu.addMenu(tr("Refresh interval"));
-    UIHelper::PopulateRefreshIntervalMenu(refreshMenu, refreshIntervalActions, pausedRefreshAction);
+    UIHelper::AddRefreshIntervalContextMenu(&menu, this->m_refreshTimer, this->m_active);
     UIHelper::AddGlobalContextMenuItems(&menu, this);
 
-    QAction *picked = menu.exec(this->ui->treeWidget->viewport()->mapToGlobal(pos));
-    UIHelper::ApplyRefreshIntervalAction(picked, refreshIntervalActions, pausedRefreshAction, this->m_refreshTimer, this->m_active);
+    menu.exec(this->ui->treeWidget->viewport()->mapToGlobal(pos));
 }
 
 void UsersWidget::rebuildTree(const QList<OS::Process> &allProcs)

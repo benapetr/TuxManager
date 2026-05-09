@@ -236,7 +236,7 @@ void CpuDetailWidget::onContextMenuRequested(const QPoint &globalPos)
     menu.addSeparator();
 
     // ── Copy ─────────────────────────────────────────────────────────────────
-    UIHelper::AddCopyWidgetAction(&menu, this->m_graphArea, tr("Copy graph"));
+    UIHelper::AddGraphContextMenuItems(&menu, this->m_graphArea);
 
     menu.exec(globalPos);
 }

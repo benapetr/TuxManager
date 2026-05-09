@@ -89,7 +89,7 @@ SwapDetailWidget::SwapDetailWidget(QWidget *parent) : QWidget(parent), ui(new Ui
     this->ui->activityGraphWidget->setToolTip(
                 tr("Swap in: disk -> RAM (pages read back into memory)\n"
                    "Swap out: RAM -> disk (pages written to swap storage)"));
-    UIHelper::EnableCopyWidgetContextMenu(this->ui->activityGraphWidget);
+    UIHelper::EnableGraphContextMenu(this->ui->activityGraphWidget);
 
     UIHelper::EnableCopyLabelContextMenu(this->ui->usageValueLabel);
     UIHelper::EnableCopyLabelContextMenu(this->ui->inUseValueLabel);
@@ -221,7 +221,7 @@ void SwapDetailWidget::onContextMenuRequested(const QPoint &globalPos)
 
     menu.addSeparator();
 
-    UIHelper::AddCopyWidgetAction(&menu, this->ui->usageGraphArea, tr("Copy graph"));
+    UIHelper::AddGraphContextMenuItems(&menu, this->ui->usageGraphArea);
 
     menu.exec(globalPos);
 }
