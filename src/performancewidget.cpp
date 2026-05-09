@@ -37,6 +37,7 @@
 #include <QMenu>
 #include <QPalette>
 #include <QRegularExpression>
+#include <QSplitter>
 
 namespace
 {
@@ -134,15 +135,25 @@ void PerformanceWidget::setupLayout()
     // The .ui gives us a bare QHBoxLayout (horizontalLayout) — populate it.
     QHBoxLayout *lay = qobject_cast<QHBoxLayout *>(this->layout());
 
-    lay->addWidget(this->m_sidePanel);
+    this->m_splitter = new QSplitter(Qt::Horizontal, this);
+    this->m_splitter->setChildrenCollapsible(false);
+    this->m_splitter->addWidget(this->m_sidePanel);
+    this->m_splitter->addWidget(this->m_stack);
+    this->m_splitter->setStretchFactor(0, 0);
+    this->m_splitter->setStretchFactor(1, 1);
 
-    // Thin separator line
-    QFrame *separator = new QFrame(this);
-    separator->setFrameShape(QFrame::VLine);
-    separator->setFrameShadow(QFrame::Sunken);
-    lay->addWidget(separator);
+    const QByteArray saved_state = CFG->PerformanceSplitterState;
+    if (!saved_state.isEmpty())
+        this->m_splitter->restoreState(saved_state);
+    else
+        this->m_splitter->setSizes({ 220, 680 });
 
-    lay->addWidget(this->m_stack, /*stretch=*/1);
+    connect(this->m_splitter, &QSplitter::splitterMoved, this, [this](int, int)
+    {
+        CFG->PerformanceSplitterState = this->m_splitter->saveState();
+    });
+
+    lay->addWidget(this->m_splitter);
 }
 
 void PerformanceWidget::setupSidePanel()
