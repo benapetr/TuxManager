@@ -34,9 +34,13 @@ class RunTaskDialog : public QDialog
         explicit RunTaskDialog(QWidget *parent = nullptr);
         ~RunTaskDialog();
 
-        QString Command() const;
+        QString GetCommand() const;
+
+    protected:
+        void accept() override;
 
     private:
+        bool startDetachedCommand(const QString &command, QString *error) const;
         void browseForCommand();
         void updateOkButton();
         static QString shellQuote(const QString &text);

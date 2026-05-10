@@ -123,7 +123,6 @@ class ProcessesWidget : public QWidget
 
         /// Open renice dialog for all selected processes.
         void reniceSelected();
-        bool startDetachedCommand(const QString &command, QString *error = nullptr) const;
         static QString findTerminalExecutable();
 };
 

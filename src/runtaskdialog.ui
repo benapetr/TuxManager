@@ -70,7 +70,7 @@
    <item>
     <widget class="QLabel" name="hintLabel">
      <property name="text">
-      <string>Enter a command, script, or path to execute</string>
+      <string>Enter an executable name or path, with optional arguments</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>

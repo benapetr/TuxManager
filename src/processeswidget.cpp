@@ -849,28 +849,7 @@ void ProcessesWidget::promptAndSendCustomSignal()
 
 void ProcessesWidget::runNewTask()
 {
-    RunTaskDialog dialog(this);
-    if (dialog.exec() != QDialog::Accepted)
-        return;
-
-    const QString command = dialog.Command();
-    if (command.isEmpty())
-        return;
-
-    QString error;
-    if (!this->startDetachedCommand(command, &error))
-    {
-        QMessageBox::warning(this, tr("Run new task failed"), tr("Failed to start command.\n\n%1").arg(error));
-        return;
-    }
-
-    CFG->TaskHistory.removeAll(command);
-    CFG->TaskHistory.prepend(command);
-    while (CFG->TaskHistory.size() > TUX_MANAGER_TASK_HISTORY)
-        CFG->TaskHistory.removeLast();
-    CFG->Save();
-
-    LOG_INFO(QString("Started detached task: %1").arg(command));
+    RunTaskDialog(this).exec();
 }
 
 void ProcessesWidget::openTerminal()
@@ -1140,26 +1119,6 @@ void ProcessesWidget::reniceSelected()
     {
         QMessageBox::warning(this, tr("Renice failed"), errors.join('\n'));
     }
-}
-
-bool ProcessesWidget::startDetachedCommand(const QString &command, QString *error) const
-{
-    if (error)
-        error->clear();
-
-    if (command.trimmed().isEmpty())
-    {
-        if (error)
-            *error = tr("Command is empty");
-        return false;
-    }
-
-    if (QProcess::startDetached("/bin/sh", { "-c", command }))
-        return true;
-
-    if (error)
-        *error = tr("Unable to start /bin/sh -c %1").arg(command);
-    return false;
 }
 
 QString ProcessesWidget::findTerminalExecutable()
