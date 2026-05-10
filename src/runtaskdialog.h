@@ -24,6 +24,7 @@
 QT_BEGIN_NAMESPACE
 namespace Ui { class RunTaskDialog; }
 class QPushButton;
+class QLabel;
 QT_END_NAMESPACE
 
 class RunTaskDialog : public QDialog
@@ -37,12 +38,16 @@ class RunTaskDialog : public QDialog
         QString Command() const;
 
     private:
+        void accept() override;
         void browseForCommand();
         void updateOkButton();
+        void setError(const QString &message);
         static QString shellQuote(const QString &text);
+        static QString resolveExecutable(const QString &command);
 
         Ui::RunTaskDialog *ui { nullptr };
         QPushButton *m_okButton { nullptr };
+        QLabel *m_errorLabel { nullptr };
 };
 
 #endif // RUNTASKDIALOG_H
