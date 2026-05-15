@@ -296,6 +296,8 @@ void ProcessesWidget::setupTable()
     this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColIoWrites, true);
     this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColIoReadsPerSec, true);
     this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColIoWritesPerSec, true);
+    connect(this->m_treeView, &QTreeView::expanded, this, [this]() { this->m_treeView->resizeColumnToContents(OS::ProcessTreeModel::ColPid); });
+    connect(this->m_treeView, &QTreeView::collapsed, this, [this]() { this->m_treeView->resizeColumnToContents(OS::ProcessTreeModel::ColPid); });
     if (!CFG->ProcessTreeHeaderState.isEmpty())
     {
         treeHeader->restoreState(CFG->ProcessTreeHeaderState);
