@@ -275,7 +275,6 @@ void ProcessesWidget::setupTable()
     });
     connect(treeHeader, &QHeaderView::sectionMoved, this, [this]() { this->saveTreeHeaderState(); });
     connect(treeHeader, &QHeaderView::sectionResized, this, [this]() { this->saveTreeHeaderState(); });
-    this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColPid, 60);
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColName, 160);
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColUser, 90);
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColState, 90);
@@ -317,7 +316,10 @@ void ProcessesWidget::setTreeViewMode(bool enabled)
     CFG->ProcessTreeView = enabled;
 
     if (enabled)
+    {
         this->m_treeModel->SetProcesses(this->m_lastProcessSnapshot.isEmpty() ? this->m_model->GetProcesses() : this->m_lastProcessSnapshot);
+        this->m_treeView->resizeColumnToContents(OS::ProcessTreeModel::ColPid);
+    }
 
     if (!this->m_viewStack)
         return;
