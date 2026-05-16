@@ -302,6 +302,7 @@ void ProcessesWidget::setupTable()
     {
         treeHeader->restoreState(CFG->ProcessTreeHeaderState);
     }
+    treeHeader->setSectionResizeMode(OS::ProcessTreeModel::ColPid, QHeaderView::Fixed);
     this->syncAllProcessColumnVisibility();
     this->m_treeHeaderPersistenceEnabled = true;
     connect(this->m_treeView, &QTreeView::customContextMenuRequested, this, &ProcessesWidget::onTreeContextMenu);
