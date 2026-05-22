@@ -26,6 +26,11 @@
 #define TUX_MANAGER_HISTORY_SIZE       900
 #define TUX_MANAGER_TASK_HISTORY       20
 
+/// Minimum dynamic rate graph scale, in bytes per second, so idle I/O graphs do not collapse to 0
 #define TUX_MANAGER_MIN_RATE           1024.0
+
+// zswap is a runtime option, so we need to check it periodically instead of just once at startup
+// there is no point checking too often
+#define TUX_MANAGER_ZSWAP_ENABLED_CHECK_INTERVAL_MS 5000
 
 #endif // GLOBALS_H

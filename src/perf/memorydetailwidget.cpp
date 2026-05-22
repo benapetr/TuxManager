@@ -162,15 +162,15 @@ void MemoryDetailWidget::Init()
 void MemoryDetailWidget::onUpdated()
 {
     const qint64 total   = Metrics::GetMemory()->MemTotalKb();
-    const qint64 used    = Metrics::GetMemory()->MemUsedNonZramKb();
+    const qint64 used    = Metrics::GetMemory()->MemUsedNonCompressedKb();
     const qint64 avail   = Metrics::GetMemory()->MemAvailKb();
     const qint64 free    = Metrics::GetMemory()->MemFreeKb();
     const qint64 cached  = Metrics::GetMemory()->MemCachedKb();   // includes buffers
     const qint64 buffers = Metrics::GetMemory()->MemBuffersKb();
     const qint64 dirty   = Metrics::GetMemory()->MemDirtyKb();
-    const qint64 compressedData = Metrics::GetMemory()->ZramCompressedKb();
-    const qint64 compressedRam = Metrics::GetMemory()->ZramMemUsedKb();
-    const bool hasZram = Metrics::GetMemory()->HasZram();
+    const qint64 compressedData = Metrics::GetMemory()->CompressedPayloadKb();
+    const qint64 compressedRam = Metrics::GetMemory()->CompressedRamUsedKb();
+    const bool hasCompressedMemory = Metrics::GetMemory()->HasCompressedMemory();
 
     this->ui->statInUseValue->setText(Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, used)), 1));
     this->ui->statAvailValue->setText(Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, avail)), 1));
@@ -178,7 +178,7 @@ void MemoryDetailWidget::onUpdated()
     this->ui->statBuffersValue->setText(Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, buffers)), 1));
     this->ui->statFreeValue->setText(Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, free)), 1));
     this->ui->statDirtyValue->setText(Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, dirty)), 1));
-    if (hasZram)
+    if (hasCompressedMemory)
     {
         this->ui->statCompressedValue->setText(tr("%1 (using %2 RAM)")
                                                    .arg(Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, compressedData)), 1),
@@ -187,15 +187,15 @@ void MemoryDetailWidget::onUpdated()
     {
         this->ui->statCompressedValue->setText(tr("—"));
     }
-    this->updateCompressedVisibility(hasZram);
+    this->updateCompressedVisibility(hasCompressedMemory);
 
     // Composition bar — 5 segments must sum to total
     // free   = MemFree
     // cached = Buffers + PageCache  (includes dirty subset)
-    // used   = Total - Free - Cached - zram_mem_used
-    // zram   = RAM physically used by zram pools
-    // Verify: used + zram + cached + free == total  ✓
-    this->ui->compositionBar->SetSegments(used, hasZram ? compressedRam : 0, dirty, cached, free, total);
+    // used   = Total - Free - Cached - compressed memory pools
+    // compressed = RAM physically used by zram/zswap pools
+    // Verify: used + compressed + cached + free == total  ✓
+    this->ui->compositionBar->SetSegments(used, hasCompressedMemory ? compressedRam : 0, dirty, cached, free, total);
 
     if (this->m_memHistory)
         this->ui->graphWidget->Tick();

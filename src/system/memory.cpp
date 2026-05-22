@@ -77,6 +77,8 @@ Memory::Memory()
 
 bool Memory::Sample()
 {
+    this->updateZswapEnabled();
+
     QFile f("/proc/meminfo");
     if (!f.open(QIODevice::ReadOnly | QIODevice::Text))
         return false;
@@ -84,6 +86,7 @@ bool Memory::Sample()
     qint64 memTotal = 0, memAvail = 0, memFree = 0;
     qint64 buffers  = 0, cached   = 0, sReclaimable = 0, shmem = 0;
     qint64 dirty    = 0, writeback = 0;
+    qint64 zswapCompressed = 0, zswapPayload = 0;
 
     for (;;)
     {
@@ -114,6 +117,8 @@ bool Memory::Sample()
         else if (key == "Shmem")        shmem        = val;
         else if (key == "Dirty")        dirty        = val;
         else if (key == "Writeback")    writeback    = val;
+        else if (this->m_zswapEnabled && key == "Zswap")    zswapCompressed = val;
+        else if (this->m_zswapEnabled && key == "Zswapped") zswapPayload    = val;
     }
     f.close();
 
@@ -131,17 +136,36 @@ bool Memory::Sample()
     this->m_zramCompressedKb = zramStats.CompressedKb;
     this->m_zramMemUsedKb = zramStats.MemUsedKb;
     this->m_hasZram = zramStats.HasZram;
+    this->m_zswapPayloadKb = this->m_zswapEnabled ? zswapPayload : 0;
+    this->m_zswapMemUsedKb = this->m_zswapEnabled ? zswapCompressed : 0;
+    this->m_compressedPayloadKb = this->m_zramCompressedKb + this->m_zswapPayloadKb;
+    this->m_compressedRamUsedKb = this->m_zramMemUsedKb + this->m_zswapMemUsedKb;
+    this->m_hasCompressedMemory = this->m_hasZram || this->m_compressedPayloadKb > 0 || this->m_compressedRamUsedKb > 0;
     // Full page cache including buffers (what we show in stats and composition bar)
     this->m_memCachedKb  = buffers + pageCache;
-    // RAM used, including zram pools.
+    // RAM used, including compressed memory pools.
     this->m_memUsedKb    = memUsed;
-    // Non-zram in-use RAM for composition views that split compressed memory out separately.
-    this->m_memUsedNonZramKb = qMax(0LL, memUsed - this->m_zramMemUsedKb);
+    // Non-compressed in-use RAM for composition views that split compressed memory out separately.
+    this->m_memUsedNonCompressedKb = qMax(0LL, memUsed - this->m_compressedRamUsedKb);
 
     // Graph tracks used / total (htop formula matches the green bar)
     const double frac = (memTotal > 0) ? static_cast<double>(this->m_memUsedKb) / static_cast<double>(memTotal) : 0.0;
     this->m_memHistory.Push(frac * 100.0);
     return true;
+}
+
+void Memory::updateZswapEnabled()
+{
+    if (this->m_zswapEnabledCheckTimer.isValid() && this->m_zswapEnabledCheckTimer.elapsed() < TUX_MANAGER_ZSWAP_ENABLED_CHECK_INTERVAL_MS)
+        return;
+
+    const QString enabledText = Misc::ReadFile("/sys/module/zswap/parameters/enabled").trimmed().toLower();
+    this->m_zswapEnabled = enabledText == "y";
+
+    if (!this->m_zswapEnabledCheckTimer.isValid())
+        this->m_zswapEnabledCheckTimer.start();
+    else
+        this->m_zswapEnabledCheckTimer.restart();
 }
 
 void Memory::readHardwareMetadata()

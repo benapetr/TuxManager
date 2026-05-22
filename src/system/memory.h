@@ -21,6 +21,7 @@
 
 #include "../globals.h"
 #include "../historybuffer.h"
+#include <QElapsedTimer>
 
 class Memory
 {
@@ -31,10 +32,10 @@ class Memory
         bool Sample();
 
         qint64 MemTotalKb()   const { return this->m_memTotalKb;   }
-        /// In-use RAM including compressed zram pools.
+        /// In-use RAM including compressed memory pools.
         qint64 MemUsedKb()    const { return this->m_memUsedKb;    }
-        /// In-use RAM excluding zram's physical RAM footprint.
-        qint64 MemUsedNonZramKb() const { return this->m_memUsedNonZramKb; }
+        /// In-use RAM excluding compressed memory pools' physical RAM footprint.
+        qint64 MemUsedNonCompressedKb() const { return this->m_memUsedNonCompressedKb; }
         qint64 MemAvailKb()   const { return this->m_memAvailKb;   }
         /// Truly free (MemFree from /proc/meminfo)
         qint64 MemFreeKb()    const { return this->m_memFreeKb;    }
@@ -48,6 +49,11 @@ class Memory
         /// Physical RAM currently consumed by zram devices.
         qint64 ZramMemUsedKb() const { return this->m_zramMemUsedKb; }
         bool HasZram() const { return this->m_hasZram; }
+        /// Total uncompressed payload currently stored in compressed memory pools.
+        qint64 CompressedPayloadKb() const { return this->m_compressedPayloadKb; }
+        /// Physical RAM currently consumed by compressed memory pools.
+        qint64 CompressedRamUsedKb() const { return this->m_compressedRamUsedKb; }
+        bool HasCompressedMemory() const { return this->m_hasCompressedMemory; }
         int MemDimmSlotsTotal() const { return this->m_memDimmSlotsTotal; }
         int MemDimmSlotsUsed()  const { return this->m_memDimmSlotsUsed;  }
         int MemSpeedMtps()      const { return this->m_memSpeedMtps;      }
@@ -56,10 +62,11 @@ class Memory
 
     private:
         void readHardwareMetadata();
+        void updateZswapEnabled();
 
         qint64           m_memTotalKb   { 0 };
         qint64           m_memUsedKb    { 0 };
-        qint64           m_memUsedNonZramKb { 0 };
+        qint64           m_memUsedNonCompressedKb { 0 };
         qint64           m_memAvailKb   { 0 };
         qint64           m_memFreeKb    { 0 };
         qint64           m_memCachedKb  { 0 };
@@ -68,6 +75,13 @@ class Memory
         qint64           m_zramCompressedKb { 0 };
         qint64           m_zramMemUsedKb { 0 };
         bool             m_hasZram { false };
+        qint64           m_zswapPayloadKb { 0 };
+        qint64           m_zswapMemUsedKb { 0 };
+        bool             m_zswapEnabled { false };
+        QElapsedTimer    m_zswapEnabledCheckTimer;
+        qint64           m_compressedPayloadKb { 0 };
+        qint64           m_compressedRamUsedKb { 0 };
+        bool             m_hasCompressedMemory { false };
         int              m_memDimmSlotsTotal { 0 };
         int              m_memDimmSlotsUsed  { 0 };
         int              m_memSpeedMtps      { 0 };
