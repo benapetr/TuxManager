@@ -148,7 +148,6 @@ QVariant ProcessTreeModel::data(const QModelIndex &index, int role) const
     {
         switch (static_cast<Column>(index.column()))
         {
-            case ColPid:
             case ColCpu:
             case ColMemRss:
             case ColMemVirt:

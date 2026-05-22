@@ -275,7 +275,6 @@ void ProcessesWidget::setupTable()
     });
     connect(treeHeader, &QHeaderView::sectionMoved, this, [this]() { this->saveTreeHeaderState(); });
     connect(treeHeader, &QHeaderView::sectionResized, this, [this]() { this->saveTreeHeaderState(); });
-    this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColPid, 60);
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColName, 160);
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColUser, 90);
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColState, 90);
@@ -296,10 +295,13 @@ void ProcessesWidget::setupTable()
     this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColIoWrites, true);
     this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColIoReadsPerSec, true);
     this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColIoWritesPerSec, true);
+    connect(this->m_treeView, &QTreeView::expanded, this, [this]() { this->m_treeView->resizeColumnToContents(OS::ProcessTreeModel::ColPid); });
+    connect(this->m_treeView, &QTreeView::collapsed, this, [this]() { this->m_treeView->resizeColumnToContents(OS::ProcessTreeModel::ColPid); });
     if (!CFG->ProcessTreeHeaderState.isEmpty())
     {
         treeHeader->restoreState(CFG->ProcessTreeHeaderState);
     }
+    treeHeader->setSectionResizeMode(OS::ProcessTreeModel::ColPid, QHeaderView::Fixed);
     this->syncAllProcessColumnVisibility();
     this->m_treeHeaderPersistenceEnabled = true;
     connect(this->m_treeView, &QTreeView::customContextMenuRequested, this, &ProcessesWidget::onTreeContextMenu);
@@ -314,7 +316,10 @@ void ProcessesWidget::setTreeViewMode(bool enabled)
     CFG->ProcessTreeView = enabled;
 
     if (enabled)
+    {
         this->m_treeModel->SetProcesses(this->m_lastProcessSnapshot.isEmpty() ? this->m_model->GetProcesses() : this->m_lastProcessSnapshot);
+        this->m_treeView->resizeColumnToContents(OS::ProcessTreeModel::ColPid);
+    }
 
     if (!this->m_viewStack)
         return;
