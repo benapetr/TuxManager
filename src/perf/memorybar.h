@@ -28,7 +28,7 @@ namespace Perf
     ///
     /// Five segments are drawn left→right to fill the full widget width:
     ///   1. Used   — processes' non-reclaimable footprint  (bright purple)
-    ///   2. Compressed — zram's physical RAM footprint     (teal)
+    ///   2. Compressed — compressed memory pools' physical RAM footprint
     ///   3. Dirty  — Dirty + Writeback pages               (amber)
     ///   4. Cached — reclaimable page cache (clean part)   (muted purple)
     ///   5. Free   — MemFree                               (near-background)
