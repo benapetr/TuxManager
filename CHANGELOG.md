@@ -1,4 +1,4 @@
-# Future
+# 1.0.7
   * Performance side panel is now resizable
   * Implemented compressed memory support
   * Visual improvements of process tree

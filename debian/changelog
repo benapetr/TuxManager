@@ -1,3 +1,12 @@
+tux-manager (1.0.7) unstable; urgency=medium
+
+  * Performance side panel is now resizable
+  * Implemented compressed memory support
+  * Visual improvements of process tree
+  * Refactored run new task
+
+ -- Petr Bena <petr@bena.rocks>  Sun, 31 May 2026 12:00:00 +0200
+
 tux-manager (1.0.6) unstable; urgency=medium
 
   * Memory view now shows compressed memory when zswap is used
