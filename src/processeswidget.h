@@ -28,7 +28,6 @@
 #include <QHeaderView>
 #include <QSet>
 #include <QSortFilterProxyModel>
-#include <QStackedWidget>
 #include <QTimer>
 #include <QTreeView>
 #include <QWidget>
@@ -74,7 +73,6 @@ class ProcessesWidget : public QWidget
         QSortFilterProxyModel    *m_treeProxy;
         QTimer                   *m_refreshTimer;
         OS::ProcessRefreshService *m_processRefreshService { nullptr };
-        QStackedWidget           *m_viewStack { nullptr };
         QTreeView                *m_treeView { nullptr };
         bool                      m_active { false };
         bool                      m_tableContextMenuOpen { false };

@@ -35,7 +35,6 @@
 #include <QPushButton>
 #include <QScrollBar>
 #include <QSortFilterProxyModel>
-#include <QStackedWidget>
 #include <QStandardPaths>
 #include <QStyle>
 #include <QTreeView>
@@ -174,16 +173,13 @@ void ProcessesWidget::setupTable()
     this->m_model->SetShowOtherUsersProcs(CFG->ShowOtherUsersProcs);
 
     QTableView *tv = this->ui->tableView;
-    this->m_viewStack = new QStackedWidget(this);
-    this->m_treeView = new QTreeView(this->m_viewStack);
+    this->m_treeView = new QTreeView(this);
 
     if (QVBoxLayout *vl = qobject_cast<QVBoxLayout *>(this->layout()))
     {
         const int tablePos = vl->indexOf(tv);
-        vl->removeWidget(tv);
-        this->m_viewStack->addWidget(tv);
-        this->m_viewStack->addWidget(this->m_treeView);
-        vl->insertWidget(tablePos, this->m_viewStack);
+        if (tablePos >= 0)
+            vl->insertWidget(tablePos + 1, this->m_treeView);
     }
 
     tv->setModel(this->m_proxy);
@@ -321,10 +317,11 @@ void ProcessesWidget::setTreeViewMode(bool enabled)
         this->m_treeView->resizeColumnToContents(OS::ProcessTreeModel::ColPid);
     }
 
-    if (!this->m_viewStack)
+    if (!this->m_treeView || !this->ui->tableView)
         return;
-    this->m_viewStack->setCurrentWidget(enabled ? static_cast<QWidget *>(this->m_treeView)
-                                                : static_cast<QWidget *>(this->ui->tableView));
+
+    this->ui->tableView->setVisible(!enabled);
+    this->m_treeView->setVisible(enabled);
 }
 
 void ProcessesWidget::SetActive(bool active)
