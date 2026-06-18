@@ -438,29 +438,47 @@ void PerformanceWidget::onSidePanelContextMenu(Perf::SidePanelItem * /*item*/, c
 {
     QMenu menu(this);
 
-    QAction *cpu = menu.addAction(tr("CPU"));
-    cpu->setCheckable(true);
-    cpu->setChecked(CFG->PerfShowCpu);
+    QAction *cpu = nullptr;
+    QAction *memory = nullptr;
+    QAction *swap = nullptr;
+    QAction *disks = nullptr;
+    QAction *network = nullptr;
+    QAction *gpu = nullptr;
 
-    QAction *memory = menu.addAction(tr("Memory"));
-    memory->setCheckable(true);
-    memory->setChecked(CFG->PerfShowMemory);
+    const QList<Perf::SidePanelGroup> groupOrder = sanitizeSidePanelGroupOrder(CFG->PerfSidePanelGroupOrder);
+    for (Perf::SidePanelGroup group : groupOrder)
+    {
+        QAction *action = menu.addAction(Perf::SidePanelGroupLabel(group));
+        action->setCheckable(true);
 
-    QAction *swap = menu.addAction(tr("Swap"));
-    swap->setCheckable(true);
-    swap->setChecked(CFG->PerfShowSwap);
-
-    QAction *disks = menu.addAction(tr("Disks"));
-    disks->setCheckable(true);
-    disks->setChecked(CFG->PerfShowDisks);
-
-    QAction *network = menu.addAction(tr("NICs"));
-    network->setCheckable(true);
-    network->setChecked(CFG->PerfShowNetwork);
-
-    QAction *gpu = menu.addAction(tr("GPUs"));
-    gpu->setCheckable(true);
-    gpu->setChecked(CFG->PerfShowGpu);
+        switch (group)
+        {
+            case Perf::SidePanelGroup::Cpu:
+                cpu = action;
+                action->setChecked(CFG->PerfShowCpu);
+                break;
+            case Perf::SidePanelGroup::Memory:
+                memory = action;
+                action->setChecked(CFG->PerfShowMemory);
+                break;
+            case Perf::SidePanelGroup::Swap:
+                swap = action;
+                action->setChecked(CFG->PerfShowSwap);
+                break;
+            case Perf::SidePanelGroup::Disks:
+                disks = action;
+                action->setChecked(CFG->PerfShowDisks);
+                break;
+            case Perf::SidePanelGroup::Network:
+                network = action;
+                action->setChecked(CFG->PerfShowNetwork);
+                break;
+            case Perf::SidePanelGroup::Gpu:
+                gpu = action;
+                action->setChecked(CFG->PerfShowGpu);
+                break;
+        }
+    }
 
     menu.addSeparator();
     QMenu *settingsMenu = menu.addMenu(tr("Settings"));

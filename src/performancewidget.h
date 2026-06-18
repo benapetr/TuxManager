@@ -41,7 +41,7 @@ QT_END_NAMESPACE
 class PerformanceWidget : public QWidget
 {
     Q_OBJECT
-    
+
     public:
         explicit PerformanceWidget(QWidget *parent = nullptr);
         ~PerformanceWidget();
