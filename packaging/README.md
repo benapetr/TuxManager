@@ -6,6 +6,7 @@ This directory contains Linux packaging scripts for Tux Manager.
 
 - Debian/Ubuntu (`.deb`) via `package-deb.sh`
 - Fedora/RHEL/Alma/Rocky (`.rpm` + `.src.rpm`) via `package-rpm.sh`
+- openSUSE (`.rpm` + `.src.rpm`) via `package-suse.sh`
 - AppImage (`.AppImage`) via `package-appimage.sh`
 - Arch Linux (`.pkg.tar.*`) via `package-arch.sh`
 - Arch Linux / AUR metadata via `arch/PKGBUILD`, `.SRCINFO`, and `.github/workflows/build-arch-aur.yml`
@@ -38,6 +39,19 @@ sudo dnf install rpm-build rsync git pkgconf-pkg-config qt6-qtbase-devel
 Notes:
 - The script can also build with Qt5 if only that is available (`qt5-qtbase-devel`).
 - The script uses `rpmbuild` and creates both binary RPM and source RPM.
+
+### openSUSE
+
+Required build tools/packages:
+
+```bash
+sudo zypper install rpm-build git gzip pkgconf-pkg-config \
+  qt6-base-common-devel qt6-core-devel qt6-gui-devel qt6-widgets-devel
+```
+
+Notes:
+- The script uses openSUSE's Qt 6 packages and RPM macros.
+- The script creates both a binary RPM and a source RPM.
 
 ### Flatpak
 
@@ -147,6 +161,24 @@ Optional:
 Output (in `packaging/output/`):
 - `tux-manager-<version>-<arch>.flatpak`
 
+### Build RPM on openSUSE
+
+```bash
+cd packaging
+./package-suse.sh
+```
+
+Optional:
+
+```bash
+./package-suse.sh --qt /path/to/qt/bin
+./package-suse.sh --version 1.2.3
+```
+
+Output (in `packaging/output/`):
+- `tux-manager-<version>-1.<arch>.rpm`
+- `tux-manager-<version>-1.src.rpm`
+
 ### Build AppImage
 
 ```bash
@@ -227,6 +259,12 @@ sudo apt-get install -f
 
 ```bash
 sudo dnf install packaging/output/tux-manager-*.rpm
+```
+
+### openSUSE
+
+```bash
+sudo zypper install packaging/output/tux-manager-*.rpm
 ```
 
 ### Flatpak
