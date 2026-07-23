@@ -349,7 +349,8 @@ void CPU::readHardwareMetadata()
         { "hyper-v",    "Hyper-V" },
         { "xen",        "Xen" },
         { "bhyve",      "bhyve" },
-        { "parallels",  "Parallels" }
+        { "parallels",  "Parallels" },
+        { "apple virtualization", "Apple Virtualization" }
     };
 
     for (const VmMarker &m : kVmMarkers)
