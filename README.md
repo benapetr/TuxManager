@@ -42,7 +42,7 @@ inputs.tuxManager.inputs.nixpkgs.follows = "nixpkgs"; # optional, deduplicates d
 You can then access the package at: `inputs.tuxManager.packages.${pkgs.stdenv.hostPlatform.system}.default`
 
 ### Others
-You can use an AppImage that can be downloaded from releases or just [build it](#building) yourself.
+You can use an AppImage that can be downloaded from [releases](https://github.com/benapetr/TuxManager/releases) or just [build it](#building) yourself.
 
 ## Building
 
