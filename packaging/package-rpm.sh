@@ -1,6 +1,6 @@
 #!/bin/bash
 ################################################################################
-# package-rpm.sh - Build and package Tux Manager for Fedora/RHEL/CentOS
+# package-rpm.sh - Build and package Tux Manager for RPM-based distributions
 ################################################################################
 
 set -e
@@ -11,6 +11,12 @@ source "$SCRIPT_DIR/config"
 QT_BIN_PATH=""
 NCPUS=$(nproc)
 RELEASE="1"
+
+if command -v zypper >/dev/null 2>&1; then
+    RPM_FAMILY="opensuse"
+else
+    RPM_FAMILY="redhat"
+fi
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -51,6 +57,11 @@ pkg_available() {
         yum -q list available "$pkg" >/dev/null 2>&1
         return $?
     fi
+    if command -v zypper >/dev/null 2>&1; then
+        zypper --non-interactive search --match-exact --type package "$pkg" 2>/dev/null |
+            grep -qE "^[[:space:]]*i?[[:space:]]*\\|[[:space:]]*$pkg[[:space:]]*\\|"
+        return $?
+    fi
     return 1
 }
 
@@ -76,11 +87,20 @@ if command -v rpm >/dev/null 2>&1; then
     }
 
     require_pkg rpm-build
-    require_pkg rsync
     require_pkg git
+    require_pkg gzip
     require_pkg pkgconf-pkg-config
 
-    if [ "$QT_MAJOR" -eq 5 ]; then
+    if [ "$RPM_FAMILY" = "opensuse" ]; then
+        if [ "$QT_MAJOR" -eq 5 ]; then
+            require_pkg libqt5-qtbase-devel
+        else
+            require_pkg qt6-base-common-devel
+            require_pkg qt6-core-devel
+            require_pkg qt6-gui-devel
+            require_pkg qt6-widgets-devel
+        fi
+    elif [ "$QT_MAJOR" -eq 5 ]; then
         require_pkg qt5-qtbase-devel
     else
         require_pkg qt6-qtbase-devel
@@ -93,6 +113,8 @@ if command -v rpm >/dev/null 2>&1; then
             echo "  sudo dnf install ${missing[*]}"
         elif command -v yum >/dev/null 2>&1; then
             echo "  sudo yum install ${missing[*]}"
+        elif command -v zypper >/dev/null 2>&1; then
+            echo "  sudo zypper install ${missing[*]}"
         else
             for pkg in "${missing[@]}"; do
                 echo "  - $pkg"
@@ -184,10 +206,18 @@ License:        GPL-3.0-or-later
 URL:            https://github.com/benapetr/TuxManager
 Source0:        %{name}-%{version}.tar.gz
 
+%if 0%{?suse_version}
+%if 0%{?qt_major} == 5
+BuildRequires:  pkgconfig(Qt5Widgets)
+%else
+BuildRequires:  pkgconfig(Qt6Widgets)
+%endif
+%else
 %if 0%{?qt_major} == 5
 BuildRequires:  qt5-qtbase-devel
 %else
 BuildRequires:  qt6-qtbase-devel
+%endif
 %endif
 BuildRequires:  pkgconf-pkg-config
 
@@ -200,7 +230,10 @@ Tux Manager is a Linux system monitor inspired by Windows Task Manager.
 %build
 mkdir -p release
 pushd src
-%{qmake_cmd} TuxManager.pro -o ../release/Makefile
+%{qmake_cmd} TuxManager.pro -o ../release/Makefile \
+    QMAKE_CFLAGS="%{optflags}" \
+    QMAKE_CXXFLAGS="%{optflags}" \
+    QMAKE_LFLAGS="%{?build_ldflags} -Wl,--as-needed"
 popd
 %make_build -C release
 
@@ -234,8 +267,19 @@ rpmbuild --define "_topdir $RPM_BUILD_ROOT" \
 
 OUTPUT_DIR="$PROJECT_ROOT/packaging/output"
 mkdir -p "$OUTPUT_DIR"
-cp "$RPM_BUILD_ROOT/RPMS/x86_64/${APP_NAME}-${APP_VERSION}-${RELEASE}"*.rpm "$OUTPUT_DIR/"
-cp "$RPM_BUILD_ROOT/SRPMS/${APP_NAME}-${APP_VERSION}-${RELEASE}"*.src.rpm "$OUTPUT_DIR/"
+shopt -s nullglob
+artifacts=(
+    "$RPM_BUILD_ROOT"/RPMS/*/"${APP_NAME}-${APP_VERSION}-${RELEASE}"*.rpm
+    "$RPM_BUILD_ROOT"/SRPMS/"${APP_NAME}-${APP_VERSION}-${RELEASE}"*.src.rpm
+)
+shopt -u nullglob
+
+if [ ${#artifacts[@]} -eq 0 ]; then
+    echo "Error: rpmbuild completed but no RPM artifacts were found."
+    exit 1
+fi
+
+cp "${artifacts[@]}" "$OUTPUT_DIR/"
 
 echo ""
 echo "==============================="
@@ -245,7 +289,11 @@ echo "Binary RPM: $OUTPUT_DIR/${APP_NAME}-${APP_VERSION}-${RELEASE}*.rpm"
 echo "Source RPM: $OUTPUT_DIR/${APP_NAME}-${APP_VERSION}-${RELEASE}*.src.rpm"
 echo ""
 echo "To install:"
-echo "  sudo dnf install $OUTPUT_DIR/${APP_NAME}-${APP_VERSION}-${RELEASE}*.rpm"
-echo "  # or"
-echo "  sudo rpm -ivh $OUTPUT_DIR/${APP_NAME}-${APP_VERSION}-${RELEASE}*.rpm"
+if [ "$RPM_FAMILY" = "opensuse" ]; then
+    echo "  sudo zypper install $OUTPUT_DIR/${APP_NAME}-${APP_VERSION}-${RELEASE}.$(rpm --eval '%{_arch}').rpm"
+else
+    echo "  sudo dnf install $OUTPUT_DIR/${APP_NAME}-${APP_VERSION}-${RELEASE}*.rpm"
+    echo "  # or"
+    echo "  sudo rpm -ivh $OUTPUT_DIR/${APP_NAME}-${APP_VERSION}-${RELEASE}*.rpm"
+fi
 echo ""
