@@ -102,17 +102,17 @@ GpuDetailWidget::GpuDetailWidget(QWidget *parent) : QWidget(parent), ui(new Ui::
     engineAreaLayout->addLayout(graphsGrid);
 
     configureGraph(this->ui->dedicatedMemGraphWidget);
-    this->ui->dedicatedMemGraphWidget->SetSeriesNames(tr("Dedicated memory usage"));
+    this->ui->dedicatedMemGraphWidget->SetSeriesNames(tr("专用显存使用"));
     UIHelper::EnableGraphContextMenu(this->ui->dedicatedMemGraphWidget);
 
     configureGraph(this->ui->sharedMemGraphWidget);
-    this->ui->sharedMemGraphWidget->SetSeriesNames(tr("Shared memory usage"));
+    this->ui->sharedMemGraphWidget->SetSeriesNames(tr("共享显存使用"));
     UIHelper::EnableGraphContextMenu(this->ui->sharedMemGraphWidget);
 
     configureGraph(this->ui->copyBwGraphWidget);
     this->ui->copyBwGraphWidget->SetSeriesNames(tr("TX"), tr("RX"));
     this->ui->copyBwGraphWidget->SetValueFormat(GraphWidget::ValueFormat::BytesPerSec);
-    this->ui->copyBwGraphWidget->setToolTip(tr("Copy bandwidth: light trace = TX, dark trace = RX"));
+    this->ui->copyBwGraphWidget->setToolTip(tr("复制带宽：浅色轨迹 = TX，深色轨迹 = RX"));
     UIHelper::EnableGraphContextMenu(this->ui->copyBwGraphWidget);
 
     UIHelper::EnableCopyLabelContextMenu(this->ui->utilValueLabel);
@@ -240,7 +240,7 @@ void GpuDetailWidget::onUpdated()
     const qint64 gpuTotalMiB = dedicatedTotalMiB + sharedTotalMiB;
 
     this->ui->utilValueLabel->setText(QString::number(util, 'f', 0) + "%");
-    this->ui->tempValueLabel->setText(tempC >= 0 ? tr("%1 C").arg(tempC) : tr("—"));
+    this->ui->tempValueLabel->setText(tempC >= 0 ? tr("%1 °C").arg(tempC) : tr("—"));
     this->ui->gpuMemValueLabel->setText(tr("%1 / %2")
                                         .arg(Misc::FormatMiB(static_cast<quint64>(qMax<qint64>(0, gpuUsedMiB)), 1))
                                         .arg(Misc::FormatMiB(static_cast<quint64>(qMax<qint64>(0, gpuTotalMiB)), 1)));
@@ -324,7 +324,7 @@ void GpuDetailWidget::bindEngineGraphSource(int slot)
         graph->SetDataSource(engine.History, 100.0);
     } else
     {
-        graph->SetSeriesNames(tr("Value"));
+        graph->SetSeriesNames(tr("数值"));
         graph->SetDataSource(kEmptyHistory, 100.0);
     }
 }

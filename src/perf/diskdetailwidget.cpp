@@ -66,7 +66,7 @@ DiskDetailWidget::DiskDetailWidget(QWidget *parent) : QWidget(parent), ui(new Ui
     this->ui->activeGraphWidget->SetSampleCapacity(TUX_MANAGER_HISTORY_SIZE);
     this->ui->activeGraphWidget->SetGridColumns(6);
     this->ui->activeGraphWidget->SetGridRows(4);
-    this->ui->activeGraphWidget->SetSeriesNames(tr("Active time"));
+    this->ui->activeGraphWidget->SetSeriesNames(tr("活动时间"));
     this->ui->activeGraphWidget->SetValueFormat(GraphWidget::ValueFormat::Percent);
 
     // Transfer graph (read + write overlay)
@@ -74,7 +74,7 @@ DiskDetailWidget::DiskDetailWidget(QWidget *parent) : QWidget(parent), ui(new Ui
     this->ui->transferGraphWidget->SetSampleCapacity(TUX_MANAGER_HISTORY_SIZE);
     this->ui->transferGraphWidget->SetGridColumns(6);
     this->ui->transferGraphWidget->SetGridRows(4);
-    this->ui->transferGraphWidget->SetSeriesNames(tr("Read"), tr("Write"));
+    this->ui->transferGraphWidget->SetSeriesNames(tr("读取"), tr("写入"));
     this->ui->transferGraphWidget->SetValueFormat(GraphWidget::ValueFormat::BytesPerSec);
     UIHelper::EnableGraphContextMenu(this->ui->activeGraphWidget);
     UIHelper::EnableGraphContextMenu(this->ui->transferGraphWidget);
@@ -137,7 +137,7 @@ void DiskDetailWidget::SetDisk(int index)
     {
         const Storage::DiskInfo &disk = Metrics::GetStorage()->FromIndex(this->m_diskIndex);
 
-        this->ui->titleLabel->setText(tr("Disk (%1)").arg(disk.Name));
+        this->ui->titleLabel->setText(tr("磁盘（%1）").arg(disk.Name));
         this->ui->modelLabel->setText(disk.Model);
         this->ui->typeValueLabel->setText(disk.Type);
         this->ui->deviceValueLabel->setText("/dev/" + disk.Name);
@@ -163,8 +163,8 @@ void DiskDetailWidget::onUpdated()
     this->ui->formattedValueLabel->setText(disk.FormattedBytes > 0
                                            ? Misc::FormatBytes(static_cast<quint64>(qMax<qint64>(0, disk.FormattedBytes)), 1)
                                            : tr("-"));
-    this->ui->systemDiskValueLabel->setText(disk.IsSystemDisk ? tr("Yes") : tr("No"));
-    this->ui->pageFileValueLabel->setText(disk.HasPageFile ? tr("Yes") : tr("No"));
+    this->ui->systemDiskValueLabel->setText(disk.IsSystemDisk ? tr("是") : tr("否"));
+    this->ui->pageFileValueLabel->setText(disk.HasPageFile ? tr("是") : tr("否"));
 
     this->ui->transferGraphWidget->SetMax(disk.MaxTransferBps);
     this->ui->activeGraphWidget->Tick();

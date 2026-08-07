@@ -73,7 +73,7 @@ namespace
         if (!g_sdLib)
         {
             if (error)
-                *error = QObject::tr("libsystemd not found");
+                *error = QObject::tr("未找到 libsystemd");
             return false;
         }
 
@@ -95,7 +95,7 @@ namespace
             || !pSdBusMessageEnterContainer || !pSdBusMessageExitContainer || !pSdBusMessageRead)
         {
             if (error)
-                *error = QObject::tr("libsystemd missing sd-bus symbols");
+                *error = QObject::tr("libsystemd 缺少 sd-bus 符号");
             return false;
         }
         if (error)
@@ -138,14 +138,14 @@ bool ServiceHelper::IsSystemdAvailable(QString *reason)
     if (exe.isEmpty())
     {
         if (reason)
-            *reason = QObject::tr("systemctl not found");
+            *reason = QObject::tr("未找到 systemctl");
         return false;
     }
 
     if (!QFileInfo::exists("/run/systemd/system"))
     {
         if (reason)
-            *reason = QObject::tr("systemd runtime directory not present");
+            *reason = QObject::tr("systemd 运行时目录不存在");
         return false;
     }
 
@@ -167,7 +167,7 @@ bool ServiceHelper::RunSystemctl(const QStringList &args,
     const QString exe = QStandardPaths::findExecutable("systemctl");
     if (exe.isEmpty())
     {
-        stderrText = QObject::tr("systemctl not found");
+        stderrText = QObject::tr("未找到 systemctl");
         return false;
     }
 
@@ -175,7 +175,7 @@ bool ServiceHelper::RunSystemctl(const QStringList &args,
     p.start(exe, args);
     if (!p.waitForStarted(500))
     {
-        stderrText = QObject::tr("Failed to start systemctl");
+        stderrText = QObject::tr("无法启动 systemctl");
         return false;
     }
 
@@ -183,7 +183,7 @@ bool ServiceHelper::RunSystemctl(const QStringList &args,
     {
         p.kill();
         p.waitForFinished(200);
-        stderrText = QObject::tr("systemctl timed out");
+        stderrText = QObject::tr("systemctl 超时");
         return false;
     }
 
@@ -212,7 +212,7 @@ bool ServiceHelper::ListServicesViaSystemdDbus(QList<ServiceRecord> &records, QS
     if (r < 0 || !bus)
     {
         if (error)
-            *error = QObject::tr("sd-bus open system failed (%1)").arg(r);
+            *error = QObject::tr("sd-bus 打开系统失败（%1）").arg(r);
         return false;
     }
 
@@ -227,7 +227,7 @@ bool ServiceHelper::ListServicesViaSystemdDbus(QList<ServiceRecord> &records, QS
     if (r < 0 || !reply)
     {
         if (error)
-            *error = QObject::tr("sd-bus ListUnits call failed (%1)").arg(r);
+            *error = QObject::tr("sd-bus ListUnits 调用失败（%1）").arg(r);
         if (reply)
             pSdBusMessageUnref(reply);
         pSdBusUnref(bus);
@@ -238,7 +238,7 @@ bool ServiceHelper::ListServicesViaSystemdDbus(QList<ServiceRecord> &records, QS
     if (r < 0)
     {
         if (error)
-            *error = QObject::tr("sd-bus decode failed (%1)").arg(r);
+            *error = QObject::tr("sd-bus 解码失败（%1）").arg(r);
         pSdBusMessageUnref(reply);
         pSdBusUnref(bus);
         return false;
@@ -278,7 +278,7 @@ bool ServiceHelper::ListServicesViaSystemdDbus(QList<ServiceRecord> &records, QS
         if (rr < 0 || er < 0)
         {
             if (error)
-                *error = QObject::tr("sd-bus read row failed (%1/%2)").arg(rr).arg(er);
+                *error = QObject::tr("sd-bus 读取行失败（%1/%2）").arg(rr).arg(er);
             pSdBusMessageExitContainer(reply); // array (best effort)
             pSdBusMessageUnref(reply);
             pSdBusUnref(bus);
@@ -305,7 +305,7 @@ bool ServiceHelper::ListServicesViaSystemdDbus(QList<ServiceRecord> &records, QS
     if (r < 0)
     {
         if (error)
-            *error = QObject::tr("sd-bus iteration failed (%1)").arg(r);
+            *error = QObject::tr("sd-bus 迭代失败（%1）").arg(r);
         return false;
     }
 
@@ -331,7 +331,7 @@ bool ServiceHelper::ManageUnit(const QString &unit, UnitAction action, QString *
     if (!method || unit.isEmpty())
     {
         if (error)
-            *error = QObject::tr("Invalid service action");
+            *error = QObject::tr("无效的服务操作");
         return false;
     }
 
@@ -372,7 +372,7 @@ bool ServiceHelper::ManageUnit(const QString &unit, UnitAction action, QString *
             } else
             {
                 if (error)
-                    *error = QObject::tr("libsystemd missing interactive sd-bus symbols");
+                    *error = QObject::tr("libsystemd 缺少交互式 sd-bus 符号");
                 LOG_DEBUG(QString("Interactive sd-bus symbols unavailable for %1, falling back to systemctl").arg(unit));
             }
 
@@ -389,11 +389,11 @@ bool ServiceHelper::ManageUnit(const QString &unit, UnitAction action, QString *
             }
 
             if (error)
-                *error = QObject::tr("systemd D-Bus call %1 for %2 failed (%3)").arg(QString::fromLatin1(method), unit, QString::number(callResult));
+                *error = QObject::tr("systemd D-Bus 调用 %1（针对 %2）失败（%3）").arg(QString::fromLatin1(method), unit, QString::number(callResult));
             LOG_DEBUG(QString("sd-bus management for %1 failed, falling back to systemctl: %2").arg(unit, error ? *error : QString()));
         } else if (error)
         {
-            *error = QObject::tr("sd-bus open system failed (%1)").arg(openResult);
+            *error = QObject::tr("sd-bus 打开系统失败（%1）").arg(openResult);
             LOG_DEBUG(QString("sd-bus open for managing %1 failed, falling back to systemctl: %2").arg(unit, *error));
         }
     } else
@@ -413,7 +413,7 @@ bool ServiceHelper::ManageUnit(const QString &unit, UnitAction action, QString *
         {
             *error = stderrText.trimmed();
             if (error->isEmpty())
-                *error = QObject::tr("systemctl %1 %2 failed").arg(verb, unit);
+                *error = QObject::tr("systemctl %1 %2 失败").arg(verb, unit);
         }
         LOG_DEBUG(QString("systemctl fallback failed for %1: exit=%2 stderr=%3").arg(unit, QString::number(exitCode), stderrText.trimmed()));
         return false;

@@ -42,11 +42,11 @@ namespace Perf
         switch (group)
         {
             case SidePanelGroup::Cpu:     return QObject::tr("CPU");
-            case SidePanelGroup::Memory:  return QObject::tr("Memory");
-            case SidePanelGroup::Swap:    return QObject::tr("Swap");
-            case SidePanelGroup::Disks:   return QObject::tr("Disks");
-            case SidePanelGroup::Network: return QObject::tr("NICs");
-            case SidePanelGroup::Gpu:     return QObject::tr("GPUs");
+            case SidePanelGroup::Memory:  return QObject::tr("内存");
+            case SidePanelGroup::Swap:    return QObject::tr("交换空间");
+            case SidePanelGroup::Disks:   return QObject::tr("磁盘");
+            case SidePanelGroup::Network: return QObject::tr("网卡");
+            case SidePanelGroup::Gpu:     return QObject::tr("GPU");
         }
 
         return {};

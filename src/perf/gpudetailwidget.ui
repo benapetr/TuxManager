@@ -68,7 +68,7 @@
      <item>
       <widget class="QLabel" name="dedicatedMemGraphLabel">
        <property name="text">
-        <string>Dedicated GPU memory usage</string>
+        <string>专用 GPU 显存使用</string>
        </property>
       </widget>
      </item>
@@ -109,7 +109,7 @@
      <item>
       <widget class="QLabel" name="dedicatedTimeLeftLabel">
        <property name="text">
-        <string>60 seconds</string>
+        <string>60 秒</string>
        </property>
       </widget>
      </item>
@@ -143,7 +143,7 @@
      <item>
       <widget class="QLabel" name="sharedMemGraphLabel">
        <property name="text">
-        <string>Shared GPU memory usage</string>
+        <string>共享 GPU 显存使用</string>
        </property>
       </widget>
      </item>
@@ -184,7 +184,7 @@
      <item>
       <widget class="QLabel" name="sharedTimeLeftLabel">
        <property name="text">
-        <string>60 seconds</string>
+        <string>60 秒</string>
        </property>
       </widget>
      </item>
@@ -218,14 +218,14 @@
      <item>
       <widget class="QLabel" name="copyBwGraphLabel">
        <property name="text">
-        <string>Copy bandwidth</string>
+        <string>复制带宽</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QLabel" name="copyBwLegendLabel">
        <property name="text">
-        <string>Light: TX  Dark: RX</string>
+        <string>浅色：发送（TX）  深色：接收（RX）</string>
        </property>
       </widget>
      </item>
@@ -266,7 +266,7 @@
      <item>
       <widget class="QLabel" name="copyTimeLeftLabel">
        <property name="text">
-        <string>60 seconds</string>
+        <string>60 秒</string>
        </property>
       </widget>
      </item>
@@ -306,7 +306,7 @@
      <item row="0" column="0">
       <widget class="QLabel" name="utilLabel">
        <property name="text">
-        <string>Utilization</string>
+        <string>使用率</string>
        </property>
       </widget>
      </item>
@@ -320,7 +320,7 @@
      <item row="0" column="2">
       <widget class="QLabel" name="dedicatedMemLabel">
        <property name="text">
-        <string>Dedicated GPU memory</string>
+        <string>专用 GPU 显存</string>
        </property>
       </widget>
      </item>
@@ -334,7 +334,7 @@
      <item row="1" column="0">
       <widget class="QLabel" name="gpuMemLabel">
        <property name="text">
-        <string>GPU Memory</string>
+        <string>GPU 显存</string>
        </property>
       </widget>
      </item>
@@ -348,7 +348,7 @@
      <item row="1" column="2">
       <widget class="QLabel" name="sharedMemLabel">
        <property name="text">
-        <string>Shared GPU memory</string>
+        <string>共享 GPU 显存</string>
        </property>
       </widget>
      </item>
@@ -362,7 +362,7 @@
      <item row="2" column="0">
       <widget class="QLabel" name="tempLabel">
        <property name="text">
-        <string>Temperature</string>
+        <string>温度</string>
        </property>
       </widget>
      </item>
@@ -376,7 +376,7 @@
      <item row="2" column="2">
       <widget class="QLabel" name="driverLabel">
        <property name="text">
-        <string>Driver version</string>
+        <string>驱动程序版本</string>
        </property>
       </widget>
      </item>
@@ -390,7 +390,7 @@
      <item row="3" column="2">
       <widget class="QLabel" name="backendLabel">
        <property name="text">
-        <string>Backend</string>
+        <string>后端</string>
        </property>
       </widget>
      </item>
@@ -404,7 +404,7 @@
      <item row="3" column="0">
       <widget class="QLabel" name="coreClockLabel">
        <property name="text">
-        <string>Core clock</string>
+        <string>核心频率</string>
        </property>
       </widget>
      </item>
@@ -418,7 +418,7 @@
      <item row="4" column="0">
       <widget class="QLabel" name="powerUsageLabel">
        <property name="text">
-        <string>Power usage</string>
+        <string>功耗</string>
        </property>
       </widget>
      </item>

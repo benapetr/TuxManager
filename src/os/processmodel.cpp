@@ -115,11 +115,11 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
             case ColIoReadsPerSec:
                 if (proc.IOPermissionDenied)
                     return QString("?");
-                return proc.IORatesAvailable ? Misc::FormatBytesPerSecond(proc.IOReadBps) : tr("measuring...");
+                return proc.IORatesAvailable ? Misc::FormatBytesPerSecond(proc.IOReadBps) : tr("测量中...");
             case ColIoWritesPerSec:
                 if (proc.IOPermissionDenied)
                     return QString("?");
-                return proc.IORatesAvailable ? Misc::FormatBytesPerSecond(proc.IOWriteBps) : tr("measuring...");
+                return proc.IORatesAvailable ? Misc::FormatBytesPerSecond(proc.IOWriteBps) : tr("测量中...");
             case ColThreads:  return proc.Threads;
             case ColPriority: return proc.Priority;
             case ColNice:     return proc.Nice;
@@ -403,20 +403,20 @@ QString ProcessModel::columnHeader(Column col)
     switch (col)
     {
         case ColPid:      return "PID";
-        case ColName:     return "Name";
-        case ColUser:     return "User";
-        case ColState:    return "State";
+        case ColName:     return "名称";
+        case ColUser:     return "用户";
+        case ColState:    return "状态";
         case ColCpu:      return "CPU %";
-        case ColMemRss:   return "MEM RES";
-        case ColMemVirt:  return "MEM VIRT";
-        case ColIoReads:  return "IO Reads";
-        case ColIoWrites: return "IO Writes";
-        case ColIoReadsPerSec: return "IO Read/s";
-        case ColIoWritesPerSec:return "IO Write/s";
-        case ColThreads:  return "Threads";
-        case ColPriority: return "Priority";
+        case ColMemRss:   return "常驻内存";
+        case ColMemVirt:  return "虚拟内存";
+        case ColIoReads:  return "IO 读取";
+        case ColIoWrites: return "IO 写入";
+        case ColIoReadsPerSec: return "IO 读取/秒";
+        case ColIoWritesPerSec:return "IO 写入/秒";
+        case ColThreads:  return "线程";
+        case ColPriority: return "优先级";
         case ColNice:     return "Nice";
-        case ColCmdline:  return "Command";
+        case ColCmdline:  return "命令";
         default:          return {};
     }
 }

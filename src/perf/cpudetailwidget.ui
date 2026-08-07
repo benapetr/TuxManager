@@ -61,7 +61,7 @@
     <layout class="QHBoxLayout" name="timeAxisLayout">
      <item>
       <widget class="QLabel" name="timeLeftLabel">
-       <property name="text"><string>60 seconds</string></property>
+       <property name="text"><string>60 秒</string></property>
        <property name="styleSheet"><string>font-size: 8pt;</string></property>
       </widget>
      </item>
@@ -88,27 +88,27 @@
      <property name="verticalSpacing"><number>6</number></property>
 
      <!-- Row 0 -->
-     <item row="0" column="0"><widget class="QLabel"><property name="text"><string>Utilization</string></property><property name="styleSheet"><string></string></property></widget></item>
+     <item row="0" column="0"><widget class="QLabel"><property name="text"><string>使用率</string></property><property name="styleSheet"><string></string></property></widget></item>
      <item row="0" column="1"><widget class="QLabel" name="statUtilValue"><property name="text"><string>0%</string></property></widget></item>
-     <item row="0" column="2"><widget class="QLabel"><property name="text"><string>Speed</string></property><property name="styleSheet"><string></string></property></widget></item>
+     <item row="0" column="2"><widget class="QLabel"><property name="text"><string>速度</string></property><property name="styleSheet"><string></string></property></widget></item>
      <item row="0" column="3"><widget class="QLabel" name="statSpeedValue"><property name="text"><string>—</string></property></widget></item>
 
      <!-- Row 1 -->
-     <item row="1" column="0"><widget class="QLabel"><property name="text"><string>Processes</string></property><property name="styleSheet"><string></string></property></widget></item>
+     <item row="1" column="0"><widget class="QLabel"><property name="text"><string>进程</string></property><property name="styleSheet"><string></string></property></widget></item>
      <item row="1" column="1"><widget class="QLabel" name="statProcessesValue"><property name="text"><string>—</string></property></widget></item>
-     <item row="1" column="2"><widget class="QLabel"><property name="text"><string>Threads</string></property><property name="styleSheet"><string></string></property></widget></item>
+     <item row="1" column="2"><widget class="QLabel"><property name="text"><string>线程</string></property><property name="styleSheet"><string></string></property></widget></item>
      <item row="1" column="3"><widget class="QLabel" name="statThreadsValue"><property name="text"><string>—</string></property></widget></item>
 
      <!-- Row 2 -->
-     <item row="2" column="0"><widget class="QLabel"><property name="text"><string>Uptime</string></property><property name="styleSheet"><string></string></property></widget></item>
+     <item row="2" column="0"><widget class="QLabel"><property name="text"><string>运行时间</string></property><property name="styleSheet"><string></string></property></widget></item>
      <item row="2" column="1"><widget class="QLabel" name="statUptimeValue"><property name="text"><string>—</string></property></widget></item>
-     <item row="2" column="2"><widget class="QLabel"><property name="text"><string>Logical processors</string></property><property name="styleSheet"><string></string></property></widget></item>
+     <item row="2" column="2"><widget class="QLabel"><property name="text"><string>逻辑处理器</string></property><property name="styleSheet"><string></string></property></widget></item>
      <item row="2" column="3"><widget class="QLabel" name="statLogicalCpusValue"><property name="text"><string>—</string></property></widget></item>
 
      <!-- Row 3 -->
-     <item row="3" column="0"><widget class="QLabel"><property name="text"><string>Virtual machine</string></property><property name="styleSheet"><string></string></property></widget></item>
+     <item row="3" column="0"><widget class="QLabel"><property name="text"><string>虚拟机</string></property><property name="styleSheet"><string></string></property></widget></item>
      <item row="3" column="1"><widget class="QLabel" name="statVmValue"><property name="text"><string>—</string></property></widget></item>
-     <item row="3" column="2"><widget class="QLabel"><property name="text"><string>Temperature</string></property><property name="styleSheet"><string></string></property></widget></item>
+     <item row="3" column="2"><widget class="QLabel"><property name="text"><string>温度</string></property><property name="styleSheet"><string></string></property></widget></item>
      <item row="3" column="3"><widget class="QLabel" name="statTempValue"><property name="text"><string>—</string></property></widget></item>
 
     </layout>

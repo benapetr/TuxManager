@@ -33,16 +33,16 @@ QString Misc::SimplifyTime(int secs)
     if (secs > 0 && (secs % 3600) == 0)
     {
         const int hours = secs / 3600;
-        return QString::number(hours) + ((hours == 1) ? " hour" : " hours");
+        return QString::number(hours) + QObject::tr(" 小时");
     }
 
     if (secs > 0 && (secs % 60) == 0)
     {
         const int minutes = secs / 60;
-        return QString::number(minutes) + ((minutes == 1) ? " minute" : " minutes");
+        return QString::number(minutes) + QObject::tr(" 分钟");
     }
 
-    return QString::number(secs) + ((secs == 1) ? " second" : " seconds");
+    return QString::number(secs) + QObject::tr(" 秒");
 }
 
 QString Misc::SimplifyTimeMS(int ms)
@@ -51,9 +51,9 @@ QString Misc::SimplifyTimeMS(int ms)
         ms = 0;
 
     if (ms > 0 && (ms % 1000) == 0)
-        return QString::number(ms / 1000) + " s";
+        return QString::number(ms / 1000) + QObject::tr(" 秒");
 
-    return QString::number(ms) + " ms";
+    return QString::number(ms) + QObject::tr(" 毫秒");
 }
 
 QString Misc::FormatBytesPerSecond(double bytesPerSec)

@@ -71,7 +71,7 @@ MemoryDetailWidget::MemoryDetailWidget(QWidget *parent) : QWidget(parent), ui(ne
     this->ui->graphWidget->SetSampleCapacity(TUX_MANAGER_HISTORY_SIZE);
     this->ui->graphWidget->SetGridColumns(6);
     this->ui->graphWidget->SetGridRows(4);
-    this->ui->graphWidget->SetSeriesNames(tr("Used memory"));
+    this->ui->graphWidget->SetSeriesNames(tr("已用内存"));
     this->ui->graphWidget->SetValueFormat(GraphWidget::ValueFormat::Percent);
     UIHelper::EnableGraphContextMenu(this->ui->graphWidget);
     UIHelper::EnableCopyLabelContextMenu(this->ui->statInUseValue);
@@ -180,7 +180,7 @@ void MemoryDetailWidget::onUpdated()
     this->ui->statDirtyValue->setText(Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, dirty)), 1));
     if (hasCompressedMemory)
     {
-        this->ui->statCompressedValue->setText(tr("%1 (using %2 RAM)")
+        this->ui->statCompressedValue->setText(tr("%1（占用 %2 内存）")
                                                    .arg(Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, compressedData)), 1),
                                                         Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, compressedRam)), 1)));
     } else

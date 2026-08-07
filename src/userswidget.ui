@@ -39,7 +39,7 @@
      </property>
      <column>
       <property name="text">
-       <string>User / Process</string>
+       <string>用户 / 进程</string>
       </property>
      </column>
      <column>
@@ -49,7 +49,7 @@
      </column>
      <column>
       <property name="text">
-       <string>Memory</string>
+       <string>内存</string>
       </property>
      </column>
     </widget>
@@ -57,7 +57,7 @@
    <item>
     <widget class="QLabel" name="statusLabel">
      <property name="text">
-      <string>Logged in users: 0</string>
+      <string>已登录用户：0</string>
      </property>
     </widget>
    </item>

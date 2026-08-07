@@ -374,7 +374,7 @@ bool GpuAmdSmiBackend::Sample(std::vector<std::unique_ptr<GPU::GPUInfo>> &gpus)
             {
                 addEngine(QStringLiteral("gfx"), QStringLiteral("GFX"), activity.gfx_activity);
                 addEngine(QStringLiteral("mem"), QStringLiteral("MEM"), activity.umc_activity);
-                addEngine(QStringLiteral("media"), QStringLiteral("Media"), activity.mm_activity);
+                addEngine(QStringLiteral("media"), QStringLiteral("媒体"), activity.mm_activity);
             }
 
             zeroMissingEngines(gpu, seenEngineKeys);

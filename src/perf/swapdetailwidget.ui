@@ -34,7 +34,7 @@
         <string>font-size: 18pt; font-weight: bold;</string>
        </property>
        <property name="text">
-        <string>Swap</string>
+        <string>交换空间</string>
        </property>
       </widget>
      </item>
@@ -58,7 +58,7 @@
      <item>
       <widget class="QLabel" name="usageLabel">
        <property name="text">
-        <string>Swap usage</string>
+        <string>交换空间使用</string>
        </property>
       </widget>
      </item>
@@ -105,7 +105,7 @@
      <item>
       <widget class="QLabel" name="usageTimeLeftLabel">
        <property name="text">
-        <string>60 seconds</string>
+        <string>60 秒</string>
        </property>
       </widget>
      </item>
@@ -136,7 +136,7 @@
      <item>
       <widget class="QLabel" name="activityLabel">
        <property name="text">
-        <string>Swap activity</string>
+        <string>交换活动</string>
        </property>
       </widget>
      </item>
@@ -177,7 +177,7 @@
      <item>
       <widget class="QLabel" name="activityTimeLeftLabel">
        <property name="text">
-        <string>60 seconds</string>
+        <string>60 秒</string>
        </property>
       </widget>
      </item>
@@ -214,7 +214,7 @@
      <item row="0" column="0">
       <widget class="QLabel" name="inUseLabel">
        <property name="text">
-        <string>In use</string>
+        <string>使用中</string>
        </property>
       </widget>
      </item>
@@ -228,7 +228,7 @@
      <item row="0" column="2">
       <widget class="QLabel" name="freeLabel">
        <property name="text">
-        <string>Free</string>
+        <string>空闲</string>
        </property>
       </widget>
      </item>
@@ -242,17 +242,17 @@
      <item row="1" column="0">
       <widget class="QLabel" name="swapInLabel">
        <property name="toolTip">
-        <string>Swap in direction: disk -&gt; RAM</string>
+        <string>换入方向：磁盘 -&gt; 内存</string>
        </property>
        <property name="text">
-        <string>Swap in</string>
+        <string>换入</string>
        </property>
       </widget>
      </item>
      <item row="1" column="1">
       <widget class="QLabel" name="inRateValueLabel">
        <property name="toolTip">
-        <string>Swap in direction: disk -&gt; RAM</string>
+        <string>换入方向：磁盘 -&gt; 内存</string>
        </property>
        <property name="text">
         <string>0 KB/s</string>
@@ -262,17 +262,17 @@
      <item row="1" column="2">
       <widget class="QLabel" name="swapOutLabel">
        <property name="toolTip">
-        <string>Swap out direction: RAM -&gt; disk</string>
+        <string>换出方向：内存 -&gt; 磁盘</string>
        </property>
        <property name="text">
-        <string>Swap out</string>
+        <string>换出</string>
        </property>
       </widget>
      </item>
      <item row="1" column="3">
       <widget class="QLabel" name="outRateValueLabel">
        <property name="toolTip">
-        <string>Swap out direction: RAM -&gt; disk</string>
+        <string>换出方向：内存 -&gt; 磁盘</string>
        </property>
        <property name="text">
         <string>0 KB/s</string>

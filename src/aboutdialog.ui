@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>About TuxManager</string>
+   <string>关于 TuxManager</string>
   </property>
   <widget class="QPushButton" name="closeButton">
    <property name="geometry">
@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Close</string>
+    <string>关闭</string>
    </property>
    <property name="icon">
     <iconset theme="QIcon::ThemeIcon::WindowClose"/>
@@ -105,7 +105,7 @@
      </font>
     </property>
     <property name="text">
-     <string>Version</string>
+     <string>版本</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -124,7 +124,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Created by Petr Bena and &lt;a href=&quot;https://github.com/benapetr/TuxManager/graphs/contributors&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#8ab4f8;&quot;&gt;many other contributors&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;由 Petr Bena 和&lt;a href=&quot;https://github.com/benapetr/TuxManager/graphs/contributors&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#8ab4f8;&quot;&gt;许多其他贡献者&lt;/span&gt;&lt;/a&gt;共同创建&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="textFormat">
      <enum>Qt::TextFormat::RichText</enum>
@@ -162,7 +162,7 @@
     </font>
    </property>
    <property name="text">
-    <string>A Linux Task Manager alternative built with Qt6, inspired by the Windows Task Manager but designed to go further - providing deep visibility into system processes, performance metrics, users, and services.&lt;br&gt;&lt;br&gt;&lt;a href=&quot;https://github.com/benapetr/TuxManager&quot;&gt;https://github.com/benapetr/TuxManager&lt;/a&gt;&lt;br&gt;&lt;br&gt;License - GPL-3.0-or-later</string>
+    <string>基于 Qt6 构建的 Linux 任务管理器替代品，灵感来自 Windows 任务管理器，但功能更进一步——深入展示系统进程、性能指标、用户与服务。&lt;br&gt;&lt;br&gt;&lt;a href=&quot;https://github.com/benapetr/TuxManager&quot;&gt;https://github.com/benapetr/TuxManager&lt;/a&gt;&lt;br&gt;&lt;br&gt;许可证 - GPL-3.0-or-later</string>
    </property>
    <property name="textFormat">
     <enum>Qt::TextFormat::RichText</enum>

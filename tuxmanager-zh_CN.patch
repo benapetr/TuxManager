@@ -1,0 +1,2532 @@
+diff --git a/src/aboutdialog.cpp b/src/aboutdialog.cpp
+index cedb3dc..8436be3 100644
+--- a/src/aboutdialog.cpp
++++ b/src/aboutdialog.cpp
+@@ -24,7 +24,7 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent), ui(new Ui::AboutDia
+ {
+     this->ui->setupUi(this);
+     this->ui->labelTitle->setText(QString::fromLatin1(TUX_MANAGER_PRODUCT_NAME));
+-    this->ui->labelVersion->setText(tr("Version %1").arg(QString::fromLatin1(TUX_MANAGER_VERSION_STRING)));
++    this->ui->labelVersion->setText(tr("版本 %1").arg(QString::fromLatin1(TUX_MANAGER_VERSION_STRING)));
+     this->setFixedSize(this->size());
+ }
+ 
+diff --git a/src/aboutdialog.ui b/src/aboutdialog.ui
+index 52941bb..6b8d436 100644
+--- a/src/aboutdialog.ui
++++ b/src/aboutdialog.ui
+@@ -11,7 +11,7 @@
+    </rect>
+   </property>
+   <property name="windowTitle">
+-   <string>About TuxManager</string>
++   <string>关于 TuxManager</string>
+   </property>
+   <widget class="QPushButton" name="closeButton">
+    <property name="geometry">
+@@ -23,7 +23,7 @@
+     </rect>
+    </property>
+    <property name="text">
+-    <string>Close</string>
++    <string>关闭</string>
+    </property>
+    <property name="icon">
+     <iconset theme="QIcon::ThemeIcon::WindowClose"/>
+@@ -105,7 +105,7 @@
+      </font>
+     </property>
+     <property name="text">
+-     <string>Version</string>
++     <string>版本</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+@@ -124,7 +124,7 @@
+      </rect>
+     </property>
+     <property name="text">
+-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Created by Petr Bena and &lt;a href=&quot;https://github.com/benapetr/TuxManager/graphs/contributors&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#8ab4f8;&quot;&gt;many other contributors&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
++     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;由 Petr Bena 和&lt;a href=&quot;https://github.com/benapetr/TuxManager/graphs/contributors&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#8ab4f8;&quot;&gt;许多其他贡献者&lt;/span&gt;&lt;/a&gt;共同创建&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::TextFormat::RichText</enum>
+@@ -162,7 +162,7 @@
+     </font>
+    </property>
+    <property name="text">
+-    <string>A Linux Task Manager alternative built with Qt6, inspired by the Windows Task Manager but designed to go further - providing deep visibility into system processes, performance metrics, users, and services.&lt;br&gt;&lt;br&gt;&lt;a href=&quot;https://github.com/benapetr/TuxManager&quot;&gt;https://github.com/benapetr/TuxManager&lt;/a&gt;&lt;br&gt;&lt;br&gt;License - GPL-3.0-or-later</string>
++    <string>基于 Qt6 构建的 Linux 任务管理器替代品，灵感来自 Windows 任务管理器，但功能更进一步——深入展示系统进程、性能指标、用户与服务。&lt;br&gt;&lt;br&gt;&lt;a href=&quot;https://github.com/benapetr/TuxManager&quot;&gt;https://github.com/benapetr/TuxManager&lt;/a&gt;&lt;br&gt;&lt;br&gt;许可证 - GPL-3.0-or-later</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::TextFormat::RichText</enum>
+diff --git a/src/colorschemedialog.cpp b/src/colorschemedialog.cpp
+index ab3be6a..51cb809 100644
+--- a/src/colorschemedialog.cpp
++++ b/src/colorschemedialog.cpp
+@@ -52,8 +52,8 @@ ColorSchemeDialog::ColorSchemeDialog(QWidget *parent) : QDialog(parent), ui(new
+         preview->setFrameShape(QFrame::StyledPanel);
+         preview->setFixedSize(36, 20);
+ 
+-        auto *pick = new QPushButton(tr("Choose"), rowHost);
+-        auto *reset = new QPushButton(tr("Reset"), rowHost);
++        auto *pick = new QPushButton(tr("选择"), rowHost);
++        auto *reset = new QPushButton(tr("重置"), rowHost);
+ 
+         rowLayout->addWidget(preview);
+         rowLayout->addWidget(pick);
+diff --git a/src/colorschemedialog.ui b/src/colorschemedialog.ui
+index 3b9a3a9..4d7766a 100644
+--- a/src/colorschemedialog.ui
++++ b/src/colorschemedialog.ui
+@@ -11,7 +11,7 @@
+    </rect>
+   </property>
+   <property name="windowTitle">
+-   <string>Customize Colors</string>
++   <string>自定义颜色</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="leftMargin">
+@@ -29,14 +29,14 @@
+    <item>
+     <widget class="QCheckBox" name="customCheck">
+      <property name="text">
+-      <string>Use custom colors</string>
++      <string>使用自定义颜色</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="hintLabel">
+      <property name="text">
+-      <string>When disabled, the default light or dark palette is used automatically.</string>
++      <string>禁用时将自动使用默认的浅色或深色配色方案。</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+diff --git a/src/mainwindow.cpp b/src/mainwindow.cpp
+index 23bc0c9..5e85145 100644
+--- a/src/mainwindow.cpp
++++ b/src/mainwindow.cpp
+@@ -33,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
+     if (CFG->IsSuperuser)
+     {
+         // Make user aware of this
+-        this->setWindowTitle(this->windowTitle() + " (superuser)");
++        this->setWindowTitle(this->windowTitle() + tr("（超级用户）"));
+     }
+ 
+     this->ui->processesLayout->addWidget(this->m_processesWidget);
+diff --git a/src/mainwindow.ui b/src/mainwindow.ui
+index bf9f721..20cfe89 100644
+--- a/src/mainwindow.ui
++++ b/src/mainwindow.ui
+@@ -34,7 +34,7 @@
+       </property>
+       <widget class="QWidget" name="processesTab">
+        <attribute name="title">
+-        <string>Processes</string>
++        <string>进程</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="processesLayout">
+         <property name="leftMargin">
+@@ -53,7 +53,7 @@
+       </widget>
+       <widget class="QWidget" name="performanceTab">
+        <attribute name="title">
+-        <string>Performance</string>
++        <string>性能</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="performanceLayout">
+         <property name="leftMargin">
+@@ -72,7 +72,7 @@
+       </widget>
+       <widget class="QWidget" name="usersTab">
+        <attribute name="title">
+-        <string>Users</string>
++        <string>用户</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="usersLayout">
+         <property name="leftMargin">
+@@ -91,7 +91,7 @@
+       </widget>
+       <widget class="QWidget" name="servicesTab">
+        <attribute name="title">
+-        <string>Services</string>
++        <string>服务</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="servicesLayout">
+         <property name="leftMargin">
+diff --git a/src/misc.cpp b/src/misc.cpp
+index e3fbc2c..cdde4e7 100644
+--- a/src/misc.cpp
++++ b/src/misc.cpp
+@@ -33,16 +33,16 @@ QString Misc::SimplifyTime(int secs)
+     if (secs > 0 && (secs % 3600) == 0)
+     {
+         const int hours = secs / 3600;
+-        return QString::number(hours) + ((hours == 1) ? " hour" : " hours");
++        return QString::number(hours) + QObject::tr(" 小时");
+     }
+ 
+     if (secs > 0 && (secs % 60) == 0)
+     {
+         const int minutes = secs / 60;
+-        return QString::number(minutes) + ((minutes == 1) ? " minute" : " minutes");
++        return QString::number(minutes) + QObject::tr(" 分钟");
+     }
+ 
+-    return QString::number(secs) + ((secs == 1) ? " second" : " seconds");
++    return QString::number(secs) + QObject::tr(" 秒");
+ }
+ 
+ QString Misc::SimplifyTimeMS(int ms)
+@@ -51,9 +51,9 @@ QString Misc::SimplifyTimeMS(int ms)
+         ms = 0;
+ 
+     if (ms > 0 && (ms % 1000) == 0)
+-        return QString::number(ms / 1000) + " s";
++        return QString::number(ms / 1000) + QObject::tr(" 秒");
+ 
+-    return QString::number(ms) + " ms";
++    return QString::number(ms) + QObject::tr(" 毫秒");
+ }
+ 
+ QString Misc::FormatBytesPerSecond(double bytesPerSec)
+diff --git a/src/os/process.cpp b/src/os/process.cpp
+index e6a2391..002043c 100644
+--- a/src/os/process.cpp
++++ b/src/os/process.cpp
+@@ -61,14 +61,14 @@ QString Process::GetStateString(char state)
+ {
+     switch (state)
+     {
+-        case 'R': return "Running";
+-        case 'S': return "Sleeping";
+-        case 'D': return "Disk sleep";
+-        case 'Z': return "Zombie";
+-        case 'T': return "Stopped";
+-        case 't': return "Tracing stop";
+-        case 'I': return "Idle";
+-        case 'X': return "Dead";
++        case 'R': return "运行中";
++        case 'S': return "睡眠中";
++        case 'D': return "磁盘睡眠";
++        case 'Z': return "僵尸";
++        case 'T': return "已停止";
++        case 't': return "跟踪停止";
++        case 'I': return "空闲";
++        case 'X': return "已结束";
+         default:  return QString(state);
+     }
+ }
+diff --git a/src/os/processmodel.cpp b/src/os/processmodel.cpp
+index feee188..3a47b6d 100644
+--- a/src/os/processmodel.cpp
++++ b/src/os/processmodel.cpp
+@@ -115,11 +115,11 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
+             case ColIoReadsPerSec:
+                 if (proc.IOPermissionDenied)
+                     return QString("?");
+-                return proc.IORatesAvailable ? Misc::FormatBytesPerSecond(proc.IOReadBps) : tr("measuring...");
++                return proc.IORatesAvailable ? Misc::FormatBytesPerSecond(proc.IOReadBps) : tr("测量中...");
+             case ColIoWritesPerSec:
+                 if (proc.IOPermissionDenied)
+                     return QString("?");
+-                return proc.IORatesAvailable ? Misc::FormatBytesPerSecond(proc.IOWriteBps) : tr("measuring...");
++                return proc.IORatesAvailable ? Misc::FormatBytesPerSecond(proc.IOWriteBps) : tr("测量中...");
+             case ColThreads:  return proc.Threads;
+             case ColPriority: return proc.Priority;
+             case ColNice:     return proc.Nice;
+@@ -403,20 +403,20 @@ QString ProcessModel::columnHeader(Column col)
+     switch (col)
+     {
+         case ColPid:      return "PID";
+-        case ColName:     return "Name";
+-        case ColUser:     return "User";
+-        case ColState:    return "State";
++        case ColName:     return "名称";
++        case ColUser:     return "用户";
++        case ColState:    return "状态";
+         case ColCpu:      return "CPU %";
+-        case ColMemRss:   return "MEM RES";
+-        case ColMemVirt:  return "MEM VIRT";
+-        case ColIoReads:  return "IO Reads";
+-        case ColIoWrites: return "IO Writes";
+-        case ColIoReadsPerSec: return "IO Read/s";
+-        case ColIoWritesPerSec:return "IO Write/s";
+-        case ColThreads:  return "Threads";
+-        case ColPriority: return "Priority";
++        case ColMemRss:   return "常驻内存";
++        case ColMemVirt:  return "虚拟内存";
++        case ColIoReads:  return "IO 读取";
++        case ColIoWrites: return "IO 写入";
++        case ColIoReadsPerSec: return "IO 读取/秒";
++        case ColIoWritesPerSec:return "IO 写入/秒";
++        case ColThreads:  return "线程";
++        case ColPriority: return "优先级";
+         case ColNice:     return "Nice";
+-        case ColCmdline:  return "Command";
++        case ColCmdline:  return "命令";
+         default:          return {};
+     }
+ }
+diff --git a/src/os/processtreemodel.cpp b/src/os/processtreemodel.cpp
+index 8077700..8b89cea 100644
+--- a/src/os/processtreemodel.cpp
++++ b/src/os/processtreemodel.cpp
+@@ -100,11 +100,11 @@ QVariant ProcessTreeModel::data(const QModelIndex &index, int role) const
+             case ColIoReadsPerSec:
+                 if (proc.IOPermissionDenied)
+                     return QString("?");
+-                return proc.IORatesAvailable ? Misc::FormatBytesPerSecond(proc.IOReadBps) : tr("measuring...");
++                return proc.IORatesAvailable ? Misc::FormatBytesPerSecond(proc.IOReadBps) : tr("测量中...");
+             case ColIoWritesPerSec:
+                 if (proc.IOPermissionDenied)
+                     return QString("?");
+-                return proc.IORatesAvailable ? Misc::FormatBytesPerSecond(proc.IOWriteBps) : tr("measuring...");
++                return proc.IORatesAvailable ? Misc::FormatBytesPerSecond(proc.IOWriteBps) : tr("测量中...");
+             case ColThreads:  return proc.Threads;
+             case ColPriority: return proc.Priority;
+             case ColNice:     return proc.Nice;
+@@ -230,20 +230,20 @@ QString ProcessTreeModel::columnHeader(Column col)
+     switch (col)
+     {
+         case ColPid:      return "PID";
+-        case ColName:     return "Name";
+-        case ColUser:     return "User";
+-        case ColState:    return "State";
++        case ColName:     return "名称";
++        case ColUser:     return "用户";
++        case ColState:    return "状态";
+         case ColCpu:      return "CPU %";
+-        case ColMemRss:   return "MEM RES";
+-        case ColMemVirt:  return "MEM VIRT";
+-        case ColIoReads:  return "IO Reads";
+-        case ColIoWrites: return "IO Writes";
+-        case ColIoReadsPerSec: return "IO Read/s";
+-        case ColIoWritesPerSec:return "IO Write/s";
+-        case ColThreads:  return "Threads";
+-        case ColPriority: return "Priority";
++        case ColMemRss:   return "常驻内存";
++        case ColMemVirt:  return "虚拟内存";
++        case ColIoReads:  return "IO 读取";
++        case ColIoWrites: return "IO 写入";
++        case ColIoReadsPerSec: return "IO 读取/秒";
++        case ColIoWritesPerSec:return "IO 写入/秒";
++        case ColThreads:  return "线程";
++        case ColPriority: return "优先级";
+         case ColNice:     return "Nice";
+-        case ColCmdline:  return "Command";
++        case ColCmdline:  return "命令";
+         default:          return {};
+     }
+ }
+diff --git a/src/os/service.cpp b/src/os/service.cpp
+index 985e58f..d4655e9 100644
+--- a/src/os/service.cpp
++++ b/src/os/service.cpp
+@@ -71,7 +71,7 @@ QList<Service> Service::LoadAll(QString *error)
+     {
+         if (error)
+             *error = stderrText.isEmpty()
+-                     ? QObject::tr("Unable to query services via sd-bus or systemctl")
++                     ? QObject::tr("无法通过 sd-bus 或 systemctl 查询服务")
+                      : stderrText;
+         return out;
+     }
+diff --git a/src/os/servicehelper.cpp b/src/os/servicehelper.cpp
+index be26e07..5049a5c 100644
+--- a/src/os/servicehelper.cpp
++++ b/src/os/servicehelper.cpp
+@@ -73,7 +73,7 @@ namespace
+         if (!g_sdLib)
+         {
+             if (error)
+-                *error = QObject::tr("libsystemd not found");
++                *error = QObject::tr("未找到 libsystemd");
+             return false;
+         }
+ 
+@@ -95,7 +95,7 @@ namespace
+             || !pSdBusMessageEnterContainer || !pSdBusMessageExitContainer || !pSdBusMessageRead)
+         {
+             if (error)
+-                *error = QObject::tr("libsystemd missing sd-bus symbols");
++                *error = QObject::tr("libsystemd 缺少 sd-bus 符号");
+             return false;
+         }
+         if (error)
+@@ -138,14 +138,14 @@ bool ServiceHelper::IsSystemdAvailable(QString *reason)
+     if (exe.isEmpty())
+     {
+         if (reason)
+-            *reason = QObject::tr("systemctl not found");
++            *reason = QObject::tr("未找到 systemctl");
+         return false;
+     }
+ 
+     if (!QFileInfo::exists("/run/systemd/system"))
+     {
+         if (reason)
+-            *reason = QObject::tr("systemd runtime directory not present");
++            *reason = QObject::tr("systemd 运行时目录不存在");
+         return false;
+     }
+ 
+@@ -167,7 +167,7 @@ bool ServiceHelper::RunSystemctl(const QStringList &args,
+     const QString exe = QStandardPaths::findExecutable("systemctl");
+     if (exe.isEmpty())
+     {
+-        stderrText = QObject::tr("systemctl not found");
++        stderrText = QObject::tr("未找到 systemctl");
+         return false;
+     }
+ 
+@@ -175,7 +175,7 @@ bool ServiceHelper::RunSystemctl(const QStringList &args,
+     p.start(exe, args);
+     if (!p.waitForStarted(500))
+     {
+-        stderrText = QObject::tr("Failed to start systemctl");
++        stderrText = QObject::tr("无法启动 systemctl");
+         return false;
+     }
+ 
+@@ -183,7 +183,7 @@ bool ServiceHelper::RunSystemctl(const QStringList &args,
+     {
+         p.kill();
+         p.waitForFinished(200);
+-        stderrText = QObject::tr("systemctl timed out");
++        stderrText = QObject::tr("systemctl 超时");
+         return false;
+     }
+ 
+@@ -212,7 +212,7 @@ bool ServiceHelper::ListServicesViaSystemdDbus(QList<ServiceRecord> &records, QS
+     if (r < 0 || !bus)
+     {
+         if (error)
+-            *error = QObject::tr("sd-bus open system failed (%1)").arg(r);
++            *error = QObject::tr("sd-bus 打开系统失败（%1）").arg(r);
+         return false;
+     }
+ 
+@@ -227,7 +227,7 @@ bool ServiceHelper::ListServicesViaSystemdDbus(QList<ServiceRecord> &records, QS
+     if (r < 0 || !reply)
+     {
+         if (error)
+-            *error = QObject::tr("sd-bus ListUnits call failed (%1)").arg(r);
++            *error = QObject::tr("sd-bus ListUnits 调用失败（%1）").arg(r);
+         if (reply)
+             pSdBusMessageUnref(reply);
+         pSdBusUnref(bus);
+@@ -238,7 +238,7 @@ bool ServiceHelper::ListServicesViaSystemdDbus(QList<ServiceRecord> &records, QS
+     if (r < 0)
+     {
+         if (error)
+-            *error = QObject::tr("sd-bus decode failed (%1)").arg(r);
++            *error = QObject::tr("sd-bus 解码失败（%1）").arg(r);
+         pSdBusMessageUnref(reply);
+         pSdBusUnref(bus);
+         return false;
+@@ -278,7 +278,7 @@ bool ServiceHelper::ListServicesViaSystemdDbus(QList<ServiceRecord> &records, QS
+         if (rr < 0 || er < 0)
+         {
+             if (error)
+-                *error = QObject::tr("sd-bus read row failed (%1/%2)").arg(rr).arg(er);
++                *error = QObject::tr("sd-bus 读取行失败（%1/%2）").arg(rr).arg(er);
+             pSdBusMessageExitContainer(reply); // array (best effort)
+             pSdBusMessageUnref(reply);
+             pSdBusUnref(bus);
+@@ -305,7 +305,7 @@ bool ServiceHelper::ListServicesViaSystemdDbus(QList<ServiceRecord> &records, QS
+     if (r < 0)
+     {
+         if (error)
+-            *error = QObject::tr("sd-bus iteration failed (%1)").arg(r);
++            *error = QObject::tr("sd-bus 迭代失败（%1）").arg(r);
+         return false;
+     }
+ 
+@@ -331,7 +331,7 @@ bool ServiceHelper::ManageUnit(const QString &unit, UnitAction action, QString *
+     if (!method || unit.isEmpty())
+     {
+         if (error)
+-            *error = QObject::tr("Invalid service action");
++            *error = QObject::tr("无效的服务操作");
+         return false;
+     }
+ 
+@@ -372,7 +372,7 @@ bool ServiceHelper::ManageUnit(const QString &unit, UnitAction action, QString *
+             } else
+             {
+                 if (error)
+-                    *error = QObject::tr("libsystemd missing interactive sd-bus symbols");
++                    *error = QObject::tr("libsystemd 缺少交互式 sd-bus 符号");
+                 LOG_DEBUG(QString("Interactive sd-bus symbols unavailable for %1, falling back to systemctl").arg(unit));
+             }
+ 
+@@ -389,11 +389,11 @@ bool ServiceHelper::ManageUnit(const QString &unit, UnitAction action, QString *
+             }
+ 
+             if (error)
+-                *error = QObject::tr("systemd D-Bus call %1 for %2 failed (%3)").arg(QString::fromLatin1(method), unit, QString::number(callResult));
++                *error = QObject::tr("systemd D-Bus 调用 %1（针对 %2）失败（%3）").arg(QString::fromLatin1(method), unit, QString::number(callResult));
+             LOG_DEBUG(QString("sd-bus management for %1 failed, falling back to systemctl: %2").arg(unit, error ? *error : QString()));
+         } else if (error)
+         {
+-            *error = QObject::tr("sd-bus open system failed (%1)").arg(openResult);
++            *error = QObject::tr("sd-bus 打开系统失败（%1）").arg(openResult);
+             LOG_DEBUG(QString("sd-bus open for managing %1 failed, falling back to systemctl: %2").arg(unit, *error));
+         }
+     } else
+@@ -413,7 +413,7 @@ bool ServiceHelper::ManageUnit(const QString &unit, UnitAction action, QString *
+         {
+             *error = stderrText.trimmed();
+             if (error->isEmpty())
+-                *error = QObject::tr("systemctl %1 %2 failed").arg(verb, unit);
++                *error = QObject::tr("systemctl %1 %2 失败").arg(verb, unit);
+         }
+         LOG_DEBUG(QString("systemctl fallback failed for %1: exit=%2 stderr=%3").arg(unit, QString::number(exitCode), stderrText.trimmed()));
+         return false;
+diff --git a/src/os/servicemodel.cpp b/src/os/servicemodel.cpp
+index 45c5e03..1f3d1d7 100644
+--- a/src/os/servicemodel.cpp
++++ b/src/os/servicemodel.cpp
+@@ -99,11 +99,11 @@ QVariant ServiceModel::headerData(int section, Qt::Orientation orientation, int
+ 
+     switch (static_cast<Column>(section))
+     {
+-        case ColService:     return tr("Service");
+-        case ColLoad:        return tr("Load");
+-        case ColActive:      return tr("Active");
+-        case ColSubState:    return tr("SubState");
+-        case ColDescription: return tr("Description");
++        case ColService:     return tr("服务");
++        case ColLoad:        return tr("加载");
++        case ColActive:      return tr("活动");
++        case ColSubState:    return tr("子状态");
++        case ColDescription: return tr("描述");
+         default:             return {};
+     }
+ }
+diff --git a/src/perf/cpudetailwidget.cpp b/src/perf/cpudetailwidget.cpp
+index 39a933e..8e330cc 100644
+--- a/src/perf/cpudetailwidget.cpp
++++ b/src/perf/cpudetailwidget.cpp
+@@ -147,7 +147,7 @@ void CpuDetailWidget::onUpdated()
+         this->ui->statSpeedValue->setText(tr("—"));
+ 
+     const int cpuTempC = Metrics::GetCPU()->CpuTemperatureC();
+-    this->ui->statTempValue->setText(cpuTempC >= 0 ? tr("%1 C").arg(cpuTempC) : tr("—"));
++    this->ui->statTempValue->setText(cpuTempC >= 0 ? tr("%1 °C").arg(cpuTempC) : tr("—"));
+ 
+     this->ui->statProcessesValue->setText(QString::number(Metrics::GetKernel()->ProcessCount()));
+     this->ui->statThreadsValue->setText(QString::number(Metrics::GetKernel()->ThreadCount()));
+@@ -184,25 +184,25 @@ void CpuDetailWidget::onUpdated()
+     {
+         const QString vendor = Metrics::GetCPU()->CpuVmVendor();
+         if (vendor.isEmpty())
+-            this->ui->statVmValue->setText(tr("Yes"));
++            this->ui->statVmValue->setText(tr("是"));
+         else
+-            this->ui->statVmValue->setText(tr("Yes (%1)").arg(vendor));
++            this->ui->statVmValue->setText(tr("是（%1）").arg(vendor));
+     } else
+     {
+-        this->ui->statVmValue->setText(tr("No"));
++        this->ui->statVmValue->setText(tr("否"));
+     }
+ }
+ 
+ void CpuDetailWidget::onContextMenuRequested(const QPoint &globalPos)
+ {
+     QMenu menu(this);
+-    menu.setTitle(tr("CPU graph options"));
++    menu.setTitle(tr("CPU 图形选项"));
+ 
+     // ── Change graph to ───────────────────────────────────────────────────────
+-    QMenu *graphMenu = menu.addMenu(tr("Change graph to"));
++    QMenu *graphMenu = menu.addMenu(tr("切换图形为"));
+ 
+-    QAction *actOverall  = graphMenu->addAction(tr("Overall utilization"));
+-    QAction *actPerCore  = graphMenu->addAction(tr("Logical processors"));
++    QAction *actOverall  = graphMenu->addAction(tr("总体使用率"));
++    QAction *actPerCore  = graphMenu->addAction(tr("逻辑处理器"));
+     actOverall->setCheckable(true);
+     actPerCore->setCheckable(true);
+ 
+@@ -224,7 +224,7 @@ void CpuDetailWidget::onContextMenuRequested(const QPoint &globalPos)
+     menu.addSeparator();
+ 
+     // ── Show kernel times ─────────────────────────────────────────────────────
+-    QAction *actKernel = menu.addAction(tr("Show kernel times"));
++    QAction *actKernel = menu.addAction(tr("显示内核时间"));
+     actKernel->setCheckable(true);
+     actKernel->setChecked(this->m_graphArea->GetShowKernelTime());
+     connect(actKernel, &QAction::triggered, this, [this](bool checked)
+diff --git a/src/perf/cpudetailwidget.ui b/src/perf/cpudetailwidget.ui
+index 057266f..ab95c83 100644
+--- a/src/perf/cpudetailwidget.ui
++++ b/src/perf/cpudetailwidget.ui
+@@ -61,7 +61,7 @@
+     <layout class="QHBoxLayout" name="timeAxisLayout">
+      <item>
+       <widget class="QLabel" name="timeLeftLabel">
+-       <property name="text"><string>60 seconds</string></property>
++       <property name="text"><string>60 秒</string></property>
+        <property name="styleSheet"><string>font-size: 8pt;</string></property>
+       </widget>
+      </item>
+@@ -88,27 +88,27 @@
+      <property name="verticalSpacing"><number>6</number></property>
+ 
+      <!-- Row 0 -->
+-     <item row="0" column="0"><widget class="QLabel"><property name="text"><string>Utilization</string></property><property name="styleSheet"><string></string></property></widget></item>
++     <item row="0" column="0"><widget class="QLabel"><property name="text"><string>使用率</string></property><property name="styleSheet"><string></string></property></widget></item>
+      <item row="0" column="1"><widget class="QLabel" name="statUtilValue"><property name="text"><string>0%</string></property></widget></item>
+-     <item row="0" column="2"><widget class="QLabel"><property name="text"><string>Speed</string></property><property name="styleSheet"><string></string></property></widget></item>
++     <item row="0" column="2"><widget class="QLabel"><property name="text"><string>速度</string></property><property name="styleSheet"><string></string></property></widget></item>
+      <item row="0" column="3"><widget class="QLabel" name="statSpeedValue"><property name="text"><string>—</string></property></widget></item>
+ 
+      <!-- Row 1 -->
+-     <item row="1" column="0"><widget class="QLabel"><property name="text"><string>Processes</string></property><property name="styleSheet"><string></string></property></widget></item>
++     <item row="1" column="0"><widget class="QLabel"><property name="text"><string>进程</string></property><property name="styleSheet"><string></string></property></widget></item>
+      <item row="1" column="1"><widget class="QLabel" name="statProcessesValue"><property name="text"><string>—</string></property></widget></item>
+-     <item row="1" column="2"><widget class="QLabel"><property name="text"><string>Threads</string></property><property name="styleSheet"><string></string></property></widget></item>
++     <item row="1" column="2"><widget class="QLabel"><property name="text"><string>线程</string></property><property name="styleSheet"><string></string></property></widget></item>
+      <item row="1" column="3"><widget class="QLabel" name="statThreadsValue"><property name="text"><string>—</string></property></widget></item>
+ 
+      <!-- Row 2 -->
+-     <item row="2" column="0"><widget class="QLabel"><property name="text"><string>Uptime</string></property><property name="styleSheet"><string></string></property></widget></item>
++     <item row="2" column="0"><widget class="QLabel"><property name="text"><string>运行时间</string></property><property name="styleSheet"><string></string></property></widget></item>
+      <item row="2" column="1"><widget class="QLabel" name="statUptimeValue"><property name="text"><string>—</string></property></widget></item>
+-     <item row="2" column="2"><widget class="QLabel"><property name="text"><string>Logical processors</string></property><property name="styleSheet"><string></string></property></widget></item>
++     <item row="2" column="2"><widget class="QLabel"><property name="text"><string>逻辑处理器</string></property><property name="styleSheet"><string></string></property></widget></item>
+      <item row="2" column="3"><widget class="QLabel" name="statLogicalCpusValue"><property name="text"><string>—</string></property></widget></item>
+ 
+      <!-- Row 3 -->
+-     <item row="3" column="0"><widget class="QLabel"><property name="text"><string>Virtual machine</string></property><property name="styleSheet"><string></string></property></widget></item>
++     <item row="3" column="0"><widget class="QLabel"><property name="text"><string>虚拟机</string></property><property name="styleSheet"><string></string></property></widget></item>
+      <item row="3" column="1"><widget class="QLabel" name="statVmValue"><property name="text"><string>—</string></property></widget></item>
+-     <item row="3" column="2"><widget class="QLabel"><property name="text"><string>Temperature</string></property><property name="styleSheet"><string></string></property></widget></item>
++     <item row="3" column="2"><widget class="QLabel"><property name="text"><string>温度</string></property><property name="styleSheet"><string></string></property></widget></item>
+      <item row="3" column="3"><widget class="QLabel" name="statTempValue"><property name="text"><string>—</string></property></widget></item>
+ 
+     </layout>
+diff --git a/src/perf/cpugrapharea.cpp b/src/perf/cpugrapharea.cpp
+index bf18890..18e171a 100644
+--- a/src/perf/cpugrapharea.cpp
++++ b/src/perf/cpugrapharea.cpp
+@@ -35,7 +35,7 @@ CpuGraphArea::CpuGraphArea(QWidget *parent) : QWidget(parent), m_stack(new QStac
+     // Page 0 — single aggregate graph
+     this->m_overallGraph = new GraphWidget(this->m_stack);
+     this->m_overallGraph->SetSampleCapacity(CFG->PerfGraphWindowSec);
+-    this->m_overallGraph->SetSeriesNames(tr("CPU"), tr("Kernel"));
++    this->m_overallGraph->SetSeriesNames(tr("CPU"), tr("内核"));
+     this->m_overallGraph->SetValueFormat(GraphWidget::ValueFormat::Percent);
+     this->m_stack->addWidget(this->m_overallGraph);  // index 0
+ 
+@@ -177,7 +177,7 @@ void CpuGraphArea::ensureCoreGraphs(int count)
+         g->SetSampleCapacity(CFG->PerfGraphWindowSec);
+         g->SetGridColumns(2);
+         g->SetGridRows(2);
+-        g->SetSeriesNames(tr("CPU %1").arg(i), tr("Kernel"));
++        g->SetSeriesNames(tr("CPU %1").arg(i), tr("内核"));
+         g->SetValueFormat(GraphWidget::ValueFormat::Percent);
+         g->setToolTip(tr("CPU %1").arg(i));
+         g->show();   // explicitly unhide — parent may be on a hidden QStackedWidget page
+diff --git a/src/perf/diskdetailwidget.cpp b/src/perf/diskdetailwidget.cpp
+index e6ef1c6..ad9d989 100644
+--- a/src/perf/diskdetailwidget.cpp
++++ b/src/perf/diskdetailwidget.cpp
+@@ -66,7 +66,7 @@ DiskDetailWidget::DiskDetailWidget(QWidget *parent) : QWidget(parent), ui(new Ui
+     this->ui->activeGraphWidget->SetSampleCapacity(TUX_MANAGER_HISTORY_SIZE);
+     this->ui->activeGraphWidget->SetGridColumns(6);
+     this->ui->activeGraphWidget->SetGridRows(4);
+-    this->ui->activeGraphWidget->SetSeriesNames(tr("Active time"));
++    this->ui->activeGraphWidget->SetSeriesNames(tr("活动时间"));
+     this->ui->activeGraphWidget->SetValueFormat(GraphWidget::ValueFormat::Percent);
+ 
+     // Transfer graph (read + write overlay)
+@@ -74,7 +74,7 @@ DiskDetailWidget::DiskDetailWidget(QWidget *parent) : QWidget(parent), ui(new Ui
+     this->ui->transferGraphWidget->SetSampleCapacity(TUX_MANAGER_HISTORY_SIZE);
+     this->ui->transferGraphWidget->SetGridColumns(6);
+     this->ui->transferGraphWidget->SetGridRows(4);
+-    this->ui->transferGraphWidget->SetSeriesNames(tr("Read"), tr("Write"));
++    this->ui->transferGraphWidget->SetSeriesNames(tr("读取"), tr("写入"));
+     this->ui->transferGraphWidget->SetValueFormat(GraphWidget::ValueFormat::BytesPerSec);
+     UIHelper::EnableGraphContextMenu(this->ui->activeGraphWidget);
+     UIHelper::EnableGraphContextMenu(this->ui->transferGraphWidget);
+@@ -137,7 +137,7 @@ void DiskDetailWidget::SetDisk(int index)
+     {
+         const Storage::DiskInfo &disk = Metrics::GetStorage()->FromIndex(this->m_diskIndex);
+ 
+-        this->ui->titleLabel->setText(tr("Disk (%1)").arg(disk.Name));
++        this->ui->titleLabel->setText(tr("磁盘（%1）").arg(disk.Name));
+         this->ui->modelLabel->setText(disk.Model);
+         this->ui->typeValueLabel->setText(disk.Type);
+         this->ui->deviceValueLabel->setText("/dev/" + disk.Name);
+@@ -163,8 +163,8 @@ void DiskDetailWidget::onUpdated()
+     this->ui->formattedValueLabel->setText(disk.FormattedBytes > 0
+                                            ? Misc::FormatBytes(static_cast<quint64>(qMax<qint64>(0, disk.FormattedBytes)), 1)
+                                            : tr("-"));
+-    this->ui->systemDiskValueLabel->setText(disk.IsSystemDisk ? tr("Yes") : tr("No"));
+-    this->ui->pageFileValueLabel->setText(disk.HasPageFile ? tr("Yes") : tr("No"));
++    this->ui->systemDiskValueLabel->setText(disk.IsSystemDisk ? tr("是") : tr("否"));
++    this->ui->pageFileValueLabel->setText(disk.HasPageFile ? tr("是") : tr("否"));
+ 
+     this->ui->transferGraphWidget->SetMax(disk.MaxTransferBps);
+     this->ui->activeGraphWidget->Tick();
+diff --git a/src/perf/diskdetailwidget.ui b/src/perf/diskdetailwidget.ui
+index 9fbda32..2727d7b 100644
+--- a/src/perf/diskdetailwidget.ui
++++ b/src/perf/diskdetailwidget.ui
+@@ -16,7 +16,7 @@
+     <layout class="QHBoxLayout" name="headerLayout">
+      <item>
+       <widget class="QLabel" name="titleLabel">
+-       <property name="text"><string>Disk</string></property>
++       <property name="text"><string>磁盘</string></property>
+        <property name="styleSheet"><string>font-size: 18pt; font-weight: bold;</string></property>
+       </widget>
+      </item>
+@@ -40,7 +40,7 @@
+     <layout class="QHBoxLayout" name="activeLabelLayout">
+      <item>
+       <widget class="QLabel" name="activeGraphLabel">
+-       <property name="text"><string>Active time</string></property>
++       <property name="text"><string>活动时间</string></property>
+        <property name="styleSheet"><string>font-size: 8pt;</string></property>
+       </widget>
+      </item>
+@@ -76,7 +76,7 @@
+     <layout class="QHBoxLayout" name="activeTimeAxisLayout">
+      <item>
+       <widget class="QLabel" name="activeTimeLeftLabel">
+-       <property name="text"><string>60 seconds</string></property>
++       <property name="text"><string>60 秒</string></property>
+        <property name="styleSheet"><string>font-size: 8pt;</string></property>
+       </widget>
+      </item>
+@@ -100,7 +100,7 @@
+     <layout class="QHBoxLayout" name="transferLabelLayout">
+      <item>
+       <widget class="QLabel" name="transferGraphLabel">
+-       <property name="text"><string>Disk transfer rate</string></property>
++       <property name="text"><string>磁盘传输速率</string></property>
+        <property name="styleSheet"><string>font-size: 8pt;</string></property>
+       </widget>
+      </item>
+@@ -130,7 +130,7 @@
+     <layout class="QHBoxLayout" name="transferTimeAxisLayout">
+      <item>
+       <widget class="QLabel" name="transferTimeLeftLabel">
+-       <property name="text"><string>60 seconds</string></property>
++       <property name="text"><string>60 秒</string></property>
+        <property name="styleSheet"><string>font-size: 8pt;</string></property>
+       </widget>
+      </item>
+@@ -155,27 +155,27 @@
+      <property name="horizontalSpacing"><number>24</number></property>
+      <property name="verticalSpacing"><number>8</number></property>
+ 
+-     <item row="0" column="0"><widget class="QLabel" name="activeLabel"><property name="text"><string>Active time</string></property><property name="styleSheet"><string></string></property></widget></item>
++     <item row="0" column="0"><widget class="QLabel" name="activeLabel"><property name="text"><string>活动时间</string></property><property name="styleSheet"><string></string></property></widget></item>
+      <item row="0" column="1"><widget class="QLabel" name="activeValueLabel"><property name="text"><string>0%</string></property></widget></item>
+-     <item row="0" column="2"><widget class="QLabel" name="capacityLabel"><property name="text"><string>Capacity</string></property><property name="styleSheet"><string></string></property></widget></item>
++     <item row="0" column="2"><widget class="QLabel" name="capacityLabel"><property name="text"><string>容量</string></property><property name="styleSheet"><string></string></property></widget></item>
+      <item row="0" column="3"><widget class="QLabel" name="capacityValueLabel"><property name="text"><string>—</string></property></widget></item>
+ 
+-     <item row="1" column="0"><widget class="QLabel" name="readLabel"><property name="text"><string>Read speed</string></property><property name="styleSheet"><string></string></property></widget></item>
++     <item row="1" column="0"><widget class="QLabel" name="readLabel"><property name="text"><string>读取速度</string></property><property name="styleSheet"><string></string></property></widget></item>
+      <item row="1" column="1"><widget class="QLabel" name="readValueLabel"><property name="text"><string>0 KB/s</string></property></widget></item>
+-     <item row="1" column="2"><widget class="QLabel" name="formattedLabel"><property name="text"><string>Formatted</string></property><property name="styleSheet"><string></string></property></widget></item>
++     <item row="1" column="2"><widget class="QLabel" name="formattedLabel"><property name="text"><string>格式化</string></property><property name="styleSheet"><string></string></property></widget></item>
+      <item row="1" column="3"><widget class="QLabel" name="formattedValueLabel"><property name="text"><string>—</string></property></widget></item>
+ 
+-     <item row="2" column="0"><widget class="QLabel" name="writeLabel"><property name="text"><string>Write speed</string></property><property name="styleSheet"><string></string></property></widget></item>
++     <item row="2" column="0"><widget class="QLabel" name="writeLabel"><property name="text"><string>写入速度</string></property><property name="styleSheet"><string></string></property></widget></item>
+      <item row="2" column="1"><widget class="QLabel" name="writeValueLabel"><property name="text"><string>0 KB/s</string></property></widget></item>
+-     <item row="2" column="2"><widget class="QLabel" name="systemDiskLabel"><property name="text"><string>System disk</string></property><property name="styleSheet"><string></string></property></widget></item>
++     <item row="2" column="2"><widget class="QLabel" name="systemDiskLabel"><property name="text"><string>系统磁盘</string></property><property name="styleSheet"><string></string></property></widget></item>
+      <item row="2" column="3"><widget class="QLabel" name="systemDiskValueLabel"><property name="text"><string>—</string></property></widget></item>
+ 
+-     <item row="3" column="0"><widget class="QLabel" name="deviceLabel"><property name="text"><string>Device</string></property><property name="styleSheet"><string></string></property></widget></item>
++     <item row="3" column="0"><widget class="QLabel" name="deviceLabel"><property name="text"><string>设备</string></property><property name="styleSheet"><string></string></property></widget></item>
+      <item row="3" column="1"><widget class="QLabel" name="deviceValueLabel"><property name="text"><string>—</string></property></widget></item>
+-     <item row="3" column="2"><widget class="QLabel" name="pageFileLabel"><property name="text"><string>Page file</string></property><property name="styleSheet"><string></string></property></widget></item>
++     <item row="3" column="2"><widget class="QLabel" name="pageFileLabel"><property name="text"><string>交换文件</string></property><property name="styleSheet"><string></string></property></widget></item>
+      <item row="3" column="3"><widget class="QLabel" name="pageFileValueLabel"><property name="text"><string>—</string></property></widget></item>
+ 
+-     <item row="4" column="2"><widget class="QLabel" name="typeLabel"><property name="text"><string>Type</string></property><property name="styleSheet"><string></string></property></widget></item>
++     <item row="4" column="2"><widget class="QLabel" name="typeLabel"><property name="text"><string>类型</string></property><property name="styleSheet"><string></string></property></widget></item>
+      <item row="4" column="3"><widget class="QLabel" name="typeValueLabel"><property name="text"><string>—</string></property></widget></item>
+     </layout>
+    </item>
+diff --git a/src/perf/gpudetailwidget.cpp b/src/perf/gpudetailwidget.cpp
+index 22f3f13..21932c9 100644
+--- a/src/perf/gpudetailwidget.cpp
++++ b/src/perf/gpudetailwidget.cpp
+@@ -102,17 +102,17 @@ GpuDetailWidget::GpuDetailWidget(QWidget *parent) : QWidget(parent), ui(new Ui::
+     engineAreaLayout->addLayout(graphsGrid);
+ 
+     configureGraph(this->ui->dedicatedMemGraphWidget);
+-    this->ui->dedicatedMemGraphWidget->SetSeriesNames(tr("Dedicated memory usage"));
++    this->ui->dedicatedMemGraphWidget->SetSeriesNames(tr("专用显存使用"));
+     UIHelper::EnableGraphContextMenu(this->ui->dedicatedMemGraphWidget);
+ 
+     configureGraph(this->ui->sharedMemGraphWidget);
+-    this->ui->sharedMemGraphWidget->SetSeriesNames(tr("Shared memory usage"));
++    this->ui->sharedMemGraphWidget->SetSeriesNames(tr("共享显存使用"));
+     UIHelper::EnableGraphContextMenu(this->ui->sharedMemGraphWidget);
+ 
+     configureGraph(this->ui->copyBwGraphWidget);
+     this->ui->copyBwGraphWidget->SetSeriesNames(tr("TX"), tr("RX"));
+     this->ui->copyBwGraphWidget->SetValueFormat(GraphWidget::ValueFormat::BytesPerSec);
+-    this->ui->copyBwGraphWidget->setToolTip(tr("Copy bandwidth: light trace = TX, dark trace = RX"));
++    this->ui->copyBwGraphWidget->setToolTip(tr("复制带宽：浅色轨迹 = TX，深色轨迹 = RX"));
+     UIHelper::EnableGraphContextMenu(this->ui->copyBwGraphWidget);
+ 
+     UIHelper::EnableCopyLabelContextMenu(this->ui->utilValueLabel);
+@@ -240,7 +240,7 @@ void GpuDetailWidget::onUpdated()
+     const qint64 gpuTotalMiB = dedicatedTotalMiB + sharedTotalMiB;
+ 
+     this->ui->utilValueLabel->setText(QString::number(util, 'f', 0) + "%");
+-    this->ui->tempValueLabel->setText(tempC >= 0 ? tr("%1 C").arg(tempC) : tr("—"));
++    this->ui->tempValueLabel->setText(tempC >= 0 ? tr("%1 °C").arg(tempC) : tr("—"));
+     this->ui->gpuMemValueLabel->setText(tr("%1 / %2")
+                                         .arg(Misc::FormatMiB(static_cast<quint64>(qMax<qint64>(0, gpuUsedMiB)), 1))
+                                         .arg(Misc::FormatMiB(static_cast<quint64>(qMax<qint64>(0, gpuTotalMiB)), 1)));
+@@ -324,7 +324,7 @@ void GpuDetailWidget::bindEngineGraphSource(int slot)
+         graph->SetDataSource(engine.History, 100.0);
+     } else
+     {
+-        graph->SetSeriesNames(tr("Value"));
++        graph->SetSeriesNames(tr("数值"));
+         graph->SetDataSource(kEmptyHistory, 100.0);
+     }
+ }
+diff --git a/src/perf/gpudetailwidget.ui b/src/perf/gpudetailwidget.ui
+index e6ebfe8..ec2f05d 100644
+--- a/src/perf/gpudetailwidget.ui
++++ b/src/perf/gpudetailwidget.ui
+@@ -68,7 +68,7 @@
+      <item>
+       <widget class="QLabel" name="dedicatedMemGraphLabel">
+        <property name="text">
+-        <string>Dedicated GPU memory usage</string>
++        <string>专用 GPU 显存使用</string>
+        </property>
+       </widget>
+      </item>
+@@ -109,7 +109,7 @@
+      <item>
+       <widget class="QLabel" name="dedicatedTimeLeftLabel">
+        <property name="text">
+-        <string>60 seconds</string>
++        <string>60 秒</string>
+        </property>
+       </widget>
+      </item>
+@@ -143,7 +143,7 @@
+      <item>
+       <widget class="QLabel" name="sharedMemGraphLabel">
+        <property name="text">
+-        <string>Shared GPU memory usage</string>
++        <string>共享 GPU 显存使用</string>
+        </property>
+       </widget>
+      </item>
+@@ -184,7 +184,7 @@
+      <item>
+       <widget class="QLabel" name="sharedTimeLeftLabel">
+        <property name="text">
+-        <string>60 seconds</string>
++        <string>60 秒</string>
+        </property>
+       </widget>
+      </item>
+@@ -218,14 +218,14 @@
+      <item>
+       <widget class="QLabel" name="copyBwGraphLabel">
+        <property name="text">
+-        <string>Copy bandwidth</string>
++        <string>复制带宽</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="copyBwLegendLabel">
+        <property name="text">
+-        <string>Light: TX  Dark: RX</string>
++        <string>浅色：发送（TX）  深色：接收（RX）</string>
+        </property>
+       </widget>
+      </item>
+@@ -266,7 +266,7 @@
+      <item>
+       <widget class="QLabel" name="copyTimeLeftLabel">
+        <property name="text">
+-        <string>60 seconds</string>
++        <string>60 秒</string>
+        </property>
+       </widget>
+      </item>
+@@ -306,7 +306,7 @@
+      <item row="0" column="0">
+       <widget class="QLabel" name="utilLabel">
+        <property name="text">
+-        <string>Utilization</string>
++        <string>使用率</string>
+        </property>
+       </widget>
+      </item>
+@@ -320,7 +320,7 @@
+      <item row="0" column="2">
+       <widget class="QLabel" name="dedicatedMemLabel">
+        <property name="text">
+-        <string>Dedicated GPU memory</string>
++        <string>专用 GPU 显存</string>
+        </property>
+       </widget>
+      </item>
+@@ -334,7 +334,7 @@
+      <item row="1" column="0">
+       <widget class="QLabel" name="gpuMemLabel">
+        <property name="text">
+-        <string>GPU Memory</string>
++        <string>GPU 显存</string>
+        </property>
+       </widget>
+      </item>
+@@ -348,7 +348,7 @@
+      <item row="1" column="2">
+       <widget class="QLabel" name="sharedMemLabel">
+        <property name="text">
+-        <string>Shared GPU memory</string>
++        <string>共享 GPU 显存</string>
+        </property>
+       </widget>
+      </item>
+@@ -362,7 +362,7 @@
+      <item row="2" column="0">
+       <widget class="QLabel" name="tempLabel">
+        <property name="text">
+-        <string>Temperature</string>
++        <string>温度</string>
+        </property>
+       </widget>
+      </item>
+@@ -376,7 +376,7 @@
+      <item row="2" column="2">
+       <widget class="QLabel" name="driverLabel">
+        <property name="text">
+-        <string>Driver version</string>
++        <string>驱动程序版本</string>
+        </property>
+       </widget>
+      </item>
+@@ -390,7 +390,7 @@
+      <item row="3" column="2">
+       <widget class="QLabel" name="backendLabel">
+        <property name="text">
+-        <string>Backend</string>
++        <string>后端</string>
+        </property>
+       </widget>
+      </item>
+@@ -404,7 +404,7 @@
+      <item row="3" column="0">
+       <widget class="QLabel" name="coreClockLabel">
+        <property name="text">
+-        <string>Core clock</string>
++        <string>核心频率</string>
+        </property>
+       </widget>
+      </item>
+@@ -418,7 +418,7 @@
+      <item row="4" column="0">
+       <widget class="QLabel" name="powerUsageLabel">
+        <property name="text">
+-        <string>Power usage</string>
++        <string>功耗</string>
+        </property>
+       </widget>
+      </item>
+diff --git a/src/perf/graphwidget.cpp b/src/perf/graphwidget.cpp
+index 7507cec..ed6e141 100644
+--- a/src/perf/graphwidget.cpp
++++ b/src/perf/graphwidget.cpp
+@@ -305,16 +305,16 @@ void GraphWidget::mouseMoveEvent(QMouseEvent *event)
+         {
+             QString tip;
+             if (idx1 >= 0)
+-                tip += tr("%1: %2").arg(this->m_primaryName, this->formatValue(this->m_data->At(idx1)));
++                tip += tr("%1：%2").arg(this->m_primaryName, this->formatValue(this->m_data->At(idx1)));
+             if (idx2 >= 0)
+             {
+                 if (!tip.isEmpty())
+                     tip += "\n";
+-                tip += tr("%1: %2").arg(this->m_secondaryName, this->formatValue(this->m_overlayData->At(idx2)));
++                tip += tr("%1：%2").arg(this->m_secondaryName, this->formatValue(this->m_overlayData->At(idx2)));
+             }
+             const int secAgo = sampleCount - 1 - slot;
+             if (!tip.isEmpty())
+-                tip += tr("\n%1 s ago").arg(secAgo);
++                tip += tr("\n%1 秒前").arg(secAgo);
+ #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+             QToolTip::showText(event->globalPosition().toPoint(), tip, this);
+ #else
+diff --git a/src/perf/graphwidget.h b/src/perf/graphwidget.h
+index 9f416db..49afb62 100644
+--- a/src/perf/graphwidget.h
++++ b/src/perf/graphwidget.h
+@@ -119,8 +119,8 @@ namespace Perf
+             int             m_hoverSlot { -1 };
+             bool            m_hoverLineEnabled { true };
+             bool            m_hoverTooltipEnabled { true };
+-            QString         m_primaryName { tr("Value") };
+-            QString         m_secondaryName { tr("Secondary") };
++            QString         m_primaryName { tr("数值") };
++            QString         m_secondaryName { tr("辅助") };
+             ValueFormat     m_valueFormat { ValueFormat::Auto };
+             QString         m_overlayText;
+             bool            m_percentTooltipAbsoluteEnabled { false };
+diff --git a/src/perf/memorybar.cpp b/src/perf/memorybar.cpp
+index 4a8a268..210f706 100644
+--- a/src/perf/memorybar.cpp
++++ b/src/perf/memorybar.cpp
+@@ -144,28 +144,28 @@ QString MemoryBar::segmentTooltip(Segment seg) const
+     {
+         case Segment::Used:
+             value = this->m_used;
+-            label = tr("Used");
++            label = tr("已用");
+             break;
+         case Segment::Compressed:
+             value = this->m_compressed;
+-            label = tr("Used (compressed)");
++            label = tr("已用（压缩）");
+             break;
+         case Segment::Dirty:
+             value = this->m_dirty;
+-            label = tr("Dirty");
++            label = tr("脏数据");
+             break;
+         case Segment::Cached:
+             value = qMax(0LL, this->m_cached - this->m_dirty);
+-            label = tr("Free (cached)");
++            label = tr("空闲（已缓存）");
+             break;
+         case Segment::Free:
+             value = this->m_free;
+-            label = tr("Free");
++            label = tr("空闲");
+             break;
+         case Segment::None:
+             break;
+     }
+ 
+     const double pct = (this->m_total > 0) ? static_cast<double>(value) * 100.0 / static_cast<double>(this->m_total) : 0.0;
+-    return tr("%1: %2 (%3%)").arg(label, Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, value)), 1), QString::number(pct, 'f', 1));
++    return tr("%1：%2（%3%）").arg(label, Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, value)), 1), QString::number(pct, 'f', 1));
+ }
+diff --git a/src/perf/memorydetailwidget.cpp b/src/perf/memorydetailwidget.cpp
+index 5fdd211..98f107e 100644
+--- a/src/perf/memorydetailwidget.cpp
++++ b/src/perf/memorydetailwidget.cpp
+@@ -71,7 +71,7 @@ MemoryDetailWidget::MemoryDetailWidget(QWidget *parent) : QWidget(parent), ui(ne
+     this->ui->graphWidget->SetSampleCapacity(TUX_MANAGER_HISTORY_SIZE);
+     this->ui->graphWidget->SetGridColumns(6);
+     this->ui->graphWidget->SetGridRows(4);
+-    this->ui->graphWidget->SetSeriesNames(tr("Used memory"));
++    this->ui->graphWidget->SetSeriesNames(tr("已用内存"));
+     this->ui->graphWidget->SetValueFormat(GraphWidget::ValueFormat::Percent);
+     UIHelper::EnableGraphContextMenu(this->ui->graphWidget);
+     UIHelper::EnableCopyLabelContextMenu(this->ui->statInUseValue);
+@@ -180,7 +180,7 @@ void MemoryDetailWidget::onUpdated()
+     this->ui->statDirtyValue->setText(Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, dirty)), 1));
+     if (hasCompressedMemory)
+     {
+-        this->ui->statCompressedValue->setText(tr("%1 (using %2 RAM)")
++        this->ui->statCompressedValue->setText(tr("%1（占用 %2 内存）")
+                                                    .arg(Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, compressedData)), 1),
+                                                         Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, compressedRam)), 1)));
+     } else
+diff --git a/src/perf/memorydetailwidget.ui b/src/perf/memorydetailwidget.ui
+index f4e702a..ad43d9a 100644
+--- a/src/perf/memorydetailwidget.ui
++++ b/src/perf/memorydetailwidget.ui
+@@ -34,7 +34,7 @@
+         <string>font-size: 18pt; font-weight: bold;</string>
+        </property>
+        <property name="text">
+-        <string>Memory</string>
++        <string>内存</string>
+        </property>
+       </widget>
+      </item>
+@@ -84,7 +84,7 @@
+         <string>font-size: 8pt;</string>
+        </property>
+        <property name="text">
+-        <string>60 seconds</string>
++        <string>60 秒</string>
+        </property>
+       </widget>
+      </item>
+@@ -124,7 +124,7 @@
+         <string>font-size: 8pt;</string>
+        </property>
+        <property name="text">
+-        <string>Memory composition</string>
++        <string>内存构成</string>
+        </property>
+       </widget>
+      </item>
+@@ -157,7 +157,7 @@
+         <string>font-size: 8pt;</string>
+        </property>
+        <property name="text">
+-        <string>In use</string>
++        <string>使用中</string>
+        </property>
+       </widget>
+      </item>
+@@ -177,7 +177,7 @@
+         <string>font-size: 8pt;</string>
+        </property>
+        <property name="text">
+-        <string>Compressed</string>
++        <string>已压缩</string>
+        </property>
+       </widget>
+      </item>
+@@ -197,7 +197,7 @@
+         <string>font-size: 8pt;</string>
+        </property>
+        <property name="text">
+-        <string>Dirty</string>
++        <string>脏数据</string>
+        </property>
+       </widget>
+      </item>
+@@ -217,7 +217,7 @@
+         <string>font-size: 8pt;</string>
+        </property>
+        <property name="text">
+-        <string>Free (Cached)</string>
++        <string>空闲（已缓存）</string>
+        </property>
+       </widget>
+      </item>
+@@ -237,7 +237,7 @@
+         <string>font-size: 8pt;</string>
+        </property>
+        <property name="text">
+-        <string>Free</string>
++        <string>空闲</string>
+        </property>
+       </widget>
+      </item>
+@@ -273,7 +273,7 @@
+         <string></string>
+        </property>
+        <property name="text">
+-        <string>In use</string>
++        <string>使用中</string>
+        </property>
+       </widget>
+      </item>
+@@ -290,7 +290,7 @@
+         <string></string>
+        </property>
+        <property name="text">
+-        <string>Available</string>
++        <string>可用</string>
+        </property>
+       </widget>
+      </item>
+@@ -307,7 +307,7 @@
+         <string></string>
+        </property>
+        <property name="text">
+-        <string>Dirty</string>
++        <string>脏数据</string>
+        </property>
+       </widget>
+      </item>
+@@ -324,7 +324,7 @@
+         <string></string>
+        </property>
+        <property name="text">
+-        <string>Free</string>
++        <string>空闲</string>
+        </property>
+       </widget>
+      </item>
+@@ -341,7 +341,7 @@
+         <string></string>
+        </property>
+        <property name="text">
+-        <string>Cached</string>
++        <string>已缓存</string>
+        </property>
+       </widget>
+      </item>
+@@ -358,7 +358,7 @@
+         <string></string>
+        </property>
+        <property name="text">
+-        <string>Buffers</string>
++        <string>缓冲区</string>
+        </property>
+       </widget>
+      </item>
+@@ -375,7 +375,7 @@
+         <string></string>
+        </property>
+        <property name="text">
+-        <string>Compressed</string>
++        <string>已压缩</string>
+        </property>
+       </widget>
+      </item>
+@@ -392,7 +392,7 @@
+         <string></string>
+        </property>
+        <property name="text">
+-        <string>DIMM slots used</string>
++        <string>已用 DIMM 插槽</string>
+        </property>
+       </widget>
+      </item>
+@@ -409,7 +409,7 @@
+         <string></string>
+        </property>
+        <property name="text">
+-        <string>Speed</string>
++        <string>速度</string>
+        </property>
+       </widget>
+      </item>
+diff --git a/src/perf/networkdetailwidget.cpp b/src/perf/networkdetailwidget.cpp
+index 0953bb6..9cc59a6 100644
+--- a/src/perf/networkdetailwidget.cpp
++++ b/src/perf/networkdetailwidget.cpp
+@@ -63,7 +63,7 @@ NetworkDetailWidget::NetworkDetailWidget(QWidget *parent) : QWidget(parent), ui(
+     this->ui->throughputGraphWidget->SetSampleCapacity(TUX_MANAGER_HISTORY_SIZE);
+     this->ui->throughputGraphWidget->SetGridColumns(6);
+     this->ui->throughputGraphWidget->SetGridRows(4);
+-    this->ui->throughputGraphWidget->SetSeriesNames(tr("Receive"), tr("Send"));
++    this->ui->throughputGraphWidget->SetSeriesNames(tr("接收"), tr("发送"));
+     this->ui->throughputGraphWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+     connect(this->ui->throughputGraphWidget, &QWidget::customContextMenuRequested, this, &NetworkDetailWidget::onGraphContextMenuRequested);
+     this->applyTransferUnitMode();
+@@ -131,10 +131,10 @@ void NetworkDetailWidget::SetNetwork(int index)
+     {
+         const Network::NetworkInfo &network = Metrics::GetNetwork()->FromIndex(this->m_networkIndex);
+ 
+-        this->ui->titleLabel->setText(tr("NIC (%1)").arg(network.Name));
++        this->ui->titleLabel->setText(tr("网卡（%1）").arg(network.Name));
+         this->ui->adapterValueLabel->setText(network.Name);
+         this->ui->typeValueLabel->setText(network.Type);
+-        this->ui->speedValueLabel->setText(network.LinkSpeedMbps > 0 ? QString::number(network.LinkSpeedMbps) + tr(" Mbps") : tr("Unknown"));
++        this->ui->speedValueLabel->setText(network.LinkSpeedMbps > 0 ? QString::number(network.LinkSpeedMbps) + tr(" Mbps") : tr("未知"));
+         this->ui->ipv4ValueLabel->setText(network.IPv4.isEmpty() ? tr("—") : network.IPv4);
+         this->ui->ipv6ValueLabel->setText(network.IPv6.isEmpty() ? tr("—") : network.IPv6.join('\n'));
+ 
+@@ -162,13 +162,13 @@ void NetworkDetailWidget::onUpdated()
+ void NetworkDetailWidget::onGraphContextMenuRequested(const QPoint &pos)
+ {
+     QMenu menu(this);
+-    menu.setTitle(tr("Network graph options"));
++    menu.setTitle(tr("网络图形选项"));
+ 
+-    QAction *bitsAction = menu.addAction(tr("Show speeds in bits"));
++    QAction *bitsAction = menu.addAction(tr("以比特（bit）显示速度"));
+     bitsAction->setCheckable(true);
+     bitsAction->setChecked(CFG->PerfNetworkUseBits);
+ 
+-    QAction *bytesAction = menu.addAction(tr("Show speeds in bytes"));
++    QAction *bytesAction = menu.addAction(tr("以字节（Byte）显示速度"));
+     bytesAction->setCheckable(true);
+     bytesAction->setChecked(!CFG->PerfNetworkUseBits);
+ 
+diff --git a/src/perf/networkdetailwidget.ui b/src/perf/networkdetailwidget.ui
+index 232aadd..b538ca6 100644
+--- a/src/perf/networkdetailwidget.ui
++++ b/src/perf/networkdetailwidget.ui
+@@ -34,7 +34,7 @@
+         <string>font-size: 18pt; font-weight: bold;</string>
+        </property>
+        <property name="text">
+-        <string>Ethernet</string>
++        <string>以太网</string>
+        </property>
+       </widget>
+      </item>
+@@ -61,7 +61,7 @@
+         <string>font-size: 8pt;</string>
+        </property>
+        <property name="text">
+-        <string>Throughput</string>
++        <string>吞吐量</string>
+        </property>
+       </widget>
+      </item>
+@@ -111,7 +111,7 @@
+         <string>font-size: 8pt;</string>
+        </property>
+        <property name="text">
+-        <string>60 seconds</string>
++        <string>60 秒</string>
+        </property>
+       </widget>
+      </item>
+@@ -157,7 +157,7 @@
+         <string/>
+        </property>
+        <property name="text">
+-        <string>Send</string>
++        <string>发送</string>
+        </property>
+       </widget>
+      </item>
+@@ -174,7 +174,7 @@
+         <string/>
+        </property>
+        <property name="text">
+-        <string>Adapter</string>
++        <string>适配器</string>
+        </property>
+       </widget>
+      </item>
+@@ -191,7 +191,7 @@
+         <string/>
+        </property>
+        <property name="text">
+-        <string>Receive</string>
++        <string>接收</string>
+        </property>
+       </widget>
+      </item>
+@@ -208,7 +208,7 @@
+         <string/>
+        </property>
+        <property name="text">
+-        <string>Connection type</string>
++        <string>连接类型</string>
+        </property>
+       </widget>
+      </item>
+@@ -225,7 +225,7 @@
+         <string/>
+        </property>
+        <property name="text">
+-        <string>Link speed</string>
++        <string>链路速度</string>
+        </property>
+       </widget>
+      </item>
+@@ -242,7 +242,7 @@
+         <string/>
+        </property>
+        <property name="text">
+-        <string>IPv4 address</string>
++        <string>IPv4 地址</string>
+        </property>
+       </widget>
+      </item>
+@@ -259,7 +259,7 @@
+         <string/>
+        </property>
+        <property name="text">
+-        <string>IPv6 addresses</string>
++        <string>IPv6 地址</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+diff --git a/src/perf/sidepanelgroup.cpp b/src/perf/sidepanelgroup.cpp
+index 01d8663..a196440 100644
+--- a/src/perf/sidepanelgroup.cpp
++++ b/src/perf/sidepanelgroup.cpp
+@@ -42,11 +42,11 @@ namespace Perf
+         switch (group)
+         {
+             case SidePanelGroup::Cpu:     return QObject::tr("CPU");
+-            case SidePanelGroup::Memory:  return QObject::tr("Memory");
+-            case SidePanelGroup::Swap:    return QObject::tr("Swap");
+-            case SidePanelGroup::Disks:   return QObject::tr("Disks");
+-            case SidePanelGroup::Network: return QObject::tr("NICs");
+-            case SidePanelGroup::Gpu:     return QObject::tr("GPUs");
++            case SidePanelGroup::Memory:  return QObject::tr("内存");
++            case SidePanelGroup::Swap:    return QObject::tr("交换空间");
++            case SidePanelGroup::Disks:   return QObject::tr("磁盘");
++            case SidePanelGroup::Network: return QObject::tr("网卡");
++            case SidePanelGroup::Gpu:     return QObject::tr("GPU");
+         }
+ 
+         return {};
+diff --git a/src/perf/sidepanelorderdialog.ui b/src/perf/sidepanelorderdialog.ui
+index 1719ce5..8eac133 100644
+--- a/src/perf/sidepanelorderdialog.ui
++++ b/src/perf/sidepanelorderdialog.ui
+@@ -11,13 +11,13 @@
+    </rect>
+   </property>
+   <property name="windowTitle">
+-   <string>Side Panel Order</string>
++   <string>侧栏顺序</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QLabel" name="descriptionLabel">
+      <property name="text">
+-      <string>Change the order of item groups in the Performance side panel.</string>
++      <string>调整“性能”侧栏中项目分组的顺序。</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+@@ -38,14 +38,14 @@
+        <item>
+         <widget class="QPushButton" name="moveUpButton">
+          <property name="text">
+-          <string>Move Up</string>
++          <string>上移</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="moveDownButton">
+          <property name="text">
+-          <string>Move Down</string>
++          <string>下移</string>
+          </property>
+         </widget>
+        </item>
+diff --git a/src/perf/swapdetailwidget.cpp b/src/perf/swapdetailwidget.cpp
+index cec700f..4d480a6 100644
+--- a/src/perf/swapdetailwidget.cpp
++++ b/src/perf/swapdetailwidget.cpp
+@@ -84,11 +84,11 @@ SwapDetailWidget::SwapDetailWidget(QWidget *parent) : QWidget(parent), ui(new Ui
+     this->ui->activityGraphWidget->SetSampleCapacity(TUX_MANAGER_HISTORY_SIZE);
+     this->ui->activityGraphWidget->SetGridColumns(6);
+     this->ui->activityGraphWidget->SetGridRows(4);
+-    this->ui->activityGraphWidget->SetSeriesNames(tr("Swap in"), tr("Swap out"));
++    this->ui->activityGraphWidget->SetSeriesNames(tr("换入"), tr("换出"));
+     this->ui->activityGraphWidget->SetValueFormat(GraphWidget::ValueFormat::BytesPerSec);
+     this->ui->activityGraphWidget->setToolTip(
+-                tr("Swap in: disk -> RAM (pages read back into memory)\n"
+-                   "Swap out: RAM -> disk (pages written to swap storage)"));
++                tr("换入：磁盘 -> 内存（页面被读回内存）\n"
++                   "换出：内存 -> 磁盘（页面被写入交换存储）"));
+     UIHelper::EnableGraphContextMenu(this->ui->activityGraphWidget);
+ 
+     UIHelper::EnableCopyLabelContextMenu(this->ui->usageValueLabel);
+@@ -195,12 +195,12 @@ void SwapDetailWidget::onUpdated()
+ void SwapDetailWidget::onContextMenuRequested(const QPoint &globalPos)
+ {
+     QMenu menu(this);
+-    menu.setTitle(tr("Swap graph options"));
++    menu.setTitle(tr("交换空间图形选项"));
+ 
+-    QMenu *graphMenu = menu.addMenu(tr("Change graph to"));
++    QMenu *graphMenu = menu.addMenu(tr("切换图形为"));
+ 
+-    QAction *actOverall = graphMenu->addAction(tr("Overall usage"));
+-    QAction *actPerDevice = graphMenu->addAction(tr("Swap devices"));
++    QAction *actOverall = graphMenu->addAction(tr("总体使用"));
++    QAction *actPerDevice = graphMenu->addAction(tr("交换设备"));
+     actOverall->setCheckable(true);
+     actPerDevice->setCheckable(true);
+ 
+diff --git a/src/perf/swapdetailwidget.ui b/src/perf/swapdetailwidget.ui
+index 31c06ae..6fa102b 100644
+--- a/src/perf/swapdetailwidget.ui
++++ b/src/perf/swapdetailwidget.ui
+@@ -34,7 +34,7 @@
+         <string>font-size: 18pt; font-weight: bold;</string>
+        </property>
+        <property name="text">
+-        <string>Swap</string>
++        <string>交换空间</string>
+        </property>
+       </widget>
+      </item>
+@@ -58,7 +58,7 @@
+      <item>
+       <widget class="QLabel" name="usageLabel">
+        <property name="text">
+-        <string>Swap usage</string>
++        <string>交换空间使用</string>
+        </property>
+       </widget>
+      </item>
+@@ -105,7 +105,7 @@
+      <item>
+       <widget class="QLabel" name="usageTimeLeftLabel">
+        <property name="text">
+-        <string>60 seconds</string>
++        <string>60 秒</string>
+        </property>
+       </widget>
+      </item>
+@@ -136,7 +136,7 @@
+      <item>
+       <widget class="QLabel" name="activityLabel">
+        <property name="text">
+-        <string>Swap activity</string>
++        <string>交换活动</string>
+        </property>
+       </widget>
+      </item>
+@@ -177,7 +177,7 @@
+      <item>
+       <widget class="QLabel" name="activityTimeLeftLabel">
+        <property name="text">
+-        <string>60 seconds</string>
++        <string>60 秒</string>
+        </property>
+       </widget>
+      </item>
+@@ -214,7 +214,7 @@
+      <item row="0" column="0">
+       <widget class="QLabel" name="inUseLabel">
+        <property name="text">
+-        <string>In use</string>
++        <string>使用中</string>
+        </property>
+       </widget>
+      </item>
+@@ -228,7 +228,7 @@
+      <item row="0" column="2">
+       <widget class="QLabel" name="freeLabel">
+        <property name="text">
+-        <string>Free</string>
++        <string>空闲</string>
+        </property>
+       </widget>
+      </item>
+@@ -242,17 +242,17 @@
+      <item row="1" column="0">
+       <widget class="QLabel" name="swapInLabel">
+        <property name="toolTip">
+-        <string>Swap in direction: disk -&gt; RAM</string>
++        <string>换入方向：磁盘 -&gt; 内存</string>
+        </property>
+        <property name="text">
+-        <string>Swap in</string>
++        <string>换入</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="inRateValueLabel">
+        <property name="toolTip">
+-        <string>Swap in direction: disk -&gt; RAM</string>
++        <string>换入方向：磁盘 -&gt; 内存</string>
+        </property>
+        <property name="text">
+         <string>0 KB/s</string>
+@@ -262,17 +262,17 @@
+      <item row="1" column="2">
+       <widget class="QLabel" name="swapOutLabel">
+        <property name="toolTip">
+-        <string>Swap out direction: RAM -&gt; disk</string>
++        <string>换出方向：内存 -&gt; 磁盘</string>
+        </property>
+        <property name="text">
+-        <string>Swap out</string>
++        <string>换出</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLabel" name="outRateValueLabel">
+        <property name="toolTip">
+-        <string>Swap out direction: RAM -&gt; disk</string>
++        <string>换出方向：内存 -&gt; 磁盘</string>
+        </property>
+        <property name="text">
+         <string>0 KB/s</string>
+diff --git a/src/perf/swapgrapharea.cpp b/src/perf/swapgrapharea.cpp
+index 73dcb1d..9543979 100644
+--- a/src/perf/swapgrapharea.cpp
++++ b/src/perf/swapgrapharea.cpp
+@@ -39,7 +39,7 @@ SwapGraphArea::SwapGraphArea(QWidget *parent) : QWidget(parent), m_stack(new QSt
+     this->m_overallGraph->SetSampleCapacity(CFG->PerfGraphWindowSec);
+     this->m_overallGraph->SetGridColumns(6);
+     this->m_overallGraph->SetGridRows(4);
+-    this->m_overallGraph->SetSeriesNames(tr("Swap usage"));
++    this->m_overallGraph->SetSeriesNames(tr("交换空间使用"));
+     this->m_overallGraph->SetValueFormat(GraphWidget::ValueFormat::Percent);
+     this->m_overallGraph->SetColor(scheme->SwapUsageGraphLineColor, scheme->SwapUsageGraphFillColor);
+     this->m_stack->addWidget(this->m_overallGraph);
+diff --git a/src/performancewidget.cpp b/src/performancewidget.cpp
+index d78a85f..e4142c3 100644
+--- a/src/performancewidget.cpp
++++ b/src/performancewidget.cpp
+@@ -222,7 +222,7 @@ void PerformanceWidget::setupSidePanel()
+     ////////////////////////////////////////////////////////////////////////////////////////////////////
+     // Memory item
+     ////////////////////////////////////////////////////////////////////////////////////////////////////
+-    this->m_memoryItem = new Perf::SidePanelItem(tr("Memory"), this);
++    this->m_memoryItem = new Perf::SidePanelItem(tr("内存"), this);
+     this->m_memoryItem->SetGraphColor(scheme->MemoryGraphLineColor, scheme->MemoryGraphFillColor);
+     this->m_memoryItem->SetGraphSource(Metrics::GetMemory()->MemHistory());
+     this->m_sidePanel->AddItem(this->m_memoryItem);
+@@ -232,7 +232,7 @@ void PerformanceWidget::setupSidePanel()
+     ////////////////////////////////////////////////////////////////////////////////////////////////////
+     // Swap item
+     ////////////////////////////////////////////////////////////////////////////////////////////////////
+-    this->m_swapItem = new Perf::SidePanelItem(tr("Swap"), this);
++    this->m_swapItem = new Perf::SidePanelItem(tr("交换空间"), this);
+     this->m_swapItem->SetGraphColor(scheme->SwapUsageGraphLineColor, scheme->SwapUsageGraphFillColor);
+     this->m_swapItem->SetGraphSource(Metrics::GetSwap()->SwapUsageHistory());
+     this->m_sidePanel->AddItem(this->m_swapItem);
+@@ -253,7 +253,7 @@ void PerformanceWidget::setupDiskPanels()
+         const Storage::DiskInfo &disk = Metrics::GetStorage()->FromIndex(i);
+         this->m_diskNames.append(disk.Name);
+ 
+-        auto *item = new Perf::SidePanelItem(tr("Disk (%1)").arg(disk.Name), this);
++        auto *item = new Perf::SidePanelItem(tr("磁盘（%1）").arg(disk.Name), this);
+         item->SetGraphColor(scheme->DiskGraphLineColor, scheme->DiskGraphFillColor);
+         item->SetGraphSource(disk.ActiveHistory);
+         this->m_sidePanel->AddItem(item);
+@@ -299,7 +299,7 @@ void PerformanceWidget::setupNetworkPanels()
+         const Network::NetworkInfo &network = Metrics::GetNetwork()->FromIndex(i);
+         this->m_networkNames.append(network.Name);
+ 
+-        auto *item = new Perf::SidePanelItem(tr("NIC (%1)").arg(network.Name), this);
++        auto *item = new Perf::SidePanelItem(tr("网卡（%1）").arg(network.Name), this);
+         item->SetGraphColor(scheme->NetworkGraphLineColor, scheme->NetworkGraphFillColor);
+         item->SetGraphSource(network.RxHistory, 1024.0);
+         this->m_sidePanel->AddItem(item);
+@@ -323,7 +323,7 @@ void PerformanceWidget::onProviderUpdated()
+     const double cpuPct = Metrics::GetCPU()->CpuPercent();
+     const int cpuTempC = Metrics::GetCPU()->CpuTemperatureC();
+     const QString cpuSub = (cpuTempC >= 0)
+-                           ? tr("%1%2 %3C", "%1=value %2=percent sign %3=temperature in Celsius")
++                           ? tr("%1%2 %3°C", "%1=value %2=percent sign %3=temperature in Celsius")
+                                  .arg(QString::number(cpuPct, 'f', 0), "%", QString::number(cpuTempC))
+                            : QString::number(cpuPct, 'f', 0) + "%";
+     if (CFG->PerfShowCpu)
+@@ -357,7 +357,7 @@ void PerformanceWidget::onProviderUpdated()
+                        QString::number(swapPct));
+     } else
+     {
+-        swapSub = tr("Off");
++        swapSub = tr("已关闭");
+     }
+ 
+     if (CFG->PerfShowSwap)
+@@ -393,7 +393,7 @@ void PerformanceWidget::onProviderUpdated()
+             const QString utilText = tr("%1%2", "%1=GPU utilization value %2=percent sign").arg(QString::number(gpu.UtilPct, 'f', 0), "%");
+             const int tempC = gpu.TemperatureC;
+             const QString sub = (tempC >= 0)
+-                                ? tr("%1 %2C", "%1=GPU utilization %2=temperature in Celsius")
++                                ? tr("%1 %2°C", "%1=GPU utilization %2=temperature in Celsius")
+                                       .arg(utilText, QString::number(tempC))
+                                 : utilText;
+             item->Update(sub);
+@@ -417,7 +417,7 @@ void PerformanceWidget::onProviderUpdated()
+             const QString downloadRate = CFG->PerfNetworkUseBits
+                                          ? Misc::FormatBitsPerSecond(network.RxBps)
+                                          : Misc::FormatBytesPerSecond(network.RxBps);
+-            const QString netSub = tr("U:%1 D:%2", "%1=upload rate %2=download rate").arg(uploadRate, downloadRate);
++            const QString netSub = tr("上传：%1 下载：%2", "%1=upload rate %2=download rate").arg(uploadRate, downloadRate);
+             item->Update(netSub, network.MaxThroughputBps);
+         }
+     }
+@@ -481,10 +481,10 @@ void PerformanceWidget::onSidePanelContextMenu(Perf::SidePanelItem * /*item*/, c
+     }
+ 
+     menu.addSeparator();
+-    QMenu *settingsMenu = menu.addMenu(tr("Settings"));
+-    QAction *customizeOrder = settingsMenu->addAction(tr("Customize order..."));
+-    QAction *customizeColors = settingsMenu->addAction(tr("Customize colors..."));
+-    QAction *showGrid = settingsMenu->addAction(tr("Show grid in side panel"));
++    QMenu *settingsMenu = menu.addMenu(tr("设置"));
++    QAction *customizeOrder = settingsMenu->addAction(tr("自定义顺序..."));
++    QAction *customizeColors = settingsMenu->addAction(tr("自定义颜色..."));
++    QAction *showGrid = settingsMenu->addAction(tr("在侧栏中显示网格"));
+     showGrid->setCheckable(true);
+     showGrid->setChecked(CFG->SidePanelGridEnabled);
+ 
+@@ -712,7 +712,7 @@ void PerformanceWidget::applySidePanelGridEnabled()
+ 
+ void PerformanceWidget::tagTimeAxisLabels()
+ {
+-    static const QRegularExpression kSecondsRe("^[0-9]+\\s+seconds$");
++    static const QRegularExpression kSecondsRe("^[0-9]+\\s+秒$");
+     for (QLabel *label : this->findChildren<QLabel *>())
+     {
+         if (!label)
+diff --git a/src/processeswidget.cpp b/src/processeswidget.cpp
+index 7a1a400..eea97f3 100644
+--- a/src/processeswidget.cpp
++++ b/src/processeswidget.cpp
+@@ -588,19 +588,19 @@ void ProcessesWidget::onTableContextMenu(const QPoint &pos)
+     QMenu menu(this);
+ 
+     // ── Copy submenu ────────────────────────────────────────────────────────
+-    QMenu *copyMenu = menu.addMenu(tr("Copy"));
++    QMenu *copyMenu = menu.addMenu(tr("复制"));
+ 
+-    QAction *copyRowAct = copyMenu->addAction(tr("Entire row"));
++    QAction *copyRowAct = copyMenu->addAction(tr("整行"));
+     copyRowAct->setEnabled(hasRowTarget);
+     connect(copyRowAct, &QAction::triggered, this, &ProcessesWidget::copyRowSelectionToClipboard);
+ 
+-    QAction *copyCellAct = copyMenu->addAction(tr("Selected cell"));
++    QAction *copyCellAct = copyMenu->addAction(tr("所选单元格"));
+     copyCellAct->setEnabled(hasTargetCell && !multipleRowsSelected);
+     connect(copyCellAct, &QAction::triggered, this, &ProcessesWidget::copyCellSelectionToClipboard);
+ 
+     QString copyPIDLabel;
+     if (multipleRowsSelected)
+-        copyPIDLabel = tr("PIDs");
++        copyPIDLabel = tr("PID 列表");
+     else
+         copyPIDLabel = tr("PID");
+ 
+@@ -611,43 +611,43 @@ void ProcessesWidget::onTableContextMenu(const QPoint &pos)
+     menu.addSeparator();
+ 
+     // ── View submenu — always visible ────────────────────────────────────────
+-    QMenu *viewMenu = menu.addMenu(tr("View"));
++    QMenu *viewMenu = menu.addMenu(tr("视图"));
+ 
+-    QAction *kernelAct = viewMenu->addAction(tr("Kernel tasks"));
++    QAction *kernelAct = viewMenu->addAction(tr("内核任务"));
+     kernelAct->setCheckable(true);
+     kernelAct->setChecked(this->m_proxy->ShowKernelTasks);
+     connect(kernelAct, &QAction::toggled, this, &ProcessesWidget::setShowKernelTasks);
+ 
+-    QAction *otherUsersAct = viewMenu->addAction(tr("Processes of other users"));
++    QAction *otherUsersAct = viewMenu->addAction(tr("其他用户的进程"));
+     otherUsersAct->setCheckable(true);
+     otherUsersAct->setChecked(this->m_proxy->ShowOtherUsersProcs);
+     connect(otherUsersAct, &QAction::toggled, this, &ProcessesWidget::setShowOtherUsersProcesses);
+ 
+     viewMenu->addSeparator();
+-    QAction *tableModeAct = viewMenu->addAction(tr("Table view"));
++    QAction *tableModeAct = viewMenu->addAction(tr("表格视图"));
+     tableModeAct->setCheckable(true);
+     tableModeAct->setChecked(!this->m_treeViewMode);
+     connect(tableModeAct, &QAction::triggered, this, [this]() { this->setTreeViewMode(false); });
+ 
+-    QAction *treeModeAct = viewMenu->addAction(tr("Tree view"));
++    QAction *treeModeAct = viewMenu->addAction(tr("树状视图"));
+     treeModeAct->setCheckable(true);
+     treeModeAct->setChecked(this->m_treeViewMode);
+     connect(treeModeAct, &QAction::triggered, this, [this]() { this->setTreeViewMode(true); });
+     // ── Send signal submenu — requires selection ────────────────────────────
+     menu.addSeparator();
+-    QMenu *signalMenu = menu.addMenu(tr("Send signal"));
++    QMenu *signalMenu = menu.addMenu(tr("发送信号"));
+     signalMenu->setEnabled(hasSelection);
+ 
+     struct { const char *label; int sig; } commonSignals[] =
+     {
+-        { "SIGTERM  (15) — Terminate",   SIGTERM  },
+-        { "SIGKILL   (9) — Kill (force)", SIGKILL  },
+-        { "SIGHUP    (1) — Hangup",       SIGHUP   },
+-        { "SIGSTOP  (19) — Stop",         SIGSTOP  },
+-        { "SIGCONT  (18) — Continue",     SIGCONT  },
+-        { "SIGINT    (2) — Interrupt",    SIGINT   },
+-        { "SIGUSR1  (10) — User 1",       SIGUSR1  },
+-        { "SIGUSR2  (12) — User 2",       SIGUSR2  },
++        { "SIGTERM  (15) — 终止",        SIGTERM  },
++        { "SIGKILL   (9) — 强制结束",    SIGKILL  },
++        { "SIGHUP    (1) — 挂断",        SIGHUP   },
++        { "SIGSTOP  (19) — 停止",        SIGSTOP  },
++        { "SIGCONT  (18) — 继续",        SIGCONT  },
++        { "SIGINT    (2) — 中断",        SIGINT   },
++        { "SIGUSR1  (10) — 用户信号 1",  SIGUSR1  },
++        { "SIGUSR2  (12) — 用户信号 2",  SIGUSR2  },
+     };
+     for (const auto &s : commonSignals)
+     {
+@@ -660,23 +660,23 @@ void ProcessesWidget::onTableContextMenu(const QPoint &pos)
+     }
+ 
+     signalMenu->addSeparator();
+-    QAction *customSig = signalMenu->addAction(tr("Custom signal..."));
++    QAction *customSig = signalMenu->addAction(tr("自定义信号..."));
+     connect(customSig, &QAction::triggered, this, &ProcessesWidget::promptAndSendCustomSignal);
+ 
+     // ── Quick-access kill / term — requires selection ───────────────────────
+     menu.addSeparator();
+-    QAction *termAction = menu.addAction(tr("Terminate  (SIGTERM)"));
++    QAction *termAction = menu.addAction(tr("终止（SIGTERM）"));
+     termAction->setEnabled(hasSelection);
+     connect(termAction, &QAction::triggered, this, &ProcessesWidget::terminateSelectedProcesses);
+ 
+-    QAction *killAction = menu.addAction(tr("Kill  (SIGKILL)"));
++    QAction *killAction = menu.addAction(tr("结束进程（SIGKILL）"));
+     killAction->setEnabled(hasSelection);
+     killAction->setIcon(style()->standardIcon(QStyle::SP_MessageBoxCritical));
+     connect(killAction, &QAction::triggered, this, &ProcessesWidget::killSelectedProcesses);
+ 
+     // ── Priority ─────────────────────────────────────────────────────────────
+     menu.addSeparator();
+-    QAction *reniceAction = menu.addAction(tr("Change priority (renice)..."));
++    QAction *reniceAction = menu.addAction(tr("更改优先级（renice）..."));
+     reniceAction->setEnabled(hasSelection);
+     connect(reniceAction, &QAction::triggered, this, &ProcessesWidget::reniceSelected);
+ 
+@@ -697,24 +697,24 @@ void ProcessesWidget::onTreeContextMenu(const QPoint &pos)
+     this->m_tableContextMenuOpen = true;
+     QMenu menu(this);
+ 
+-    QMenu *viewMenu = menu.addMenu(tr("View"));
+-    QAction *kernelAct = viewMenu->addAction(tr("Kernel tasks"));
++    QMenu *viewMenu = menu.addMenu(tr("视图"));
++    QAction *kernelAct = viewMenu->addAction(tr("内核任务"));
+     kernelAct->setCheckable(true);
+     kernelAct->setChecked(this->m_proxy->ShowKernelTasks);
+     connect(kernelAct, &QAction::toggled, this, &ProcessesWidget::setShowKernelTasks);
+ 
+-    QAction *otherUsersAct = viewMenu->addAction(tr("Processes of other users"));
++    QAction *otherUsersAct = viewMenu->addAction(tr("其他用户的进程"));
+     otherUsersAct->setCheckable(true);
+     otherUsersAct->setChecked(this->m_proxy->ShowOtherUsersProcs);
+     connect(otherUsersAct, &QAction::toggled, this, &ProcessesWidget::setShowOtherUsersProcesses);
+ 
+     viewMenu->addSeparator();
+-    QAction *tableModeAct = viewMenu->addAction(tr("Table view"));
++    QAction *tableModeAct = viewMenu->addAction(tr("表格视图"));
+     tableModeAct->setCheckable(true);
+     tableModeAct->setChecked(!this->m_treeViewMode);
+     connect(tableModeAct, &QAction::triggered, this, [this]() { this->setTreeViewMode(false); });
+ 
+-    QAction *treeModeAct = viewMenu->addAction(tr("Tree view"));
++    QAction *treeModeAct = viewMenu->addAction(tr("树状视图"));
+     treeModeAct->setCheckable(true);
+     treeModeAct->setChecked(this->m_treeViewMode);
+     connect(treeModeAct, &QAction::triggered, this, [this]() { this->setTreeViewMode(true); });
+@@ -722,16 +722,16 @@ void ProcessesWidget::onTreeContextMenu(const QPoint &pos)
+     const QList<pid_t> pids = this->selectedPids();
+     const bool hasSelection = !pids.isEmpty();
+     menu.addSeparator();
+-    QAction *termAction = menu.addAction(tr("Terminate  (SIGTERM)"));
++    QAction *termAction = menu.addAction(tr("终止（SIGTERM）"));
+     termAction->setEnabled(hasSelection);
+     connect(termAction, &QAction::triggered, this, &ProcessesWidget::terminateSelectedProcesses);
+ 
+-    QAction *killAction = menu.addAction(tr("Kill  (SIGKILL)"));
++    QAction *killAction = menu.addAction(tr("结束进程（SIGKILL）"));
+     killAction->setEnabled(hasSelection);
+     killAction->setIcon(style()->standardIcon(QStyle::SP_MessageBoxCritical));
+     connect(killAction, &QAction::triggered, this, &ProcessesWidget::killSelectedProcesses);
+ 
+-    QAction *reniceAction = menu.addAction(tr("Change priority (renice)..."));
++    QAction *reniceAction = menu.addAction(tr("更改优先级（renice）..."));
+     reniceAction->setEnabled(hasSelection);
+     connect(reniceAction, &QAction::triggered, this, &ProcessesWidget::reniceSelected);
+ 
+@@ -758,7 +758,7 @@ void ProcessesWidget::updateStatusBar()
+     qlonglong totalThreads = 0;
+     for (const OS::Process &p : all)
+         totalThreads += qMax(0, p.Threads);
+-    const QString text = tr("Tasks: %1  Threads: %2").arg(totalTasks).arg(totalThreads);
++    const QString text = tr("任务：%1  线程：%2").arg(totalTasks).arg(totalThreads);
+ 
+     this->ui->statusLabel->setText(text);
+ }
+@@ -842,8 +842,8 @@ void ProcessesWidget::promptAndSendCustomSignal()
+     bool ok = false;
+     const int sig = QInputDialog::getInt(
+         this,
+-        tr("Send custom signal"),
+-        tr("Signal number:"),
++        tr("发送自定义信号"),
++        tr("信号编号："),
+         1, 1, 64, 1, &ok);
+     if (ok)
+         this->sendSignalToSelected(sig);
+@@ -859,13 +859,13 @@ void ProcessesWidget::openTerminal()
+     const QString terminal = findTerminalExecutable();
+     if (terminal.isEmpty())
+     {
+-        QMessageBox::warning(this, tr("Open terminal failed"), tr("No supported terminal emulator was found on this system."));
++        QMessageBox::warning(this, tr("打开终端失败"), tr("未在此系统上找到支持的终端模拟器。"));
+         return;
+     }
+ 
+     if (!QProcess::startDetached(terminal, {}))
+     {
+-        QMessageBox::warning(this, tr("Open terminal failed"), tr("Failed to start terminal: %1").arg(terminal));
++        QMessageBox::warning(this, tr("打开终端失败"), tr("启动终端失败：%1").arg(terminal));
+         return;
+     }
+ 
+@@ -1032,15 +1032,15 @@ void ProcessesWidget::sendSignalToSelected(int signal)
+     QString body;
+     if (pids.size() == 1)
+     {
+-        body = tr("You are about to send signal %1 to process PID %2.\n\n"
+-                  "Do you want to continue?")
++        body = tr("即将向进程 PID %2 发送信号 %1。\n\n"
++                  "是否继续？")
+                    .arg(signalText, pidStrings.first());
+     } else
+     {
+-        body = tr("You are about to send signal %1 to %2 selected processes.\n"
+-                  "This will affect all selected processes.\n\n"
+-                  "PIDs: %3\n\n"
+-                  "Do you want to continue?")
++        body = tr("即将向 %2 个选中的进程发送信号 %1。\n"
++                  "这将影响所有选中的进程。\n\n"
++                  "PID：%3\n\n"
++                  "是否继续？")
+                    .arg(signalText, QString::number(pids.size()), pidStrings.join(", "));
+     }
+ 
+@@ -1061,14 +1061,14 @@ void ProcessesWidget::sendSignalToSelected(int signal)
+         {
+             const QString userHint = otherUsers.isEmpty()
+                                      ? QString()
+-                                     : tr("\nTarget owners: %1").arg(otherUsers.join(", "));
+-            body += tr("\n\nWarning: one or more selected processes are owned by another user. "
+-                       "This application is running without superuser privileges, so this signal will most likely be rejected and nothing will happen.")
++                                     : tr("\n目标所有者：%1").arg(otherUsers.join(", "));
++            body += tr("\n\n警告：一个或多个选中的进程属于其他用户。"
++                       "当前应用没有超级用户权限，因此该信号很可能会被拒绝且不会产生任何效果。")
+                     + userHint;
+         }
+     }
+ 
+-    const QMessageBox::StandardButton answer = QMessageBox::warning(this, tr("Confirm Signal"), body, QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
++    const QMessageBox::StandardButton answer = QMessageBox::warning(this, tr("确认信号"), body, QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+     if (answer != QMessageBox::Yes)
+         return;
+ 
+@@ -1088,7 +1088,7 @@ void ProcessesWidget::sendSignalToSelected(int signal)
+ 
+     if (!errors.isEmpty())
+     {
+-        QMessageBox::warning(this, tr("Signal failed"), errors.join('\n'));
++        QMessageBox::warning(this, tr("发送信号失败"), errors.join('\n'));
+     }
+ }
+ 
+@@ -1099,7 +1099,7 @@ void ProcessesWidget::reniceSelected()
+         return;
+ 
+     bool ok;
+-    const int nice = QInputDialog::getInt(this, tr("Change priority"), tr("Nice value (-20 = highest priority, 19 = lowest):"), 0, -20, 19, 1, &ok);
++    const int nice = QInputDialog::getInt(this, tr("更改优先级"), tr("Nice 值（-20 = 最高优先级，19 = 最低）："), 0, -20, 19, 1, &ok);
+     if (!ok)
+         return;
+ 
+@@ -1119,7 +1119,7 @@ void ProcessesWidget::reniceSelected()
+ 
+     if (!errors.isEmpty())
+     {
+-        QMessageBox::warning(this, tr("Renice failed"), errors.join('\n'));
++        QMessageBox::warning(this, tr("更改优先级失败"), errors.join('\n'));
+     }
+ }
+ 
+diff --git a/src/processeswidget.ui b/src/processeswidget.ui
+index 97cbc4a..3643d32 100644
+--- a/src/processeswidget.ui
++++ b/src/processeswidget.ui
+@@ -20,24 +20,24 @@
+     <layout class="QHBoxLayout" name="toolbarLayout">
+      <item>
+       <widget class="QLabel" name="searchLabel">
+-       <property name="text"><string>Search:</string></property>
++       <property name="text"><string>搜索：</string></property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="searchEdit">
+-       <property name="placeholderText"><string>Filter processes…</string></property>
++       <property name="placeholderText"><string>筛选进程…</string></property>
+        <property name="clearButtonEnabled"><bool>true</bool></property>
+        <property name="maximumWidth"><number>240</number></property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="runNewTaskButton">
+-       <property name="text"><string>Run new task</string></property>
++       <property name="text"><string>运行新任务</string></property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="openTerminalButton">
+-       <property name="text"><string>Open terminal</string></property>
++       <property name="text"><string>打开终端</string></property>
+       </widget>
+      </item>
+      <item>
+@@ -62,7 +62,7 @@
+    </item>
+    <item>
+     <widget class="QLabel" name="statusLabel">
+-     <property name="text"><string>Tasks: 0</string></property>
++     <property name="text"><string>任务：0</string></property>
+      <property name="alignment"><set>Qt::AlignLeft|Qt::AlignVCenter</set></property>
+     </widget>
+    </item>
+diff --git a/src/runtaskdialog.cpp b/src/runtaskdialog.cpp
+index 5331db7..2415012 100644
+--- a/src/runtaskdialog.cpp
++++ b/src/runtaskdialog.cpp
+@@ -92,7 +92,7 @@ void RunTaskDialog::accept()
+     QString error;
+     if (!this->startDetachedCommand(command, &error))
+     {
+-        QMessageBox::warning(this, tr("Run new task failed"), tr("Failed to start command.\n\n%1").arg(error));
++        QMessageBox::warning(this, tr("运行新任务失败"), tr("无法启动命令。\n\n%1").arg(error));
+         return;
+     }
+ 
+@@ -112,7 +112,7 @@ void RunTaskDialog::browseForCommand()
+     if (startDir.isEmpty() || !QDir(startDir).exists())
+         startDir = QStringLiteral("/usr/bin");
+ 
+-    const QString path = QFileDialog::getOpenFileName(this, tr("Select executable"), startDir, tr("All files (*)"));
++    const QString path = QFileDialog::getOpenFileName(this, tr("选择可执行文件"), startDir, tr("所有文件 (*)"));
+     if (path.isEmpty())
+         return;
+ 
+@@ -136,7 +136,7 @@ bool RunTaskDialog::startDetachedCommand(const QString &command, QString *error)
+     if (trimmed.isEmpty())
+     {
+         if (error)
+-            *error = tr("Command is empty");
++            *error = tr("命令为空");
+         return false;
+     }
+ 
+@@ -144,7 +144,7 @@ bool RunTaskDialog::startDetachedCommand(const QString &command, QString *error)
+     if (parts.isEmpty())
+     {
+         if (error)
+-            *error = tr("Command is empty");
++            *error = tr("命令为空");
+         return false;
+     }
+ 
+@@ -153,7 +153,7 @@ bool RunTaskDialog::startDetachedCommand(const QString &command, QString *error)
+     if (executable.isEmpty())
+     {
+         if (error)
+-            *error = tr("Executable was not found: %1").arg(program);
++            *error = tr("未找到可执行文件：%1").arg(program);
+         return false;
+     }
+ 
+@@ -161,14 +161,14 @@ bool RunTaskDialog::startDetachedCommand(const QString &command, QString *error)
+     if (!executableInfo.exists())
+     {
+         if (error)
+-            *error = tr("Executable does not exist: %1").arg(executable);
++            *error = tr("可执行文件不存在：%1").arg(executable);
+         return false;
+     }
+ 
+     if (!executableInfo.isExecutable())
+     {
+         if (error)
+-            *error = tr("File is not executable: %1").arg(executable);
++            *error = tr("文件不可执行：%1").arg(executable);
+         return false;
+     }
+ 
+@@ -178,7 +178,7 @@ bool RunTaskDialog::startDetachedCommand(const QString &command, QString *error)
+         return true;
+ 
+     if (error)
+-        *error = tr("Failed to start executable: %1").arg(executable);
++        *error = tr("启动可执行文件失败：%1").arg(executable);
+     return false;
+ }
+ 
+diff --git a/src/runtaskdialog.ui b/src/runtaskdialog.ui
+index f6290b1..5cedec2 100644
+--- a/src/runtaskdialog.ui
++++ b/src/runtaskdialog.ui
+@@ -11,7 +11,7 @@
+    </rect>
+   </property>
+   <property name="windowTitle">
+-   <string>Run new task</string>
++   <string>运行新任务</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+@@ -19,7 +19,7 @@
+      <item row="0" column="0">
+       <widget class="QLabel" name="openLabel">
+        <property name="text">
+-        <string>Open:</string>
++        <string>打开：</string>
+        </property>
+       </widget>
+      </item>
+@@ -70,7 +70,7 @@
+    <item>
+     <widget class="QLabel" name="hintLabel">
+      <property name="text">
+-      <string>Enter an executable name or path, with optional arguments</string>
++      <string>输入可执行文件名称或路径，可附带可选参数</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+diff --git a/src/serviceswidget.cpp b/src/serviceswidget.cpp
+index b2e856a..7ac13d7 100644
+--- a/src/serviceswidget.cpp
++++ b/src/serviceswidget.cpp
+@@ -178,14 +178,14 @@ void ServicesWidget::onRefreshFinished(quint64 token, bool systemdAvailable, con
+     {
+         this->ui->tableView->setVisible(false);
+         this->ui->unavailableLabel->setVisible(true);
+-        this->ui->unavailableLabel->setText(tr("systemd required (%1)").arg(reason));
+-        this->ui->statusLabel->setText(tr("Services unavailable"));
++        this->ui->unavailableLabel->setText(tr("需要 systemd（%1）").arg(reason));
++        this->ui->statusLabel->setText(tr("服务不可用"));
+     } else if (!error.isEmpty())
+     {
+         this->ui->tableView->setVisible(false);
+         this->ui->unavailableLabel->setVisible(true);
+-        this->ui->unavailableLabel->setText(tr("Failed to query services: %1").arg(error));
+-        this->ui->statusLabel->setText(tr("Services unavailable"));
++        this->ui->unavailableLabel->setText(tr("查询服务失败：%1").arg(error));
++        this->ui->statusLabel->setText(tr("服务不可用"));
+     } else
+     {
+         const UIHelper::TableSelectionSnapshot snapshot = UIHelper::CaptureTableSelection(
+@@ -202,7 +202,7 @@ void ServicesWidget::onRefreshFinished(quint64 token, bool systemdAvailable, con
+         this->ui->unavailableLabel->setVisible(false);
+         this->ui->tableView->setVisible(true);
+         this->m_model->SetServices(services);
+-        this->ui->statusLabel->setText(tr("Services: %1").arg(services.size()));
++        this->ui->statusLabel->setText(tr("服务：%1").arg(services.size()));
+ 
+         UIHelper::RestoreTableSelection(
+             this->ui->tableView,
+@@ -250,9 +250,9 @@ void ServicesWidget::onTableContextMenu(const QPoint &pos)
+     const bool hasSingleTargetService = !targetUnit.isEmpty() && !multipleRowsSelected;
+ 
+     QMenu menu(this);
+-    QMenu *copyMenu = menu.addMenu(tr("Copy"));
++    QMenu *copyMenu = menu.addMenu(tr("复制"));
+ 
+-    QAction *copyRowAct = copyMenu->addAction(tr("Entire row"));
++    QAction *copyRowAct = copyMenu->addAction(tr("整行"));
+     copyRowAct->setEnabled(hasRowTarget);
+     connect(copyRowAct, &QAction::triggered, this, [this, targetIndex, selectedRows, multipleRowsSelected]()
+     {
+@@ -266,7 +266,7 @@ void ServicesWidget::onTableContextMenu(const QPoint &pos)
+         QGuiApplication::clipboard()->setText(UIHelper::GetVisibleRowText(this->ui->tableView, row));
+     });
+ 
+-    QAction *copyCellAct = copyMenu->addAction(tr("Selected cell"));
++    QAction *copyCellAct = copyMenu->addAction(tr("所选单元格"));
+     copyCellAct->setEnabled(hasTargetCell && !multipleRowsSelected);
+     connect(copyCellAct, &QAction::triggered, this, [this, targetIndex]()
+     {
+@@ -275,46 +275,46 @@ void ServicesWidget::onTableContextMenu(const QPoint &pos)
+ 
+     menu.addSeparator();
+ 
+-    QAction *startAct = menu.addAction(tr("Start"));
++    QAction *startAct = menu.addAction(tr("启动"));
+     startAct->setEnabled(hasSingleTargetService);
+     connect(startAct, &QAction::triggered, this, [this, targetUnit]()
+     {
+-        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::Start, tr("start"));
++        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::Start, tr("启动"));
+     });
+ 
+-    QAction *stopAct = menu.addAction(tr("Stop"));
++    QAction *stopAct = menu.addAction(tr("停止"));
+     stopAct->setEnabled(hasSingleTargetService);
+     connect(stopAct, &QAction::triggered, this, [this, targetUnit]()
+     {
+-        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::Stop, tr("stop"));
++        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::Stop, tr("停止"));
+     });
+ 
+-    QAction *restartAct = menu.addAction(tr("Restart"));
++    QAction *restartAct = menu.addAction(tr("重启"));
+     restartAct->setEnabled(hasSingleTargetService);
+     connect(restartAct, &QAction::triggered, this, [this, targetUnit]()
+     {
+-        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::Restart, tr("restart"));
++        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::Restart, tr("重启"));
+     });
+ 
+-    QAction *reloadAct = menu.addAction(tr("Reload"));
++    QAction *reloadAct = menu.addAction(tr("重新加载"));
+     reloadAct->setEnabled(hasSingleTargetService);
+     connect(reloadAct, &QAction::triggered, this, [this, targetUnit]()
+     {
+-        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::Reload, tr("reload"));
++        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::Reload, tr("重新加载"));
+     });
+ 
+-    QAction *tryRestartAct = menu.addAction(tr("Try Restart"));
++    QAction *tryRestartAct = menu.addAction(tr("尝试重启"));
+     tryRestartAct->setEnabled(hasSingleTargetService);
+     connect(tryRestartAct, &QAction::triggered, this, [this, targetUnit]()
+     {
+-        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::TryRestart, tr("try restart"));
++        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::TryRestart, tr("尝试重启"));
+     });
+ 
+-    QAction *reloadOrRestartAct = menu.addAction(tr("Reload Or Restart"));
++    QAction *reloadOrRestartAct = menu.addAction(tr("重新加载或重启"));
+     reloadOrRestartAct->setEnabled(hasSingleTargetService);
+     connect(reloadOrRestartAct, &QAction::triggered, this, [this, targetUnit]()
+     {
+-        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::ReloadOrRestart, tr("reload or restart"));
++        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::ReloadOrRestart, tr("重新加载或重启"));
+     });
+ 
+     menu.addSeparator();
+@@ -351,7 +351,7 @@ void ServicesWidget::manageServiceUnit(const QString &unit, OS::ServiceHelper::U
+     QString error;
+     if (!OS::ServiceHelper::ManageUnit(unit, action, &error))
+     {
+-        QMessageBox::warning(this, tr("Service action failed"), tr("Failed to %1 service %2.\n\n%3").arg(actionLabel, unit, error));
++        QMessageBox::warning(this, tr("服务操作失败"), tr("对服务 %2 执行“%1”操作失败。\n\n%3").arg(actionLabel, unit, error));
+     }
+ 
+     if (this->m_active && !CFG->RefreshPaused)
+diff --git a/src/serviceswidget.ui b/src/serviceswidget.ui
+index ba719c0..92613c1 100644
+--- a/src/serviceswidget.ui
++++ b/src/serviceswidget.ui
+@@ -31,14 +31,14 @@
+      <item>
+       <widget class="QLabel" name="searchLabel">
+        <property name="text">
+-        <string>Search:</string>
++        <string>搜索：</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="searchEdit">
+        <property name="placeholderText">
+-        <string>Filter services…</string>
++        <string>筛选服务…</string>
+        </property>
+        <property name="clearButtonEnabled">
+         <bool>true</bool>
+@@ -69,7 +69,7 @@
+       <bool>false</bool>
+      </property>
+      <property name="text">
+-      <string>systemd required</string>
++      <string>需要 systemd</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+@@ -92,7 +92,7 @@
+    <item>
+     <widget class="QLabel" name="statusLabel">
+      <property name="text">
+-      <string>Services: 0</string>
++      <string>服务：0</string>
+      </property>
+     </widget>
+    </item>
+diff --git a/src/system/gpu/amdsmibackend.cpp b/src/system/gpu/amdsmibackend.cpp
+index eb149df..3eb7073 100644
+--- a/src/system/gpu/amdsmibackend.cpp
++++ b/src/system/gpu/amdsmibackend.cpp
+@@ -374,7 +374,7 @@ bool GpuAmdSmiBackend::Sample(std::vector<std::unique_ptr<GPU::GPUInfo>> &gpus)
+             {
+                 addEngine(QStringLiteral("gfx"), QStringLiteral("GFX"), activity.gfx_activity);
+                 addEngine(QStringLiteral("mem"), QStringLiteral("MEM"), activity.umc_activity);
+-                addEngine(QStringLiteral("media"), QStringLiteral("Media"), activity.mm_activity);
++                addEngine(QStringLiteral("media"), QStringLiteral("媒体"), activity.mm_activity);
+             }
+ 
+             zeroMissingEngines(gpu, seenEngineKeys);
+diff --git a/src/system/gpu/drmbackend.cpp b/src/system/gpu/drmbackend.cpp
+index cbf47ab..68cbe0d 100644
+--- a/src/system/gpu/drmbackend.cpp
++++ b/src/system/gpu/drmbackend.cpp
+@@ -446,17 +446,17 @@ bool GpuDrmBackend::sampleIntelCard(DRMCard &card, GPU::GPUInfo &gpu, qint64 fdI
+         QString label;
+         QString key = it.key();
+         if (key == QLatin1String("rcs"))
+-            label = QStringLiteral("Render");
++            label = QStringLiteral("渲染");
+         else if (key == QLatin1String("ccs"))
+-            label = QStringLiteral("Compute");
++            label = QStringLiteral("计算");
+         else if (key.startsWith(QLatin1String("ccs")))
+-            label = QStringLiteral("Compute ") + key.mid(3);
++            label = QStringLiteral("计算 ") + key.mid(3);
+         else if (key.startsWith(QLatin1String("vcs")))
+-            label = QStringLiteral("Video");
++            label = QStringLiteral("视频");
+         else if (key.startsWith(QLatin1String("vecs")))
+-            label = QStringLiteral("Video Enhance");
++            label = QStringLiteral("视频增强");
+         else if (key.startsWith(QLatin1String("bcs")))
+-            label = QStringLiteral("Copy");
++            label = QStringLiteral("复制");
+         else
+             label = key.toUpper();
+ 
+diff --git a/src/system/gpu/intelsysmanbackend.cpp b/src/system/gpu/intelsysmanbackend.cpp
+index b0c76e6..7f03e8e 100644
+--- a/src/system/gpu/intelsysmanbackend.cpp
++++ b/src/system/gpu/intelsysmanbackend.cpp
+@@ -290,29 +290,29 @@ namespace
+         {
+             case ZES_ENGINE_GROUP_COMPUTE_ALL:
+             case ZES_ENGINE_GROUP_COMPUTE_SINGLE:
+-                return QStringLiteral("Compute");
++                return QStringLiteral("计算");
+             case ZES_ENGINE_GROUP_MEDIA_ALL:
+-                return QStringLiteral("Media");
++                return QStringLiteral("媒体");
+             case ZES_ENGINE_GROUP_COPY_ALL:
+             case ZES_ENGINE_GROUP_COPY_SINGLE:
+-                return QStringLiteral("Copy");
++                return QStringLiteral("复制");
+             case ZES_ENGINE_GROUP_RENDER_SINGLE:
+             case ZES_ENGINE_GROUP_RENDER_ALL:
+-                return QStringLiteral("Render");
++                return QStringLiteral("渲染");
+             case ZES_ENGINE_GROUP_MEDIA_DECODE_SINGLE:
+-                return QStringLiteral("Video Decode");
++                return QStringLiteral("视频解码");
+             case ZES_ENGINE_GROUP_MEDIA_ENCODE_SINGLE:
+-                return QStringLiteral("Video Encode");
++                return QStringLiteral("视频编码");
+             case ZES_ENGINE_GROUP_MEDIA_ENHANCEMENT_SINGLE:
+-                return QStringLiteral("Video Enhance");
++                return QStringLiteral("视频增强");
+             case ZES_ENGINE_GROUP_3D_SINGLE:
+             case ZES_ENGINE_GROUP_3D_ALL:
+                 return QStringLiteral("3D");
+             case ZES_ENGINE_GROUP_3D_RENDER_COMPUTE_ALL:
+-                return QStringLiteral("3D/Render");
++                return QStringLiteral("3D/渲染");
+             case ZES_ENGINE_GROUP_ALL:
+             default:
+-                return QStringLiteral("All");
++                return QStringLiteral("全部");
+         }
+     }
+ 
+diff --git a/src/system/gpu/nvmlbackend.cpp b/src/system/gpu/nvmlbackend.cpp
+index a052e5c..27a80d0 100644
+--- a/src/system/gpu/nvmlbackend.cpp
++++ b/src/system/gpu/nvmlbackend.cpp
+@@ -351,21 +351,21 @@ bool GpuNvmlBackend::Sample(std::vector<std::unique_ptr<GPU::GPUInfo>> &gpus)
+ 
+             addEngine(QStringLiteral("3d"), QStringLiteral("3D"), graphicsUtil);
+             addEngine(QStringLiteral("cuda"), QStringLiteral("CUDA"), computeUtil);
+-            addEngine(QStringLiteral("copy"), QStringLiteral("Copy"), util.memory);
++            addEngine(QStringLiteral("copy"), QStringLiteral("复制"), util.memory);
+         }
+         if (pNvmlDeviceGetEncoderUtilization)
+         {
+             unsigned int enc = 0;
+             unsigned int sampling = 0;
+             if (pNvmlDeviceGetEncoderUtilization(dev, &enc, &sampling) == NVML_SUCCESS)
+-                addEngine(QStringLiteral("video-encode"), QStringLiteral("Video Encode"), enc);
++                addEngine(QStringLiteral("video-encode"), QStringLiteral("视频编码"), enc);
+         }
+         if (pNvmlDeviceGetDecoderUtilization)
+         {
+             unsigned int dec = 0;
+             unsigned int sampling = 0;
+             if (pNvmlDeviceGetDecoderUtilization(dev, &dec, &sampling) == NVML_SUCCESS)
+-                addEngine(QStringLiteral("video-decode"), QStringLiteral("Video Decode"), dec);
++                addEngine(QStringLiteral("video-decode"), QStringLiteral("视频解码"), dec);
+         }
+ 
+         zeroMissingEngines(gpu, seenEngineKeys);
+diff --git a/src/system/network.cpp b/src/system/network.cpp
+index ffd3081..cdd593f 100644
+--- a/src/system/network.cpp
++++ b/src/system/network.cpp
+@@ -58,12 +58,12 @@ QString Network::networkTypeFromArpType(int arpType)
+ {
+     // ARPHRD_ETHER (1), ARPHRD_LOOPBACK (772), ARPHRD_IEEE80211* (801+)
+     if (arpType == 1)
+-        return "Ethernet";
++        return QObject::tr("以太网");
+     if (arpType == 772)
+-        return "Loopback";
++        return QObject::tr("回环");
+     if (arpType >= 801 && arpType <= 804)
+         return "Wi-Fi";
+-    return QObject::tr("Network");
++    return QObject::tr("网络");
+ }
+ 
+ int Network::readLinkSpeedMbps(const QString &name)
+diff --git a/src/system/storage.cpp b/src/system/storage.cpp
+index e7f9bc2..2ae499b 100644
+--- a/src/system/storage.cpp
++++ b/src/system/storage.cpp
+@@ -241,7 +241,7 @@ void Storage::refreshDisks(const QSet<QString> &measurableDevices)
+             continue;
+ 
+         const QString model = Misc::ReadFile(QString("/sys/class/block/%1/device/model").arg(name));
+-        d->Model = model.isEmpty() ? QObject::tr("Unknown device") : model;
++        d->Model = model.isEmpty() ? QObject::tr("未知设备") : model;
+ 
+         const QString rotational = Misc::ReadFile(QString("/sys/class/block/%1/queue/rotational").arg(name));
+         if (rotational == "1")
+@@ -249,7 +249,7 @@ void Storage::refreshDisks(const QSet<QString> &measurableDevices)
+         else if (rotational == "0")
+             d->Type = "SSD";
+         else
+-            d->Type = QObject::tr("Unknown");
++            d->Type = QObject::tr("未知");
+ 
+         const qint64 sizeSecs = Misc::ReadFile(QString("/sys/class/block/%1/size").arg(name)).toLongLong();
+         d->CapacityBytes = qMax<qint64>(0, sizeSecs) * 512LL;
+diff --git a/src/ui/uihelper.cpp b/src/ui/uihelper.cpp
+index f649e45..b2dee57 100644
+--- a/src/ui/uihelper.cpp
++++ b/src/ui/uihelper.cpp
+@@ -153,7 +153,7 @@ void UIHelper::AddGlobalContextMenuItems(QMenu *menu, QWidget *parent)
+         return;
+ 
+     menu->addSeparator();
+-    QAction *aboutAction = menu->addAction(QObject::tr("About TuxManager"));
++    QAction *aboutAction = menu->addAction(QObject::tr("关于 TuxManager"));
+     QObject::connect(aboutAction, &QAction::triggered, menu, [menu, parent]()
+     {
+         QWidget *dialogParent = parent ? parent : qobject_cast<QWidget *>(menu->parent());
+@@ -174,7 +174,7 @@ void UIHelper::EnableCopyLabelContextMenu(QLabel *label)
+         text.replace('\r', ' ');
+         text.replace('\n', ' ');
+         QMenu menu(label);
+-        QAction *copyAction = menu.addAction(QObject::tr("Copy"));
++        QAction *copyAction = menu.addAction(QObject::tr("复制"));
+         copyAction->setEnabled(!text.isEmpty() && text != QString::fromUtf8("—"));
+         QObject::connect(copyAction, &QAction::triggered, &menu, [text]()
+         {
+@@ -190,7 +190,7 @@ QAction *UIHelper::AddCopyWidgetAction(QMenu *menu, QWidget *widget, const QStri
+     if (!menu || !widget)
+         return nullptr;
+ 
+-    QAction *copyAction = menu->addAction(text.isEmpty() ? QObject::tr("Copy graph") : text);
++    QAction *copyAction = menu->addAction(text.isEmpty() ? QObject::tr("复制图形") : text);
+     QObject::connect(copyAction, &QAction::triggered, menu, [widget]()
+     {
+         QApplication::clipboard()->setPixmap(widget->grab());
+@@ -200,7 +200,7 @@ QAction *UIHelper::AddCopyWidgetAction(QMenu *menu, QWidget *widget, const QStri
+ 
+ void UIHelper::AddRefreshIntervalContextMenu(QMenu *menu, QTimer *timer, bool timerOwnerActive)
+ {
+-    QMenu *refreshMenu = menu->addMenu(QObject::tr("Refresh interval"));
++    QMenu *refreshMenu = menu->addMenu(QObject::tr("刷新间隔"));
+ 
+     QHash<QAction *, int> intervalActions;
+     intervalActions.clear();
+@@ -229,7 +229,7 @@ void UIHelper::AddRefreshIntervalContextMenu(QMenu *menu, QTimer *timer, bool ti
+ 
+     refreshMenu->addSeparator();
+ 
+-    QAction *pausedAction = refreshMenu->addAction(QObject::tr("Paused"));
++    QAction *pausedAction = refreshMenu->addAction(QObject::tr("已暂停"));
+     pausedAction->setCheckable(true);
+     pausedAction->setChecked(CFG->RefreshPaused);
+ 
+@@ -247,7 +247,7 @@ void UIHelper::AddRefreshIntervalContextMenu(QMenu *menu, QTimer *timer, bool ti
+ 
+ void UIHelper::AddGraphWindowContextMenu(QMenu *menu)
+ {
+-    QMenu *timeMenu = menu->addMenu(QObject::tr("Graph time"));
++    QMenu *timeMenu = menu->addMenu(QObject::tr("图形时间范围"));
+     QVector<int> intervals = CFG->DataWindowAvailableIntervals;
+     if (intervals.isEmpty())
+         intervals.append(CFG->PerfGraphWindowSec);
+@@ -281,7 +281,7 @@ void UIHelper::AddGraphContextMenuItems(QMenu *menu, QWidget *graphArea)
+     AddGraphWindowContextMenu(menu);
+ 
+     menu->addSeparator();
+-    AddCopyWidgetAction(menu, graphArea, QObject::tr("Copy graph"));
++    AddCopyWidgetAction(menu, graphArea, QObject::tr("复制图形"));
+ }
+ 
+ void UIHelper::EnableGraphContextMenu(QWidget *widget)
+diff --git a/src/userswidget.cpp b/src/userswidget.cpp
+index f4adb09..e4ce70e 100644
+--- a/src/userswidget.cpp
++++ b/src/userswidget.cpp
+@@ -64,7 +64,7 @@ namespace
+ 
+     void updateProcessItem(QTreeWidgetItem *item, const OS::Process &proc)
+     {
+-        item->setText(0, QObject::tr("%1 (pid %2)").arg(proc.Name).arg(proc.PID));
++        item->setText(0, QObject::tr("%1（pid %2）").arg(proc.Name).arg(proc.PID));
+         item->setData(0, Qt::UserRole, static_cast<qlonglong>(proc.PID));
+         item->setText(1, QString::number(proc.CPUPercent, 'f', 1) + "%");
+         item->setText(2, Misc::FormatKiB(proc.VMRssKb, 1));
+@@ -82,7 +82,7 @@ UsersWidget::UsersWidget(OS::ProcessRefreshService *processRefreshService, QWidg
+     this->ui->setupUi(this);
+ 
+     this->ui->treeWidget->setColumnCount(3);
+-    this->ui->treeWidget->setHeaderLabels({ tr("User / Process"), tr("CPU"), tr("Memory") });
++    this->ui->treeWidget->setHeaderLabels({ tr("用户 / 进程"), tr("CPU"), tr("内存") });
+     this->ui->treeWidget->setRootIsDecorated(true);
+     this->ui->treeWidget->setAlternatingRowColors(true);
+     this->ui->treeWidget->setAnimated(false);
+@@ -202,7 +202,7 @@ void UsersWidget::onContextMenu(const QPoint &pos)
+ 
+     if (isProcessItem && selectedPid > 0)
+     {
+-        QAction *goToProcessAction = menu.addAction(tr("Go to process"));
++        QAction *goToProcessAction = menu.addAction(tr("转到进程"));
+         connect(goToProcessAction, &QAction::triggered, this, [this, selectedPid]()
+         {
+             emit goToProcessRequested(selectedPid);
+@@ -392,5 +392,5 @@ void UsersWidget::rebuildTree(const QList<OS::Process> &allProcs)
+     if (scrollbar)
+         scrollbar->setValue(scrollPos);
+ 
+-    this->ui->statusLabel->setText(tr("Logged in users: %1").arg(agg.size()));
++    this->ui->statusLabel->setText(tr("已登录用户：%1").arg(agg.size()));
+ }
+diff --git a/src/userswidget.ui b/src/userswidget.ui
+index 192cfca..219261f 100644
+--- a/src/userswidget.ui
++++ b/src/userswidget.ui
+@@ -39,7 +39,7 @@
+      </property>
+      <column>
+       <property name="text">
+-       <string>User / Process</string>
++       <string>用户 / 进程</string>
+       </property>
+      </column>
+      <column>
+@@ -49,7 +49,7 @@
+      </column>
+      <column>
+       <property name="text">
+-       <string>Memory</string>
++       <string>内存</string>
+       </property>
+      </column>
+     </widget>
+@@ -57,7 +57,7 @@
+    <item>
+     <widget class="QLabel" name="statusLabel">
+      <property name="text">
+-      <string>Logged in users: 0</string>
++      <string>已登录用户：0</string>
+      </property>
+     </widget>
+    </item>

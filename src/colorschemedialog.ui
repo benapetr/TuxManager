@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Customize Colors</string>
+   <string>自定义颜色</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="leftMargin">
@@ -29,14 +29,14 @@
    <item>
     <widget class="QCheckBox" name="customCheck">
      <property name="text">
-      <string>Use custom colors</string>
+      <string>使用自定义颜色</string>
      </property>
     </widget>
    </item>
    <item>
     <widget class="QLabel" name="hintLabel">
      <property name="text">
-      <string>When disabled, the default light or dark palette is used automatically.</string>
+      <string>禁用时将自动使用默认的浅色或深色配色方案。</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>

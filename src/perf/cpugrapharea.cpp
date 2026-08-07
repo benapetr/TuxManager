@@ -35,7 +35,7 @@ CpuGraphArea::CpuGraphArea(QWidget *parent) : QWidget(parent), m_stack(new QStac
     // Page 0 — single aggregate graph
     this->m_overallGraph = new GraphWidget(this->m_stack);
     this->m_overallGraph->SetSampleCapacity(CFG->PerfGraphWindowSec);
-    this->m_overallGraph->SetSeriesNames(tr("CPU"), tr("Kernel"));
+    this->m_overallGraph->SetSeriesNames(tr("CPU"), tr("内核"));
     this->m_overallGraph->SetValueFormat(GraphWidget::ValueFormat::Percent);
     this->m_stack->addWidget(this->m_overallGraph);  // index 0
 
@@ -177,7 +177,7 @@ void CpuGraphArea::ensureCoreGraphs(int count)
         g->SetSampleCapacity(CFG->PerfGraphWindowSec);
         g->SetGridColumns(2);
         g->SetGridRows(2);
-        g->SetSeriesNames(tr("CPU %1").arg(i), tr("Kernel"));
+        g->SetSeriesNames(tr("CPU %1").arg(i), tr("内核"));
         g->SetValueFormat(GraphWidget::ValueFormat::Percent);
         g->setToolTip(tr("CPU %1").arg(i));
         g->show();   // explicitly unhide — parent may be on a hidden QStackedWidget page

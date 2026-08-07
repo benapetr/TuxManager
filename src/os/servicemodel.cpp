@@ -99,11 +99,11 @@ QVariant ServiceModel::headerData(int section, Qt::Orientation orientation, int 
 
     switch (static_cast<Column>(section))
     {
-        case ColService:     return tr("Service");
-        case ColLoad:        return tr("Load");
-        case ColActive:      return tr("Active");
-        case ColSubState:    return tr("SubState");
-        case ColDescription: return tr("Description");
+        case ColService:     return tr("服务");
+        case ColLoad:        return tr("加载");
+        case ColActive:      return tr("活动");
+        case ColSubState:    return tr("子状态");
+        case ColDescription: return tr("描述");
         default:             return {};
     }
 }

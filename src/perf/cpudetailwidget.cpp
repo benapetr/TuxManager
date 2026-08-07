@@ -147,7 +147,7 @@ void CpuDetailWidget::onUpdated()
         this->ui->statSpeedValue->setText(tr("—"));
 
     const int cpuTempC = Metrics::GetCPU()->CpuTemperatureC();
-    this->ui->statTempValue->setText(cpuTempC >= 0 ? tr("%1 C").arg(cpuTempC) : tr("—"));
+    this->ui->statTempValue->setText(cpuTempC >= 0 ? tr("%1 °C").arg(cpuTempC) : tr("—"));
 
     this->ui->statProcessesValue->setText(QString::number(Metrics::GetKernel()->ProcessCount()));
     this->ui->statThreadsValue->setText(QString::number(Metrics::GetKernel()->ThreadCount()));
@@ -184,25 +184,25 @@ void CpuDetailWidget::onUpdated()
     {
         const QString vendor = Metrics::GetCPU()->CpuVmVendor();
         if (vendor.isEmpty())
-            this->ui->statVmValue->setText(tr("Yes"));
+            this->ui->statVmValue->setText(tr("是"));
         else
-            this->ui->statVmValue->setText(tr("Yes (%1)").arg(vendor));
+            this->ui->statVmValue->setText(tr("是（%1）").arg(vendor));
     } else
     {
-        this->ui->statVmValue->setText(tr("No"));
+        this->ui->statVmValue->setText(tr("否"));
     }
 }
 
 void CpuDetailWidget::onContextMenuRequested(const QPoint &globalPos)
 {
     QMenu menu(this);
-    menu.setTitle(tr("CPU graph options"));
+    menu.setTitle(tr("CPU 图形选项"));
 
     // ── Change graph to ───────────────────────────────────────────────────────
-    QMenu *graphMenu = menu.addMenu(tr("Change graph to"));
+    QMenu *graphMenu = menu.addMenu(tr("切换图形为"));
 
-    QAction *actOverall  = graphMenu->addAction(tr("Overall utilization"));
-    QAction *actPerCore  = graphMenu->addAction(tr("Logical processors"));
+    QAction *actOverall  = graphMenu->addAction(tr("总体使用率"));
+    QAction *actPerCore  = graphMenu->addAction(tr("逻辑处理器"));
     actOverall->setCheckable(true);
     actPerCore->setCheckable(true);
 
@@ -224,7 +224,7 @@ void CpuDetailWidget::onContextMenuRequested(const QPoint &globalPos)
     menu.addSeparator();
 
     // ── Show kernel times ─────────────────────────────────────────────────────
-    QAction *actKernel = menu.addAction(tr("Show kernel times"));
+    QAction *actKernel = menu.addAction(tr("显示内核时间"));
     actKernel->setCheckable(true);
     actKernel->setChecked(this->m_graphArea->GetShowKernelTime());
     connect(actKernel, &QAction::triggered, this, [this](bool checked)

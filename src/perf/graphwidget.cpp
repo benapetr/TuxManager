@@ -305,16 +305,16 @@ void GraphWidget::mouseMoveEvent(QMouseEvent *event)
         {
             QString tip;
             if (idx1 >= 0)
-                tip += tr("%1: %2").arg(this->m_primaryName, this->formatValue(this->m_data->At(idx1)));
+                tip += tr("%1：%2").arg(this->m_primaryName, this->formatValue(this->m_data->At(idx1)));
             if (idx2 >= 0)
             {
                 if (!tip.isEmpty())
                     tip += "\n";
-                tip += tr("%1: %2").arg(this->m_secondaryName, this->formatValue(this->m_overlayData->At(idx2)));
+                tip += tr("%1：%2").arg(this->m_secondaryName, this->formatValue(this->m_overlayData->At(idx2)));
             }
             const int secAgo = sampleCount - 1 - slot;
             if (!tip.isEmpty())
-                tip += tr("\n%1 s ago").arg(secAgo);
+                tip += tr("\n%1 秒前").arg(secAgo);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             QToolTip::showText(event->globalPosition().toPoint(), tip, this);
 #else

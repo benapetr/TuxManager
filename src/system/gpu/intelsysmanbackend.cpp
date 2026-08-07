@@ -290,29 +290,29 @@ namespace
         {
             case ZES_ENGINE_GROUP_COMPUTE_ALL:
             case ZES_ENGINE_GROUP_COMPUTE_SINGLE:
-                return QStringLiteral("Compute");
+                return QStringLiteral("计算");
             case ZES_ENGINE_GROUP_MEDIA_ALL:
-                return QStringLiteral("Media");
+                return QStringLiteral("媒体");
             case ZES_ENGINE_GROUP_COPY_ALL:
             case ZES_ENGINE_GROUP_COPY_SINGLE:
-                return QStringLiteral("Copy");
+                return QStringLiteral("复制");
             case ZES_ENGINE_GROUP_RENDER_SINGLE:
             case ZES_ENGINE_GROUP_RENDER_ALL:
-                return QStringLiteral("Render");
+                return QStringLiteral("渲染");
             case ZES_ENGINE_GROUP_MEDIA_DECODE_SINGLE:
-                return QStringLiteral("Video Decode");
+                return QStringLiteral("视频解码");
             case ZES_ENGINE_GROUP_MEDIA_ENCODE_SINGLE:
-                return QStringLiteral("Video Encode");
+                return QStringLiteral("视频编码");
             case ZES_ENGINE_GROUP_MEDIA_ENHANCEMENT_SINGLE:
-                return QStringLiteral("Video Enhance");
+                return QStringLiteral("视频增强");
             case ZES_ENGINE_GROUP_3D_SINGLE:
             case ZES_ENGINE_GROUP_3D_ALL:
                 return QStringLiteral("3D");
             case ZES_ENGINE_GROUP_3D_RENDER_COMPUTE_ALL:
-                return QStringLiteral("3D/Render");
+                return QStringLiteral("3D/渲染");
             case ZES_ENGINE_GROUP_ALL:
             default:
-                return QStringLiteral("All");
+                return QStringLiteral("全部");
         }
     }
 

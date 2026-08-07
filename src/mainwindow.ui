@@ -34,7 +34,7 @@
       </property>
       <widget class="QWidget" name="processesTab">
        <attribute name="title">
-        <string>Processes</string>
+        <string>进程</string>
        </attribute>
        <layout class="QVBoxLayout" name="processesLayout">
         <property name="leftMargin">
@@ -53,7 +53,7 @@
       </widget>
       <widget class="QWidget" name="performanceTab">
        <attribute name="title">
-        <string>Performance</string>
+        <string>性能</string>
        </attribute>
        <layout class="QVBoxLayout" name="performanceLayout">
         <property name="leftMargin">
@@ -72,7 +72,7 @@
       </widget>
       <widget class="QWidget" name="usersTab">
        <attribute name="title">
-        <string>Users</string>
+        <string>用户</string>
        </attribute>
        <layout class="QVBoxLayout" name="usersLayout">
         <property name="leftMargin">
@@ -91,7 +91,7 @@
       </widget>
       <widget class="QWidget" name="servicesTab">
        <attribute name="title">
-        <string>Services</string>
+        <string>服务</string>
        </attribute>
        <layout class="QVBoxLayout" name="servicesLayout">
         <property name="leftMargin">

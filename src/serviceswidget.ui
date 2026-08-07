@@ -31,14 +31,14 @@
      <item>
       <widget class="QLabel" name="searchLabel">
        <property name="text">
-        <string>Search:</string>
+        <string>搜索：</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QLineEdit" name="searchEdit">
        <property name="placeholderText">
-        <string>Filter services…</string>
+        <string>筛选服务…</string>
        </property>
        <property name="clearButtonEnabled">
         <bool>true</bool>
@@ -69,7 +69,7 @@
       <bool>false</bool>
      </property>
      <property name="text">
-      <string>systemd required</string>
+      <string>需要 systemd</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -92,7 +92,7 @@
    <item>
     <widget class="QLabel" name="statusLabel">
      <property name="text">
-      <string>Services: 0</string>
+      <string>服务：0</string>
      </property>
     </widget>
    </item>

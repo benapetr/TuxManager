@@ -446,17 +446,17 @@ bool GpuDrmBackend::sampleIntelCard(DRMCard &card, GPU::GPUInfo &gpu, qint64 fdI
         QString label;
         QString key = it.key();
         if (key == QLatin1String("rcs"))
-            label = QStringLiteral("Render");
+            label = QStringLiteral("渲染");
         else if (key == QLatin1String("ccs"))
-            label = QStringLiteral("Compute");
+            label = QStringLiteral("计算");
         else if (key.startsWith(QLatin1String("ccs")))
-            label = QStringLiteral("Compute ") + key.mid(3);
+            label = QStringLiteral("计算 ") + key.mid(3);
         else if (key.startsWith(QLatin1String("vcs")))
-            label = QStringLiteral("Video");
+            label = QStringLiteral("视频");
         else if (key.startsWith(QLatin1String("vecs")))
-            label = QStringLiteral("Video Enhance");
+            label = QStringLiteral("视频增强");
         else if (key.startsWith(QLatin1String("bcs")))
-            label = QStringLiteral("Copy");
+            label = QStringLiteral("复制");
         else
             label = key.toUpper();
 

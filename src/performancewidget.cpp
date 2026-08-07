@@ -222,7 +222,7 @@ void PerformanceWidget::setupSidePanel()
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     // Memory item
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    this->m_memoryItem = new Perf::SidePanelItem(tr("Memory"), this);
+    this->m_memoryItem = new Perf::SidePanelItem(tr("内存"), this);
     this->m_memoryItem->SetGraphColor(scheme->MemoryGraphLineColor, scheme->MemoryGraphFillColor);
     this->m_memoryItem->SetGraphSource(Metrics::GetMemory()->MemHistory());
     this->m_sidePanel->AddItem(this->m_memoryItem);
@@ -232,7 +232,7 @@ void PerformanceWidget::setupSidePanel()
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     // Swap item
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    this->m_swapItem = new Perf::SidePanelItem(tr("Swap"), this);
+    this->m_swapItem = new Perf::SidePanelItem(tr("交换空间"), this);
     this->m_swapItem->SetGraphColor(scheme->SwapUsageGraphLineColor, scheme->SwapUsageGraphFillColor);
     this->m_swapItem->SetGraphSource(Metrics::GetSwap()->SwapUsageHistory());
     this->m_sidePanel->AddItem(this->m_swapItem);
@@ -253,7 +253,7 @@ void PerformanceWidget::setupDiskPanels()
         const Storage::DiskInfo &disk = Metrics::GetStorage()->FromIndex(i);
         this->m_diskNames.append(disk.Name);
 
-        auto *item = new Perf::SidePanelItem(tr("Disk (%1)").arg(disk.Name), this);
+        auto *item = new Perf::SidePanelItem(tr("磁盘（%1）").arg(disk.Name), this);
         item->SetGraphColor(scheme->DiskGraphLineColor, scheme->DiskGraphFillColor);
         item->SetGraphSource(disk.ActiveHistory);
         this->m_sidePanel->AddItem(item);
@@ -299,7 +299,7 @@ void PerformanceWidget::setupNetworkPanels()
         const Network::NetworkInfo &network = Metrics::GetNetwork()->FromIndex(i);
         this->m_networkNames.append(network.Name);
 
-        auto *item = new Perf::SidePanelItem(tr("NIC (%1)").arg(network.Name), this);
+        auto *item = new Perf::SidePanelItem(tr("网卡（%1）").arg(network.Name), this);
         item->SetGraphColor(scheme->NetworkGraphLineColor, scheme->NetworkGraphFillColor);
         item->SetGraphSource(network.RxHistory, 1024.0);
         this->m_sidePanel->AddItem(item);
@@ -323,7 +323,7 @@ void PerformanceWidget::onProviderUpdated()
     const double cpuPct = Metrics::GetCPU()->CpuPercent();
     const int cpuTempC = Metrics::GetCPU()->CpuTemperatureC();
     const QString cpuSub = (cpuTempC >= 0)
-                           ? tr("%1%2 %3C", "%1=value %2=percent sign %3=temperature in Celsius")
+                           ? tr("%1%2 %3°C", "%1=value %2=percent sign %3=temperature in Celsius")
                                  .arg(QString::number(cpuPct, 'f', 0), "%", QString::number(cpuTempC))
                            : QString::number(cpuPct, 'f', 0) + "%";
     if (CFG->PerfShowCpu)
@@ -357,7 +357,7 @@ void PerformanceWidget::onProviderUpdated()
                        QString::number(swapPct));
     } else
     {
-        swapSub = tr("Off");
+        swapSub = tr("已关闭");
     }
 
     if (CFG->PerfShowSwap)
@@ -393,7 +393,7 @@ void PerformanceWidget::onProviderUpdated()
             const QString utilText = tr("%1%2", "%1=GPU utilization value %2=percent sign").arg(QString::number(gpu.UtilPct, 'f', 0), "%");
             const int tempC = gpu.TemperatureC;
             const QString sub = (tempC >= 0)
-                                ? tr("%1 %2C", "%1=GPU utilization %2=temperature in Celsius")
+                                ? tr("%1 %2°C", "%1=GPU utilization %2=temperature in Celsius")
                                       .arg(utilText, QString::number(tempC))
                                 : utilText;
             item->Update(sub);
@@ -417,7 +417,7 @@ void PerformanceWidget::onProviderUpdated()
             const QString downloadRate = CFG->PerfNetworkUseBits
                                          ? Misc::FormatBitsPerSecond(network.RxBps)
                                          : Misc::FormatBytesPerSecond(network.RxBps);
-            const QString netSub = tr("U:%1 D:%2", "%1=upload rate %2=download rate").arg(uploadRate, downloadRate);
+            const QString netSub = tr("上传：%1 下载：%2", "%1=upload rate %2=download rate").arg(uploadRate, downloadRate);
             item->Update(netSub, network.MaxThroughputBps);
         }
     }
@@ -481,10 +481,10 @@ void PerformanceWidget::onSidePanelContextMenu(Perf::SidePanelItem * /*item*/, c
     }
 
     menu.addSeparator();
-    QMenu *settingsMenu = menu.addMenu(tr("Settings"));
-    QAction *customizeOrder = settingsMenu->addAction(tr("Customize order..."));
-    QAction *customizeColors = settingsMenu->addAction(tr("Customize colors..."));
-    QAction *showGrid = settingsMenu->addAction(tr("Show grid in side panel"));
+    QMenu *settingsMenu = menu.addMenu(tr("设置"));
+    QAction *customizeOrder = settingsMenu->addAction(tr("自定义顺序..."));
+    QAction *customizeColors = settingsMenu->addAction(tr("自定义颜色..."));
+    QAction *showGrid = settingsMenu->addAction(tr("在侧栏中显示网格"));
     showGrid->setCheckable(true);
     showGrid->setChecked(CFG->SidePanelGridEnabled);
 
@@ -712,7 +712,7 @@ void PerformanceWidget::applySidePanelGridEnabled()
 
 void PerformanceWidget::tagTimeAxisLabels()
 {
-    static const QRegularExpression kSecondsRe("^[0-9]+\\s+seconds$");
+    static const QRegularExpression kSecondsRe("^[0-9]+\\s+秒$");
     for (QLabel *label : this->findChildren<QLabel *>())
     {
         if (!label)

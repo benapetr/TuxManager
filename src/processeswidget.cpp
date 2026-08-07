@@ -588,19 +588,19 @@ void ProcessesWidget::onTableContextMenu(const QPoint &pos)
     QMenu menu(this);
 
     // ── Copy submenu ────────────────────────────────────────────────────────
-    QMenu *copyMenu = menu.addMenu(tr("Copy"));
+    QMenu *copyMenu = menu.addMenu(tr("复制"));
 
-    QAction *copyRowAct = copyMenu->addAction(tr("Entire row"));
+    QAction *copyRowAct = copyMenu->addAction(tr("整行"));
     copyRowAct->setEnabled(hasRowTarget);
     connect(copyRowAct, &QAction::triggered, this, &ProcessesWidget::copyRowSelectionToClipboard);
 
-    QAction *copyCellAct = copyMenu->addAction(tr("Selected cell"));
+    QAction *copyCellAct = copyMenu->addAction(tr("所选单元格"));
     copyCellAct->setEnabled(hasTargetCell && !multipleRowsSelected);
     connect(copyCellAct, &QAction::triggered, this, &ProcessesWidget::copyCellSelectionToClipboard);
 
     QString copyPIDLabel;
     if (multipleRowsSelected)
-        copyPIDLabel = tr("PIDs");
+        copyPIDLabel = tr("PID 列表");
     else
         copyPIDLabel = tr("PID");
 
@@ -611,43 +611,43 @@ void ProcessesWidget::onTableContextMenu(const QPoint &pos)
     menu.addSeparator();
 
     // ── View submenu — always visible ────────────────────────────────────────
-    QMenu *viewMenu = menu.addMenu(tr("View"));
+    QMenu *viewMenu = menu.addMenu(tr("视图"));
 
-    QAction *kernelAct = viewMenu->addAction(tr("Kernel tasks"));
+    QAction *kernelAct = viewMenu->addAction(tr("内核任务"));
     kernelAct->setCheckable(true);
     kernelAct->setChecked(this->m_proxy->ShowKernelTasks);
     connect(kernelAct, &QAction::toggled, this, &ProcessesWidget::setShowKernelTasks);
 
-    QAction *otherUsersAct = viewMenu->addAction(tr("Processes of other users"));
+    QAction *otherUsersAct = viewMenu->addAction(tr("其他用户的进程"));
     otherUsersAct->setCheckable(true);
     otherUsersAct->setChecked(this->m_proxy->ShowOtherUsersProcs);
     connect(otherUsersAct, &QAction::toggled, this, &ProcessesWidget::setShowOtherUsersProcesses);
 
     viewMenu->addSeparator();
-    QAction *tableModeAct = viewMenu->addAction(tr("Table view"));
+    QAction *tableModeAct = viewMenu->addAction(tr("表格视图"));
     tableModeAct->setCheckable(true);
     tableModeAct->setChecked(!this->m_treeViewMode);
     connect(tableModeAct, &QAction::triggered, this, [this]() { this->setTreeViewMode(false); });
 
-    QAction *treeModeAct = viewMenu->addAction(tr("Tree view"));
+    QAction *treeModeAct = viewMenu->addAction(tr("树状视图"));
     treeModeAct->setCheckable(true);
     treeModeAct->setChecked(this->m_treeViewMode);
     connect(treeModeAct, &QAction::triggered, this, [this]() { this->setTreeViewMode(true); });
     // ── Send signal submenu — requires selection ────────────────────────────
     menu.addSeparator();
-    QMenu *signalMenu = menu.addMenu(tr("Send signal"));
+    QMenu *signalMenu = menu.addMenu(tr("发送信号"));
     signalMenu->setEnabled(hasSelection);
 
     struct { const char *label; int sig; } commonSignals[] =
     {
-        { "SIGTERM  (15) — Terminate",   SIGTERM  },
-        { "SIGKILL   (9) — Kill (force)", SIGKILL  },
-        { "SIGHUP    (1) — Hangup",       SIGHUP   },
-        { "SIGSTOP  (19) — Stop",         SIGSTOP  },
-        { "SIGCONT  (18) — Continue",     SIGCONT  },
-        { "SIGINT    (2) — Interrupt",    SIGINT   },
-        { "SIGUSR1  (10) — User 1",       SIGUSR1  },
-        { "SIGUSR2  (12) — User 2",       SIGUSR2  },
+        { "SIGTERM  (15) — 终止",        SIGTERM  },
+        { "SIGKILL   (9) — 强制结束",    SIGKILL  },
+        { "SIGHUP    (1) — 挂断",        SIGHUP   },
+        { "SIGSTOP  (19) — 停止",        SIGSTOP  },
+        { "SIGCONT  (18) — 继续",        SIGCONT  },
+        { "SIGINT    (2) — 中断",        SIGINT   },
+        { "SIGUSR1  (10) — 用户信号 1",  SIGUSR1  },
+        { "SIGUSR2  (12) — 用户信号 2",  SIGUSR2  },
     };
     for (const auto &s : commonSignals)
     {
@@ -660,23 +660,23 @@ void ProcessesWidget::onTableContextMenu(const QPoint &pos)
     }
 
     signalMenu->addSeparator();
-    QAction *customSig = signalMenu->addAction(tr("Custom signal..."));
+    QAction *customSig = signalMenu->addAction(tr("自定义信号..."));
     connect(customSig, &QAction::triggered, this, &ProcessesWidget::promptAndSendCustomSignal);
 
     // ── Quick-access kill / term — requires selection ───────────────────────
     menu.addSeparator();
-    QAction *termAction = menu.addAction(tr("Terminate  (SIGTERM)"));
+    QAction *termAction = menu.addAction(tr("终止（SIGTERM）"));
     termAction->setEnabled(hasSelection);
     connect(termAction, &QAction::triggered, this, &ProcessesWidget::terminateSelectedProcesses);
 
-    QAction *killAction = menu.addAction(tr("Kill  (SIGKILL)"));
+    QAction *killAction = menu.addAction(tr("结束进程（SIGKILL）"));
     killAction->setEnabled(hasSelection);
     killAction->setIcon(style()->standardIcon(QStyle::SP_MessageBoxCritical));
     connect(killAction, &QAction::triggered, this, &ProcessesWidget::killSelectedProcesses);
 
     // ── Priority ─────────────────────────────────────────────────────────────
     menu.addSeparator();
-    QAction *reniceAction = menu.addAction(tr("Change priority (renice)..."));
+    QAction *reniceAction = menu.addAction(tr("更改优先级（renice）..."));
     reniceAction->setEnabled(hasSelection);
     connect(reniceAction, &QAction::triggered, this, &ProcessesWidget::reniceSelected);
 
@@ -697,24 +697,24 @@ void ProcessesWidget::onTreeContextMenu(const QPoint &pos)
     this->m_tableContextMenuOpen = true;
     QMenu menu(this);
 
-    QMenu *viewMenu = menu.addMenu(tr("View"));
-    QAction *kernelAct = viewMenu->addAction(tr("Kernel tasks"));
+    QMenu *viewMenu = menu.addMenu(tr("视图"));
+    QAction *kernelAct = viewMenu->addAction(tr("内核任务"));
     kernelAct->setCheckable(true);
     kernelAct->setChecked(this->m_proxy->ShowKernelTasks);
     connect(kernelAct, &QAction::toggled, this, &ProcessesWidget::setShowKernelTasks);
 
-    QAction *otherUsersAct = viewMenu->addAction(tr("Processes of other users"));
+    QAction *otherUsersAct = viewMenu->addAction(tr("其他用户的进程"));
     otherUsersAct->setCheckable(true);
     otherUsersAct->setChecked(this->m_proxy->ShowOtherUsersProcs);
     connect(otherUsersAct, &QAction::toggled, this, &ProcessesWidget::setShowOtherUsersProcesses);
 
     viewMenu->addSeparator();
-    QAction *tableModeAct = viewMenu->addAction(tr("Table view"));
+    QAction *tableModeAct = viewMenu->addAction(tr("表格视图"));
     tableModeAct->setCheckable(true);
     tableModeAct->setChecked(!this->m_treeViewMode);
     connect(tableModeAct, &QAction::triggered, this, [this]() { this->setTreeViewMode(false); });
 
-    QAction *treeModeAct = viewMenu->addAction(tr("Tree view"));
+    QAction *treeModeAct = viewMenu->addAction(tr("树状视图"));
     treeModeAct->setCheckable(true);
     treeModeAct->setChecked(this->m_treeViewMode);
     connect(treeModeAct, &QAction::triggered, this, [this]() { this->setTreeViewMode(true); });
@@ -722,16 +722,16 @@ void ProcessesWidget::onTreeContextMenu(const QPoint &pos)
     const QList<pid_t> pids = this->selectedPids();
     const bool hasSelection = !pids.isEmpty();
     menu.addSeparator();
-    QAction *termAction = menu.addAction(tr("Terminate  (SIGTERM)"));
+    QAction *termAction = menu.addAction(tr("终止（SIGTERM）"));
     termAction->setEnabled(hasSelection);
     connect(termAction, &QAction::triggered, this, &ProcessesWidget::terminateSelectedProcesses);
 
-    QAction *killAction = menu.addAction(tr("Kill  (SIGKILL)"));
+    QAction *killAction = menu.addAction(tr("结束进程（SIGKILL）"));
     killAction->setEnabled(hasSelection);
     killAction->setIcon(style()->standardIcon(QStyle::SP_MessageBoxCritical));
     connect(killAction, &QAction::triggered, this, &ProcessesWidget::killSelectedProcesses);
 
-    QAction *reniceAction = menu.addAction(tr("Change priority (renice)..."));
+    QAction *reniceAction = menu.addAction(tr("更改优先级（renice）..."));
     reniceAction->setEnabled(hasSelection);
     connect(reniceAction, &QAction::triggered, this, &ProcessesWidget::reniceSelected);
 
@@ -758,7 +758,7 @@ void ProcessesWidget::updateStatusBar()
     qlonglong totalThreads = 0;
     for (const OS::Process &p : all)
         totalThreads += qMax(0, p.Threads);
-    const QString text = tr("Tasks: %1  Threads: %2").arg(totalTasks).arg(totalThreads);
+    const QString text = tr("任务：%1  线程：%2").arg(totalTasks).arg(totalThreads);
 
     this->ui->statusLabel->setText(text);
 }
@@ -842,8 +842,8 @@ void ProcessesWidget::promptAndSendCustomSignal()
     bool ok = false;
     const int sig = QInputDialog::getInt(
         this,
-        tr("Send custom signal"),
-        tr("Signal number:"),
+        tr("发送自定义信号"),
+        tr("信号编号："),
         1, 1, 64, 1, &ok);
     if (ok)
         this->sendSignalToSelected(sig);
@@ -859,13 +859,13 @@ void ProcessesWidget::openTerminal()
     const QString terminal = findTerminalExecutable();
     if (terminal.isEmpty())
     {
-        QMessageBox::warning(this, tr("Open terminal failed"), tr("No supported terminal emulator was found on this system."));
+        QMessageBox::warning(this, tr("打开终端失败"), tr("未在此系统上找到支持的终端模拟器。"));
         return;
     }
 
     if (!QProcess::startDetached(terminal, {}))
     {
-        QMessageBox::warning(this, tr("Open terminal failed"), tr("Failed to start terminal: %1").arg(terminal));
+        QMessageBox::warning(this, tr("打开终端失败"), tr("启动终端失败：%1").arg(terminal));
         return;
     }
 
@@ -1032,15 +1032,15 @@ void ProcessesWidget::sendSignalToSelected(int signal)
     QString body;
     if (pids.size() == 1)
     {
-        body = tr("You are about to send signal %1 to process PID %2.\n\n"
-                  "Do you want to continue?")
+        body = tr("即将向进程 PID %2 发送信号 %1。\n\n"
+                  "是否继续？")
                    .arg(signalText, pidStrings.first());
     } else
     {
-        body = tr("You are about to send signal %1 to %2 selected processes.\n"
-                  "This will affect all selected processes.\n\n"
-                  "PIDs: %3\n\n"
-                  "Do you want to continue?")
+        body = tr("即将向 %2 个选中的进程发送信号 %1。\n"
+                  "这将影响所有选中的进程。\n\n"
+                  "PID：%3\n\n"
+                  "是否继续？")
                    .arg(signalText, QString::number(pids.size()), pidStrings.join(", "));
     }
 
@@ -1061,14 +1061,14 @@ void ProcessesWidget::sendSignalToSelected(int signal)
         {
             const QString userHint = otherUsers.isEmpty()
                                      ? QString()
-                                     : tr("\nTarget owners: %1").arg(otherUsers.join(", "));
-            body += tr("\n\nWarning: one or more selected processes are owned by another user. "
-                       "This application is running without superuser privileges, so this signal will most likely be rejected and nothing will happen.")
+                                     : tr("\n目标所有者：%1").arg(otherUsers.join(", "));
+            body += tr("\n\n警告：一个或多个选中的进程属于其他用户。"
+                       "当前应用没有超级用户权限，因此该信号很可能会被拒绝且不会产生任何效果。")
                     + userHint;
         }
     }
 
-    const QMessageBox::StandardButton answer = QMessageBox::warning(this, tr("Confirm Signal"), body, QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+    const QMessageBox::StandardButton answer = QMessageBox::warning(this, tr("确认信号"), body, QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
     if (answer != QMessageBox::Yes)
         return;
 
@@ -1088,7 +1088,7 @@ void ProcessesWidget::sendSignalToSelected(int signal)
 
     if (!errors.isEmpty())
     {
-        QMessageBox::warning(this, tr("Signal failed"), errors.join('\n'));
+        QMessageBox::warning(this, tr("发送信号失败"), errors.join('\n'));
     }
 }
 
@@ -1099,7 +1099,7 @@ void ProcessesWidget::reniceSelected()
         return;
 
     bool ok;
-    const int nice = QInputDialog::getInt(this, tr("Change priority"), tr("Nice value (-20 = highest priority, 19 = lowest):"), 0, -20, 19, 1, &ok);
+    const int nice = QInputDialog::getInt(this, tr("更改优先级"), tr("Nice 值（-20 = 最高优先级，19 = 最低）："), 0, -20, 19, 1, &ok);
     if (!ok)
         return;
 
@@ -1119,7 +1119,7 @@ void ProcessesWidget::reniceSelected()
 
     if (!errors.isEmpty())
     {
-        QMessageBox::warning(this, tr("Renice failed"), errors.join('\n'));
+        QMessageBox::warning(this, tr("更改优先级失败"), errors.join('\n'));
     }
 }
 

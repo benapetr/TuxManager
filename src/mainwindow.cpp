@@ -33,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     if (CFG->IsSuperuser)
     {
         // Make user aware of this
-        this->setWindowTitle(this->windowTitle() + " (superuser)");
+        this->setWindowTitle(this->windowTitle() + tr("（超级用户）"));
     }
 
     this->ui->processesLayout->addWidget(this->m_processesWidget);

@@ -178,14 +178,14 @@ void ServicesWidget::onRefreshFinished(quint64 token, bool systemdAvailable, con
     {
         this->ui->tableView->setVisible(false);
         this->ui->unavailableLabel->setVisible(true);
-        this->ui->unavailableLabel->setText(tr("systemd required (%1)").arg(reason));
-        this->ui->statusLabel->setText(tr("Services unavailable"));
+        this->ui->unavailableLabel->setText(tr("需要 systemd（%1）").arg(reason));
+        this->ui->statusLabel->setText(tr("服务不可用"));
     } else if (!error.isEmpty())
     {
         this->ui->tableView->setVisible(false);
         this->ui->unavailableLabel->setVisible(true);
-        this->ui->unavailableLabel->setText(tr("Failed to query services: %1").arg(error));
-        this->ui->statusLabel->setText(tr("Services unavailable"));
+        this->ui->unavailableLabel->setText(tr("查询服务失败：%1").arg(error));
+        this->ui->statusLabel->setText(tr("服务不可用"));
     } else
     {
         const UIHelper::TableSelectionSnapshot snapshot = UIHelper::CaptureTableSelection(
@@ -202,7 +202,7 @@ void ServicesWidget::onRefreshFinished(quint64 token, bool systemdAvailable, con
         this->ui->unavailableLabel->setVisible(false);
         this->ui->tableView->setVisible(true);
         this->m_model->SetServices(services);
-        this->ui->statusLabel->setText(tr("Services: %1").arg(services.size()));
+        this->ui->statusLabel->setText(tr("服务：%1").arg(services.size()));
 
         UIHelper::RestoreTableSelection(
             this->ui->tableView,
@@ -250,9 +250,9 @@ void ServicesWidget::onTableContextMenu(const QPoint &pos)
     const bool hasSingleTargetService = !targetUnit.isEmpty() && !multipleRowsSelected;
 
     QMenu menu(this);
-    QMenu *copyMenu = menu.addMenu(tr("Copy"));
+    QMenu *copyMenu = menu.addMenu(tr("复制"));
 
-    QAction *copyRowAct = copyMenu->addAction(tr("Entire row"));
+    QAction *copyRowAct = copyMenu->addAction(tr("整行"));
     copyRowAct->setEnabled(hasRowTarget);
     connect(copyRowAct, &QAction::triggered, this, [this, targetIndex, selectedRows, multipleRowsSelected]()
     {
@@ -266,7 +266,7 @@ void ServicesWidget::onTableContextMenu(const QPoint &pos)
         QGuiApplication::clipboard()->setText(UIHelper::GetVisibleRowText(this->ui->tableView, row));
     });
 
-    QAction *copyCellAct = copyMenu->addAction(tr("Selected cell"));
+    QAction *copyCellAct = copyMenu->addAction(tr("所选单元格"));
     copyCellAct->setEnabled(hasTargetCell && !multipleRowsSelected);
     connect(copyCellAct, &QAction::triggered, this, [this, targetIndex]()
     {
@@ -275,46 +275,46 @@ void ServicesWidget::onTableContextMenu(const QPoint &pos)
 
     menu.addSeparator();
 
-    QAction *startAct = menu.addAction(tr("Start"));
+    QAction *startAct = menu.addAction(tr("启动"));
     startAct->setEnabled(hasSingleTargetService);
     connect(startAct, &QAction::triggered, this, [this, targetUnit]()
     {
-        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::Start, tr("start"));
+        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::Start, tr("启动"));
     });
 
-    QAction *stopAct = menu.addAction(tr("Stop"));
+    QAction *stopAct = menu.addAction(tr("停止"));
     stopAct->setEnabled(hasSingleTargetService);
     connect(stopAct, &QAction::triggered, this, [this, targetUnit]()
     {
-        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::Stop, tr("stop"));
+        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::Stop, tr("停止"));
     });
 
-    QAction *restartAct = menu.addAction(tr("Restart"));
+    QAction *restartAct = menu.addAction(tr("重启"));
     restartAct->setEnabled(hasSingleTargetService);
     connect(restartAct, &QAction::triggered, this, [this, targetUnit]()
     {
-        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::Restart, tr("restart"));
+        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::Restart, tr("重启"));
     });
 
-    QAction *reloadAct = menu.addAction(tr("Reload"));
+    QAction *reloadAct = menu.addAction(tr("重新加载"));
     reloadAct->setEnabled(hasSingleTargetService);
     connect(reloadAct, &QAction::triggered, this, [this, targetUnit]()
     {
-        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::Reload, tr("reload"));
+        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::Reload, tr("重新加载"));
     });
 
-    QAction *tryRestartAct = menu.addAction(tr("Try Restart"));
+    QAction *tryRestartAct = menu.addAction(tr("尝试重启"));
     tryRestartAct->setEnabled(hasSingleTargetService);
     connect(tryRestartAct, &QAction::triggered, this, [this, targetUnit]()
     {
-        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::TryRestart, tr("try restart"));
+        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::TryRestart, tr("尝试重启"));
     });
 
-    QAction *reloadOrRestartAct = menu.addAction(tr("Reload Or Restart"));
+    QAction *reloadOrRestartAct = menu.addAction(tr("重新加载或重启"));
     reloadOrRestartAct->setEnabled(hasSingleTargetService);
     connect(reloadOrRestartAct, &QAction::triggered, this, [this, targetUnit]()
     {
-        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::ReloadOrRestart, tr("reload or restart"));
+        this->manageServiceUnit(targetUnit, OS::ServiceHelper::UnitAction::ReloadOrRestart, tr("重新加载或重启"));
     });
 
     menu.addSeparator();
@@ -351,7 +351,7 @@ void ServicesWidget::manageServiceUnit(const QString &unit, OS::ServiceHelper::U
     QString error;
     if (!OS::ServiceHelper::ManageUnit(unit, action, &error))
     {
-        QMessageBox::warning(this, tr("Service action failed"), tr("Failed to %1 service %2.\n\n%3").arg(actionLabel, unit, error));
+        QMessageBox::warning(this, tr("服务操作失败"), tr("对服务 %2 执行“%1”操作失败。\n\n%3").arg(actionLabel, unit, error));
     }
 
     if (this->m_active && !CFG->RefreshPaused)

@@ -144,28 +144,28 @@ QString MemoryBar::segmentTooltip(Segment seg) const
     {
         case Segment::Used:
             value = this->m_used;
-            label = tr("Used");
+            label = tr("已用");
             break;
         case Segment::Compressed:
             value = this->m_compressed;
-            label = tr("Used (compressed)");
+            label = tr("已用（压缩）");
             break;
         case Segment::Dirty:
             value = this->m_dirty;
-            label = tr("Dirty");
+            label = tr("脏数据");
             break;
         case Segment::Cached:
             value = qMax(0LL, this->m_cached - this->m_dirty);
-            label = tr("Free (cached)");
+            label = tr("空闲（已缓存）");
             break;
         case Segment::Free:
             value = this->m_free;
-            label = tr("Free");
+            label = tr("空闲");
             break;
         case Segment::None:
             break;
     }
 
     const double pct = (this->m_total > 0) ? static_cast<double>(value) * 100.0 / static_cast<double>(this->m_total) : 0.0;
-    return tr("%1: %2 (%3%)").arg(label, Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, value)), 1), QString::number(pct, 'f', 1));
+    return tr("%1：%2（%3%）").arg(label, Misc::FormatKiB(static_cast<quint64>(qMax<qint64>(0, value)), 1), QString::number(pct, 'f', 1));
 }

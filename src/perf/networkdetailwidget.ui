@@ -34,7 +34,7 @@
         <string>font-size: 18pt; font-weight: bold;</string>
        </property>
        <property name="text">
-        <string>Ethernet</string>
+        <string>以太网</string>
        </property>
       </widget>
      </item>
@@ -61,7 +61,7 @@
         <string>font-size: 8pt;</string>
        </property>
        <property name="text">
-        <string>Throughput</string>
+        <string>吞吐量</string>
        </property>
       </widget>
      </item>
@@ -111,7 +111,7 @@
         <string>font-size: 8pt;</string>
        </property>
        <property name="text">
-        <string>60 seconds</string>
+        <string>60 秒</string>
        </property>
       </widget>
      </item>
@@ -157,7 +157,7 @@
         <string/>
        </property>
        <property name="text">
-        <string>Send</string>
+        <string>发送</string>
        </property>
       </widget>
      </item>
@@ -174,7 +174,7 @@
         <string/>
        </property>
        <property name="text">
-        <string>Adapter</string>
+        <string>适配器</string>
        </property>
       </widget>
      </item>
@@ -191,7 +191,7 @@
         <string/>
        </property>
        <property name="text">
-        <string>Receive</string>
+        <string>接收</string>
        </property>
       </widget>
      </item>
@@ -208,7 +208,7 @@
         <string/>
        </property>
        <property name="text">
-        <string>Connection type</string>
+        <string>连接类型</string>
        </property>
       </widget>
      </item>
@@ -225,7 +225,7 @@
         <string/>
        </property>
        <property name="text">
-        <string>Link speed</string>
+        <string>链路速度</string>
        </property>
       </widget>
      </item>
@@ -242,7 +242,7 @@
         <string/>
        </property>
        <property name="text">
-        <string>IPv4 address</string>
+        <string>IPv4 地址</string>
        </property>
       </widget>
      </item>
@@ -259,7 +259,7 @@
         <string/>
        </property>
        <property name="text">
-        <string>IPv6 addresses</string>
+        <string>IPv6 地址</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>

@@ -92,7 +92,7 @@ void RunTaskDialog::accept()
     QString error;
     if (!this->startDetachedCommand(command, &error))
     {
-        QMessageBox::warning(this, tr("Run new task failed"), tr("Failed to start command.\n\n%1").arg(error));
+        QMessageBox::warning(this, tr("运行新任务失败"), tr("无法启动命令。\n\n%1").arg(error));
         return;
     }
 
@@ -112,7 +112,7 @@ void RunTaskDialog::browseForCommand()
     if (startDir.isEmpty() || !QDir(startDir).exists())
         startDir = QStringLiteral("/usr/bin");
 
-    const QString path = QFileDialog::getOpenFileName(this, tr("Select executable"), startDir, tr("All files (*)"));
+    const QString path = QFileDialog::getOpenFileName(this, tr("选择可执行文件"), startDir, tr("所有文件 (*)"));
     if (path.isEmpty())
         return;
 
@@ -136,7 +136,7 @@ bool RunTaskDialog::startDetachedCommand(const QString &command, QString *error)
     if (trimmed.isEmpty())
     {
         if (error)
-            *error = tr("Command is empty");
+            *error = tr("命令为空");
         return false;
     }
 
@@ -144,7 +144,7 @@ bool RunTaskDialog::startDetachedCommand(const QString &command, QString *error)
     if (parts.isEmpty())
     {
         if (error)
-            *error = tr("Command is empty");
+            *error = tr("命令为空");
         return false;
     }
 
@@ -153,7 +153,7 @@ bool RunTaskDialog::startDetachedCommand(const QString &command, QString *error)
     if (executable.isEmpty())
     {
         if (error)
-            *error = tr("Executable was not found: %1").arg(program);
+            *error = tr("未找到可执行文件：%1").arg(program);
         return false;
     }
 
@@ -161,14 +161,14 @@ bool RunTaskDialog::startDetachedCommand(const QString &command, QString *error)
     if (!executableInfo.exists())
     {
         if (error)
-            *error = tr("Executable does not exist: %1").arg(executable);
+            *error = tr("可执行文件不存在：%1").arg(executable);
         return false;
     }
 
     if (!executableInfo.isExecutable())
     {
         if (error)
-            *error = tr("File is not executable: %1").arg(executable);
+            *error = tr("文件不可执行：%1").arg(executable);
         return false;
     }
 
@@ -178,7 +178,7 @@ bool RunTaskDialog::startDetachedCommand(const QString &command, QString *error)
         return true;
 
     if (error)
-        *error = tr("Failed to start executable: %1").arg(executable);
+        *error = tr("启动可执行文件失败：%1").arg(executable);
     return false;
 }
 

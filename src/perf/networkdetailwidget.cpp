@@ -63,7 +63,7 @@ NetworkDetailWidget::NetworkDetailWidget(QWidget *parent) : QWidget(parent), ui(
     this->ui->throughputGraphWidget->SetSampleCapacity(TUX_MANAGER_HISTORY_SIZE);
     this->ui->throughputGraphWidget->SetGridColumns(6);
     this->ui->throughputGraphWidget->SetGridRows(4);
-    this->ui->throughputGraphWidget->SetSeriesNames(tr("Receive"), tr("Send"));
+    this->ui->throughputGraphWidget->SetSeriesNames(tr("接收"), tr("发送"));
     this->ui->throughputGraphWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this->ui->throughputGraphWidget, &QWidget::customContextMenuRequested, this, &NetworkDetailWidget::onGraphContextMenuRequested);
     this->applyTransferUnitMode();
@@ -131,10 +131,10 @@ void NetworkDetailWidget::SetNetwork(int index)
     {
         const Network::NetworkInfo &network = Metrics::GetNetwork()->FromIndex(this->m_networkIndex);
 
-        this->ui->titleLabel->setText(tr("NIC (%1)").arg(network.Name));
+        this->ui->titleLabel->setText(tr("网卡（%1）").arg(network.Name));
         this->ui->adapterValueLabel->setText(network.Name);
         this->ui->typeValueLabel->setText(network.Type);
-        this->ui->speedValueLabel->setText(network.LinkSpeedMbps > 0 ? QString::number(network.LinkSpeedMbps) + tr(" Mbps") : tr("Unknown"));
+        this->ui->speedValueLabel->setText(network.LinkSpeedMbps > 0 ? QString::number(network.LinkSpeedMbps) + tr(" Mbps") : tr("未知"));
         this->ui->ipv4ValueLabel->setText(network.IPv4.isEmpty() ? tr("—") : network.IPv4);
         this->ui->ipv6ValueLabel->setText(network.IPv6.isEmpty() ? tr("—") : network.IPv6.join('\n'));
 
@@ -162,13 +162,13 @@ void NetworkDetailWidget::onUpdated()
 void NetworkDetailWidget::onGraphContextMenuRequested(const QPoint &pos)
 {
     QMenu menu(this);
-    menu.setTitle(tr("Network graph options"));
+    menu.setTitle(tr("网络图形选项"));
 
-    QAction *bitsAction = menu.addAction(tr("Show speeds in bits"));
+    QAction *bitsAction = menu.addAction(tr("以比特（bit）显示速度"));
     bitsAction->setCheckable(true);
     bitsAction->setChecked(CFG->PerfNetworkUseBits);
 
-    QAction *bytesAction = menu.addAction(tr("Show speeds in bytes"));
+    QAction *bytesAction = menu.addAction(tr("以字节（Byte）显示速度"));
     bytesAction->setCheckable(true);
     bytesAction->setChecked(!CFG->PerfNetworkUseBits);
 

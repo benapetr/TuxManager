@@ -71,7 +71,7 @@ QList<Service> Service::LoadAll(QString *error)
     {
         if (error)
             *error = stderrText.isEmpty()
-                     ? QObject::tr("Unable to query services via sd-bus or systemctl")
+                     ? QObject::tr("无法通过 sd-bus 或 systemctl 查询服务")
                      : stderrText;
         return out;
     }

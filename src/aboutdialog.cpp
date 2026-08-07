@@ -24,7 +24,7 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent), ui(new Ui::AboutDia
 {
     this->ui->setupUi(this);
     this->ui->labelTitle->setText(QString::fromLatin1(TUX_MANAGER_PRODUCT_NAME));
-    this->ui->labelVersion->setText(tr("Version %1").arg(QString::fromLatin1(TUX_MANAGER_VERSION_STRING)));
+    this->ui->labelVersion->setText(tr("版本 %1").arg(QString::fromLatin1(TUX_MANAGER_VERSION_STRING)));
     this->setFixedSize(this->size());
 }
 

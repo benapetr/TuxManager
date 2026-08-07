@@ -61,14 +61,14 @@ QString Process::GetStateString(char state)
 {
     switch (state)
     {
-        case 'R': return "Running";
-        case 'S': return "Sleeping";
-        case 'D': return "Disk sleep";
-        case 'Z': return "Zombie";
-        case 'T': return "Stopped";
-        case 't': return "Tracing stop";
-        case 'I': return "Idle";
-        case 'X': return "Dead";
+        case 'R': return "运行中";
+        case 'S': return "睡眠中";
+        case 'D': return "磁盘睡眠";
+        case 'Z': return "僵尸";
+        case 'T': return "已停止";
+        case 't': return "跟踪停止";
+        case 'I': return "空闲";
+        case 'X': return "已结束";
         default:  return QString(state);
     }
 }

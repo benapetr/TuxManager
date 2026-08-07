@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Run new task</string>
+   <string>运行新任务</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -19,7 +19,7 @@
      <item row="0" column="0">
       <widget class="QLabel" name="openLabel">
        <property name="text">
-        <string>Open:</string>
+        <string>打开：</string>
        </property>
       </widget>
      </item>
@@ -70,7 +70,7 @@
    <item>
     <widget class="QLabel" name="hintLabel">
      <property name="text">
-      <string>Enter an executable name or path, with optional arguments</string>
+      <string>输入可执行文件名称或路径，可附带可选参数</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>

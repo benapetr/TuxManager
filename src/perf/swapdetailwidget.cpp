@@ -84,11 +84,11 @@ SwapDetailWidget::SwapDetailWidget(QWidget *parent) : QWidget(parent), ui(new Ui
     this->ui->activityGraphWidget->SetSampleCapacity(TUX_MANAGER_HISTORY_SIZE);
     this->ui->activityGraphWidget->SetGridColumns(6);
     this->ui->activityGraphWidget->SetGridRows(4);
-    this->ui->activityGraphWidget->SetSeriesNames(tr("Swap in"), tr("Swap out"));
+    this->ui->activityGraphWidget->SetSeriesNames(tr("换入"), tr("换出"));
     this->ui->activityGraphWidget->SetValueFormat(GraphWidget::ValueFormat::BytesPerSec);
     this->ui->activityGraphWidget->setToolTip(
-                tr("Swap in: disk -> RAM (pages read back into memory)\n"
-                   "Swap out: RAM -> disk (pages written to swap storage)"));
+                tr("换入：磁盘 -> 内存（页面被读回内存）\n"
+                   "换出：内存 -> 磁盘（页面被写入交换存储）"));
     UIHelper::EnableGraphContextMenu(this->ui->activityGraphWidget);
 
     UIHelper::EnableCopyLabelContextMenu(this->ui->usageValueLabel);
@@ -195,12 +195,12 @@ void SwapDetailWidget::onUpdated()
 void SwapDetailWidget::onContextMenuRequested(const QPoint &globalPos)
 {
     QMenu menu(this);
-    menu.setTitle(tr("Swap graph options"));
+    menu.setTitle(tr("交换空间图形选项"));
 
-    QMenu *graphMenu = menu.addMenu(tr("Change graph to"));
+    QMenu *graphMenu = menu.addMenu(tr("切换图形为"));
 
-    QAction *actOverall = graphMenu->addAction(tr("Overall usage"));
-    QAction *actPerDevice = graphMenu->addAction(tr("Swap devices"));
+    QAction *actOverall = graphMenu->addAction(tr("总体使用"));
+    QAction *actPerDevice = graphMenu->addAction(tr("交换设备"));
     actOverall->setCheckable(true);
     actPerDevice->setCheckable(true);
 

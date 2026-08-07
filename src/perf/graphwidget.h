@@ -119,8 +119,8 @@ namespace Perf
             int             m_hoverSlot { -1 };
             bool            m_hoverLineEnabled { true };
             bool            m_hoverTooltipEnabled { true };
-            QString         m_primaryName { tr("Value") };
-            QString         m_secondaryName { tr("Secondary") };
+            QString         m_primaryName { tr("数值") };
+            QString         m_secondaryName { tr("辅助") };
             ValueFormat     m_valueFormat { ValueFormat::Auto };
             QString         m_overlayText;
             bool            m_percentTooltipAbsoluteEnabled { false };

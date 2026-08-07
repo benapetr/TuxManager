@@ -153,7 +153,7 @@ void UIHelper::AddGlobalContextMenuItems(QMenu *menu, QWidget *parent)
         return;
 
     menu->addSeparator();
-    QAction *aboutAction = menu->addAction(QObject::tr("About TuxManager"));
+    QAction *aboutAction = menu->addAction(QObject::tr("关于 TuxManager"));
     QObject::connect(aboutAction, &QAction::triggered, menu, [menu, parent]()
     {
         QWidget *dialogParent = parent ? parent : qobject_cast<QWidget *>(menu->parent());
@@ -174,7 +174,7 @@ void UIHelper::EnableCopyLabelContextMenu(QLabel *label)
         text.replace('\r', ' ');
         text.replace('\n', ' ');
         QMenu menu(label);
-        QAction *copyAction = menu.addAction(QObject::tr("Copy"));
+        QAction *copyAction = menu.addAction(QObject::tr("复制"));
         copyAction->setEnabled(!text.isEmpty() && text != QString::fromUtf8("—"));
         QObject::connect(copyAction, &QAction::triggered, &menu, [text]()
         {
@@ -190,7 +190,7 @@ QAction *UIHelper::AddCopyWidgetAction(QMenu *menu, QWidget *widget, const QStri
     if (!menu || !widget)
         return nullptr;
 
-    QAction *copyAction = menu->addAction(text.isEmpty() ? QObject::tr("Copy graph") : text);
+    QAction *copyAction = menu->addAction(text.isEmpty() ? QObject::tr("复制图形") : text);
     QObject::connect(copyAction, &QAction::triggered, menu, [widget]()
     {
         QApplication::clipboard()->setPixmap(widget->grab());
@@ -200,7 +200,7 @@ QAction *UIHelper::AddCopyWidgetAction(QMenu *menu, QWidget *widget, const QStri
 
 void UIHelper::AddRefreshIntervalContextMenu(QMenu *menu, QTimer *timer, bool timerOwnerActive)
 {
-    QMenu *refreshMenu = menu->addMenu(QObject::tr("Refresh interval"));
+    QMenu *refreshMenu = menu->addMenu(QObject::tr("刷新间隔"));
 
     QHash<QAction *, int> intervalActions;
     intervalActions.clear();
@@ -229,7 +229,7 @@ void UIHelper::AddRefreshIntervalContextMenu(QMenu *menu, QTimer *timer, bool ti
 
     refreshMenu->addSeparator();
 
-    QAction *pausedAction = refreshMenu->addAction(QObject::tr("Paused"));
+    QAction *pausedAction = refreshMenu->addAction(QObject::tr("已暂停"));
     pausedAction->setCheckable(true);
     pausedAction->setChecked(CFG->RefreshPaused);
 
@@ -247,7 +247,7 @@ void UIHelper::AddRefreshIntervalContextMenu(QMenu *menu, QTimer *timer, bool ti
 
 void UIHelper::AddGraphWindowContextMenu(QMenu *menu)
 {
-    QMenu *timeMenu = menu->addMenu(QObject::tr("Graph time"));
+    QMenu *timeMenu = menu->addMenu(QObject::tr("图形时间范围"));
     QVector<int> intervals = CFG->DataWindowAvailableIntervals;
     if (intervals.isEmpty())
         intervals.append(CFG->PerfGraphWindowSec);
@@ -281,7 +281,7 @@ void UIHelper::AddGraphContextMenuItems(QMenu *menu, QWidget *graphArea)
     AddGraphWindowContextMenu(menu);
 
     menu->addSeparator();
-    AddCopyWidgetAction(menu, graphArea, QObject::tr("Copy graph"));
+    AddCopyWidgetAction(menu, graphArea, QObject::tr("复制图形"));
 }
 
 void UIHelper::EnableGraphContextMenu(QWidget *widget)

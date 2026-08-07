@@ -351,21 +351,21 @@ bool GpuNvmlBackend::Sample(std::vector<std::unique_ptr<GPU::GPUInfo>> &gpus)
 
             addEngine(QStringLiteral("3d"), QStringLiteral("3D"), graphicsUtil);
             addEngine(QStringLiteral("cuda"), QStringLiteral("CUDA"), computeUtil);
-            addEngine(QStringLiteral("copy"), QStringLiteral("Copy"), util.memory);
+            addEngine(QStringLiteral("copy"), QStringLiteral("复制"), util.memory);
         }
         if (pNvmlDeviceGetEncoderUtilization)
         {
             unsigned int enc = 0;
             unsigned int sampling = 0;
             if (pNvmlDeviceGetEncoderUtilization(dev, &enc, &sampling) == NVML_SUCCESS)
-                addEngine(QStringLiteral("video-encode"), QStringLiteral("Video Encode"), enc);
+                addEngine(QStringLiteral("video-encode"), QStringLiteral("视频编码"), enc);
         }
         if (pNvmlDeviceGetDecoderUtilization)
         {
             unsigned int dec = 0;
             unsigned int sampling = 0;
             if (pNvmlDeviceGetDecoderUtilization(dev, &dec, &sampling) == NVML_SUCCESS)
-                addEngine(QStringLiteral("video-decode"), QStringLiteral("Video Decode"), dec);
+                addEngine(QStringLiteral("video-decode"), QStringLiteral("视频解码"), dec);
         }
 
         zeroMissingEngines(gpu, seenEngineKeys);

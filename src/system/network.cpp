@@ -58,12 +58,12 @@ QString Network::networkTypeFromArpType(int arpType)
 {
     // ARPHRD_ETHER (1), ARPHRD_LOOPBACK (772), ARPHRD_IEEE80211* (801+)
     if (arpType == 1)
-        return "Ethernet";
+        return QObject::tr("以太网");
     if (arpType == 772)
-        return "Loopback";
+        return QObject::tr("回环");
     if (arpType >= 801 && arpType <= 804)
         return "Wi-Fi";
-    return QObject::tr("Network");
+    return QObject::tr("网络");
 }
 
 int Network::readLinkSpeedMbps(const QString &name)

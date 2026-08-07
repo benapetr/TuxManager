@@ -52,8 +52,8 @@ ColorSchemeDialog::ColorSchemeDialog(QWidget *parent) : QDialog(parent), ui(new 
         preview->setFrameShape(QFrame::StyledPanel);
         preview->setFixedSize(36, 20);
 
-        auto *pick = new QPushButton(tr("Choose"), rowHost);
-        auto *reset = new QPushButton(tr("Reset"), rowHost);
+        auto *pick = new QPushButton(tr("选择"), rowHost);
+        auto *reset = new QPushButton(tr("重置"), rowHost);
 
         rowLayout->addWidget(preview);
         rowLayout->addWidget(pick);

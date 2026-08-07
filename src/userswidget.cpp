@@ -64,7 +64,7 @@ namespace
 
     void updateProcessItem(QTreeWidgetItem *item, const OS::Process &proc)
     {
-        item->setText(0, QObject::tr("%1 (pid %2)").arg(proc.Name).arg(proc.PID));
+        item->setText(0, QObject::tr("%1（pid %2）").arg(proc.Name).arg(proc.PID));
         item->setData(0, Qt::UserRole, static_cast<qlonglong>(proc.PID));
         item->setText(1, QString::number(proc.CPUPercent, 'f', 1) + "%");
         item->setText(2, Misc::FormatKiB(proc.VMRssKb, 1));
@@ -82,7 +82,7 @@ UsersWidget::UsersWidget(OS::ProcessRefreshService *processRefreshService, QWidg
     this->ui->setupUi(this);
 
     this->ui->treeWidget->setColumnCount(3);
-    this->ui->treeWidget->setHeaderLabels({ tr("User / Process"), tr("CPU"), tr("Memory") });
+    this->ui->treeWidget->setHeaderLabels({ tr("用户 / 进程"), tr("CPU"), tr("内存") });
     this->ui->treeWidget->setRootIsDecorated(true);
     this->ui->treeWidget->setAlternatingRowColors(true);
     this->ui->treeWidget->setAnimated(false);
@@ -202,7 +202,7 @@ void UsersWidget::onContextMenu(const QPoint &pos)
 
     if (isProcessItem && selectedPid > 0)
     {
-        QAction *goToProcessAction = menu.addAction(tr("Go to process"));
+        QAction *goToProcessAction = menu.addAction(tr("转到进程"));
         connect(goToProcessAction, &QAction::triggered, this, [this, selectedPid]()
         {
             emit goToProcessRequested(selectedPid);
@@ -392,5 +392,5 @@ void UsersWidget::rebuildTree(const QList<OS::Process> &allProcs)
     if (scrollbar)
         scrollbar->setValue(scrollPos);
 
-    this->ui->statusLabel->setText(tr("Logged in users: %1").arg(agg.size()));
+    this->ui->statusLabel->setText(tr("已登录用户：%1").arg(agg.size()));
 }

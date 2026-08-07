@@ -11,13 +11,13 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Side Panel Order</string>
+   <string>侧栏顺序</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QLabel" name="descriptionLabel">
      <property name="text">
-      <string>Change the order of item groups in the Performance side panel.</string>
+      <string>调整“性能”侧栏中项目分组的顺序。</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
@@ -38,14 +38,14 @@
        <item>
         <widget class="QPushButton" name="moveUpButton">
          <property name="text">
-          <string>Move Up</string>
+          <string>上移</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="moveDownButton">
          <property name="text">
-          <string>Move Down</string>
+          <string>下移</string>
          </property>
         </widget>
        </item>

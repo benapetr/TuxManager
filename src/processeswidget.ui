@@ -20,24 +20,24 @@
     <layout class="QHBoxLayout" name="toolbarLayout">
      <item>
       <widget class="QLabel" name="searchLabel">
-       <property name="text"><string>Search:</string></property>
+       <property name="text"><string>搜索：</string></property>
       </widget>
      </item>
      <item>
       <widget class="QLineEdit" name="searchEdit">
-       <property name="placeholderText"><string>Filter processes…</string></property>
+       <property name="placeholderText"><string>筛选进程…</string></property>
        <property name="clearButtonEnabled"><bool>true</bool></property>
        <property name="maximumWidth"><number>240</number></property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="runNewTaskButton">
-       <property name="text"><string>Run new task</string></property>
+       <property name="text"><string>运行新任务</string></property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="openTerminalButton">
-       <property name="text"><string>Open terminal</string></property>
+       <property name="text"><string>打开终端</string></property>
       </widget>
      </item>
      <item>
@@ -62,7 +62,7 @@
    </item>
    <item>
     <widget class="QLabel" name="statusLabel">
-     <property name="text"><string>Tasks: 0</string></property>
+     <property name="text"><string>任务：0</string></property>
      <property name="alignment"><set>Qt::AlignLeft|Qt::AlignVCenter</set></property>
     </widget>
    </item>

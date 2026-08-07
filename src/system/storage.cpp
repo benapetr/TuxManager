@@ -241,7 +241,7 @@ void Storage::refreshDisks(const QSet<QString> &measurableDevices)
             continue;
 
         const QString model = Misc::ReadFile(QString("/sys/class/block/%1/device/model").arg(name));
-        d->Model = model.isEmpty() ? QObject::tr("Unknown device") : model;
+        d->Model = model.isEmpty() ? QObject::tr("未知设备") : model;
 
         const QString rotational = Misc::ReadFile(QString("/sys/class/block/%1/queue/rotational").arg(name));
         if (rotational == "1")
@@ -249,7 +249,7 @@ void Storage::refreshDisks(const QSet<QString> &measurableDevices)
         else if (rotational == "0")
             d->Type = "SSD";
         else
-            d->Type = QObject::tr("Unknown");
+            d->Type = QObject::tr("未知");
 
         const qint64 sizeSecs = Misc::ReadFile(QString("/sys/class/block/%1/size").arg(name)).toLongLong();
         d->CapacityBytes = qMax<qint64>(0, sizeSecs) * 512LL;
