@@ -58,6 +58,9 @@ namespace OS
             int     Threads       { 1 };
             quint64 VMRssKb       { 0 };      ///< Resident set size in KiB
             quint64 vmSizeKb      { 0 };      ///< Virtual memory size in KiB
+            quint64 SharedKb      { 0 };      ///< Shared resident pages in KiB (/proc/pid/statm)
+            quint64 TextKb        { 0 };      ///< Text/code pages in KiB (/proc/pid/statm)
+            quint64 DataKb        { 0 };      ///< Data + stack pages in KiB (/proc/pid/statm)
             quint64 CPUTicks      { 0 };      ///< utime + stime in jiffies (for delta CPU%)
             double  CPUPercent    { 0.0 };    ///< Calculated externally after two samples
             quint64 StartTimeTicks{ 0 };      ///< Start time in jiffies since boot
@@ -81,6 +84,7 @@ namespace OS
 
         private:
             static bool loadOneStatAndUid(pid_t pid, Process &out);
+            static void loadStatm(Process &proc);
             static bool loadIO(Process &proc);
             static void loadUserAndCmdline(Process &proc);
     };

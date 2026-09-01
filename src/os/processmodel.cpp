@@ -48,6 +48,9 @@ namespace
                && lhs.Threads == rhs.Threads
                && lhs.VMRssKb == rhs.VMRssKb
                && lhs.vmSizeKb == rhs.vmSizeKb
+               && lhs.SharedKb == rhs.SharedKb
+               && lhs.TextKb == rhs.TextKb
+               && lhs.DataKb == rhs.DataKb
                && lhs.CPUTicks == rhs.CPUTicks
                && lhs.CPUPercent == rhs.CPUPercent
                && lhs.StartTimeTicks == rhs.StartTimeTicks
@@ -110,6 +113,9 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
             case ColCpu:      return QString::number(proc.CPUPercent, 'f', 1) + " %";
             case ColMemRss:   return Misc::FormatKiB(proc.VMRssKb, 0);
             case ColMemVirt:  return Misc::FormatKiB(proc.vmSizeKb, 0);
+            case ColMemShared:return Misc::FormatKiB(proc.SharedKb, 0);
+            case ColMemText:  return Misc::FormatKiB(proc.TextKb, 0);
+            case ColMemData:  return Misc::FormatKiB(proc.DataKb, 0);
             case ColIoReads:  return proc.IOTotalsAvailable ? Misc::FormatBytes(proc.IOReadBytes, 0) : QString("?");
             case ColIoWrites: return proc.IOTotalsAvailable ? Misc::FormatBytes(proc.IOWriteBytes, 0) : QString("?");
             case ColIoReadsPerSec:
@@ -137,6 +143,9 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
             case ColCpu:      return proc.CPUPercent;
             case ColMemRss:   return static_cast<qulonglong>(proc.VMRssKb);
             case ColMemVirt:  return static_cast<qulonglong>(proc.vmSizeKb);
+            case ColMemShared:return static_cast<qulonglong>(proc.SharedKb);
+            case ColMemText:  return static_cast<qulonglong>(proc.TextKb);
+            case ColMemData:  return static_cast<qulonglong>(proc.DataKb);
             case ColIoReads:
                 return proc.IOTotalsAvailable
                        ? QVariant::fromValue(static_cast<qlonglong>(proc.IOReadBytes))
@@ -168,6 +177,9 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
             case ColCpu:
             case ColMemRss:
             case ColMemVirt:
+            case ColMemShared:
+            case ColMemText:
+            case ColMemData:
             case ColIoReads:
             case ColIoWrites:
             case ColIoReadsPerSec:
@@ -409,6 +421,9 @@ QString ProcessModel::columnHeader(Column col)
         case ColCpu:      return "CPU %";
         case ColMemRss:   return "MEM RES";
         case ColMemVirt:  return "MEM VIRT";
+        case ColMemShared:return "MEM SHR";
+        case ColMemText:  return "MEM TEXT";
+        case ColMemData:  return "MEM DATA";
         case ColIoReads:  return "IO Reads";
         case ColIoWrites: return "IO Writes";
         case ColIoReadsPerSec: return "IO Read/s";

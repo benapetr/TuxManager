@@ -156,6 +156,26 @@ bool Process::loadOneStatAndUid(pid_t pid, Process &out)
     return true;
 }
 
+void Process::loadStatm(Process &proc)
+{
+    QFile statmFile(QString("/proc/%1/statm").arg(proc.PID));
+    if (!statmFile.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    const QList<QByteArray> fields = statmFile.readAll().trimmed().split(' ');
+    statmFile.close();
+
+    if (fields.size() < 6)
+        return;
+
+    const quint64 pageKb = static_cast<quint64>(cachedPageSize()) / 1024ULL;
+    proc.vmSizeKb = fields.at(0).toULongLong() * pageKb;
+    proc.VMRssKb  = fields.at(1).toULongLong() * pageKb;
+    proc.SharedKb = fields.at(2).toULongLong() * pageKb;
+    proc.TextKb   = fields.at(3).toULongLong() * pageKb;
+    proc.DataKb   = fields.at(5).toULongLong() * pageKb;
+}
+
 bool Process::loadIO(Process &proc)
 {
     QFile ioFile(QString("/proc/%1/io").arg(proc.PID));
@@ -259,6 +279,8 @@ QList<Process> Process::LoadAll(const LoadOptions &options)
             continue;
         if (!options.IncludeOtherUsers && proc.UID != options.MyUID)
             continue;
+
+        loadStatm(proc);
 
         if (options.CollectIOMetrics)
         {

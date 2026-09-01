@@ -50,6 +50,9 @@ namespace OS
                 ColPriority,
                 ColNice,
                 ColCmdline,
+                ColMemShared,
+                ColMemText,
+                ColMemData,
                 ColCount           ///< Sentinel — always last
             };
 
