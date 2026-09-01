@@ -91,6 +91,7 @@ void Configuration::Load()
     this->ProcessTreeView        = s.value("Processes/TreeView",            this->ProcessTreeView).toBool();
     this->ProcessListSortColumn  = s.value("Processes/SortColumn",          this->ProcessListSortColumn).toInt();
     this->ProcessListSortOrder   = s.value("Processes/SortOrder",           this->ProcessListSortOrder).toInt();
+    this->ProcessColumnSchemaVersion = s.value("Processes/ColumnSchemaVersion", this->ProcessColumnSchemaVersion).toInt();
     this->ProcessListHeaderState = s.value("Processes/TableHeaderState",    this->ProcessListHeaderState).toByteArray();
     this->ProcessTreeHeaderState = s.value("Processes/TreeHeaderState",     this->ProcessTreeHeaderState).toByteArray();
     this->TaskHistory            = s.value("Processes/TaskHistory",         this->TaskHistory).toStringList();
@@ -177,6 +178,7 @@ void Configuration::Save()
     s.setValue("Processes/TreeView",            this->ProcessTreeView);
     s.setValue("Processes/SortColumn",          this->ProcessListSortColumn);
     s.setValue("Processes/SortOrder",           this->ProcessListSortOrder);
+    s.setValue("Processes/ColumnSchemaVersion", this->ProcessColumnSchemaVersion);
     s.setValue("Processes/TableHeaderState",    this->ProcessListHeaderState);
     s.setValue("Processes/TreeHeaderState",     this->ProcessTreeHeaderState);
     s.setValue("Processes/TaskHistory",         this->TaskHistory);

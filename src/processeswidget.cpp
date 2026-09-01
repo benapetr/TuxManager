@@ -158,6 +158,11 @@ bool ProcessesWidget::selectProcessInTree(pid_t pid)
 
 void ProcessesWidget::setupTable()
 {
+    static constexpr int PROCESS_COLUMN_SCHEMA_VERSION = 1;
+    const bool resetProcessHeaderState = CFG->ProcessColumnSchemaVersion < PROCESS_COLUMN_SCHEMA_VERSION;
+    if (resetProcessHeaderState && CFG->ProcessListSortColumn > OS::ProcessModel::ColMemVirt)
+        CFG->ProcessListSortColumn += 3;
+
     this->m_proxy->setSourceModel(this->m_model);
     this->m_treeProxy->setSourceModel(this->m_treeModel);
     this->m_treeProxy->setSortRole(Qt::UserRole);
@@ -222,6 +227,9 @@ void ProcessesWidget::setupTable()
     tv->setColumnWidth(OS::ProcessModel::ColCpu,      65);
     tv->setColumnWidth(OS::ProcessModel::ColMemRss,   80);
     tv->setColumnWidth(OS::ProcessModel::ColMemVirt,  80);
+    tv->setColumnWidth(OS::ProcessModel::ColMemShared, 80);
+    tv->setColumnWidth(OS::ProcessModel::ColMemText,  80);
+    tv->setColumnWidth(OS::ProcessModel::ColMemData,  80);
     tv->setColumnWidth(OS::ProcessModel::ColIoReads,  90);
     tv->setColumnWidth(OS::ProcessModel::ColIoWrites, 90);
     tv->setColumnWidth(OS::ProcessModel::ColIoReadsPerSec, 100);
@@ -229,22 +237,18 @@ void ProcessesWidget::setupTable()
     tv->setColumnWidth(OS::ProcessModel::ColThreads,  65);
     tv->setColumnWidth(OS::ProcessModel::ColPriority, 65);
     tv->setColumnWidth(OS::ProcessModel::ColNice,     50);
-    tv->setColumnWidth(OS::ProcessModel::ColMemShared, 80);
-    tv->setColumnWidth(OS::ProcessModel::ColMemText,  80);
-    tv->setColumnWidth(OS::ProcessModel::ColMemData,  80);
-
     // Hide less-common columns by default
     hv->hideSection(OS::ProcessModel::ColMemVirt);
+    hv->hideSection(OS::ProcessModel::ColMemShared);
+    hv->hideSection(OS::ProcessModel::ColMemText);
+    hv->hideSection(OS::ProcessModel::ColMemData);
     hv->hideSection(OS::ProcessModel::ColPriority);
     hv->hideSection(OS::ProcessModel::ColNice);
     hv->hideSection(OS::ProcessModel::ColIoReads);
     hv->hideSection(OS::ProcessModel::ColIoWrites);
     hv->hideSection(OS::ProcessModel::ColIoReadsPerSec);
     hv->hideSection(OS::ProcessModel::ColIoWritesPerSec);
-    hv->hideSection(OS::ProcessModel::ColMemShared);
-    hv->hideSection(OS::ProcessModel::ColMemText);
-    hv->hideSection(OS::ProcessModel::ColMemData);
-    if (!CFG->ProcessListHeaderState.isEmpty())
+    if (!resetProcessHeaderState && !CFG->ProcessListHeaderState.isEmpty())
     {
         hv->restoreState(CFG->ProcessListHeaderState);
     }
@@ -283,6 +287,9 @@ void ProcessesWidget::setupTable()
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColCpu, 65);
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColMemRss, 80);
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColMemVirt, 80);
+    this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColMemShared, 80);
+    this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColMemText, 80);
+    this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColMemData, 80);
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColIoReads, 90);
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColIoWrites, 90);
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColIoReadsPerSec, 100);
@@ -290,28 +297,31 @@ void ProcessesWidget::setupTable()
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColThreads, 65);
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColPriority, 65);
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColNice, 50);
-    this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColMemShared, 80);
-    this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColMemText, 80);
-    this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColMemData, 80);
     this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColMemVirt, true);
+    this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColMemShared, true);
+    this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColMemText, true);
+    this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColMemData, true);
     this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColPriority, true);
     this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColNice, true);
     this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColIoReads, true);
     this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColIoWrites, true);
     this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColIoReadsPerSec, true);
     this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColIoWritesPerSec, true);
-    this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColMemShared, true);
-    this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColMemText, true);
-    this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColMemData, true);
     connect(this->m_treeView, &QTreeView::expanded, this, [this]() { this->m_treeView->resizeColumnToContents(OS::ProcessTreeModel::ColPid); });
     connect(this->m_treeView, &QTreeView::collapsed, this, [this]() { this->m_treeView->resizeColumnToContents(OS::ProcessTreeModel::ColPid); });
-    if (!CFG->ProcessTreeHeaderState.isEmpty())
+    if (!resetProcessHeaderState && !CFG->ProcessTreeHeaderState.isEmpty())
     {
         treeHeader->restoreState(CFG->ProcessTreeHeaderState);
     }
     treeHeader->setSectionResizeMode(OS::ProcessTreeModel::ColPid, QHeaderView::Fixed);
     this->syncAllProcessColumnVisibility();
     this->m_treeHeaderPersistenceEnabled = true;
+    if (resetProcessHeaderState)
+    {
+        CFG->ProcessColumnSchemaVersion = PROCESS_COLUMN_SCHEMA_VERSION;
+        this->saveTableHeaderState();
+        this->saveTreeHeaderState();
+    }
     connect(this->m_treeView, &QTreeView::customContextMenuRequested, this, &ProcessesWidget::onTreeContextMenu);
     this->updateIOMetricsEnabledState(false);
 
