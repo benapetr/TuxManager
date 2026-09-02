@@ -20,9 +20,12 @@
 #include "../../logger.h"
 #include "../../misc.h"
 
+#include <QDir>
 #include <QSet>
 #include <QSysInfo>
 #include <dlfcn.h>
+#include <limits.h>
+#include <unistd.h>
 
 namespace
 {
@@ -38,14 +41,16 @@ namespace
 
     static constexpr ZeResult ZE_RESULT_SUCCESS = 0;
 
-    static constexpr uint32_t ZES_STRUCTURE_TYPE_PCI_PROPERTIES = 2;
-    static constexpr uint32_t ZES_STRUCTURE_TYPE_ENGINE_PROPERTIES = 4;
-    static constexpr uint32_t ZES_STRUCTURE_TYPE_FREQ_PROPERTIES = 16;
-    static constexpr uint32_t ZES_STRUCTURE_TYPE_FREQ_STATE = 17;
-    static constexpr uint32_t ZES_STRUCTURE_TYPE_MEM_PROPERTIES = 21;
-    static constexpr uint32_t ZES_STRUCTURE_TYPE_MEM_STATE = 23;
-    static constexpr uint32_t ZES_STRUCTURE_TYPE_TEMP_PROPERTIES = 30;
-    static constexpr uint32_t ZES_STRUCTURE_TYPE_POWER_PROPERTIES = 35;
+    // Sysman 1.11+ structure type values (hex). Older sequential values were
+    // renumbered; passing stale constants corrupts the properties the driver writes.
+    static constexpr uint32_t ZES_STRUCTURE_TYPE_PCI_PROPERTIES = 0x2;
+    static constexpr uint32_t ZES_STRUCTURE_TYPE_ENGINE_PROPERTIES = 0x5;
+    static constexpr uint32_t ZES_STRUCTURE_TYPE_FREQ_PROPERTIES = 0x9;
+    static constexpr uint32_t ZES_STRUCTURE_TYPE_FREQ_STATE = 0x1b;
+    static constexpr uint32_t ZES_STRUCTURE_TYPE_MEM_PROPERTIES = 0xb;
+    static constexpr uint32_t ZES_STRUCTURE_TYPE_MEM_STATE = 0x1e;
+    static constexpr uint32_t ZES_STRUCTURE_TYPE_TEMP_PROPERTIES = 0x14;
+    static constexpr uint32_t ZES_STRUCTURE_TYPE_POWER_PROPERTIES = 0xd;
 
     static constexpr uint32_t ZES_MEM_LOC_SYSTEM = 0;
     static constexpr uint32_t ZES_MEM_LOC_DEVICE = 1;
@@ -133,7 +138,7 @@ namespace
         ZeBool onSubdevice;
         uint32_t subdeviceId;
         uint32_t location;
-        int64_t physicalSize;
+        uint64_t physicalSize;
         int32_t busWidth;
         int32_t numChannels;
     };
@@ -337,6 +342,183 @@ namespace
         }
         return QSysInfo::kernelVersion();
     }
+
+    QString fdEngineLabel(const QString &key)
+    {
+        if (key == QLatin1String("rcs"))
+            return QStringLiteral("Render");
+        if (key.startsWith(QLatin1String("ccs")))
+            return QStringLiteral("Compute") + (key.size() > 3 ? QLatin1Char(' ') + key.mid(3) : QString());
+        if (key.startsWith(QLatin1String("vcs")))
+            return QStringLiteral("Video");
+        if (key.startsWith(QLatin1String("vecs")))
+            return QStringLiteral("Video Enhance");
+        if (key.startsWith(QLatin1String("bcs")))
+            return QStringLiteral("Copy");
+        return key.toUpper();
+    }
+
+    QString renderNodeForBdf(const QString &bdf)
+    {
+        const QDir drmDir(QStringLiteral("/sys/bus/pci/devices/") + bdf + QStringLiteral("/drm"));
+        const QStringList renderNodes = drmDir.entryList({QStringLiteral("renderD[0-9]*")}, QDir::Dirs);
+        return renderNodes.isEmpty() ? QString() : QStringLiteral("/dev/dri/") + renderNodes.first();
+    }
+
+    //! Reads the GPU package temperature from hwmon sysfs (fallback for sysman,
+    //! which has no sensors when PMT telemetry is unavailable). Prefers the
+    //! lowest-numbered sensor; on xe that is temp2_input ("pkg").
+    int readHwmonTemperatureC(const QString &bdf)
+    {
+        const QDir hwmonRoot(QStringLiteral("/sys/bus/pci/devices/") + bdf + QStringLiteral("/hwmon"));
+        const QStringList hwmonDirs = hwmonRoot.entryList({QStringLiteral("hwmon[0-9]*")}, QDir::Dirs);
+
+        int bestSensor = INT_MAX;
+        int bestMilliC = -1;
+
+        for (const QString &hwmonName : hwmonDirs)
+        {
+            const QDir dir(hwmonRoot.filePath(hwmonName));
+            const QStringList inputs = dir.entryList({QStringLiteral("temp[0-9]*_input")}, QDir::Files);
+            for (const QString &input : inputs)
+            {
+                // "temp2_input" -> "2"
+                const QString numStr = input.mid(4, input.size() - 4 - QStringLiteral("_input").size());
+                bool ok = false;
+                const int sensor = numStr.toInt(&ok);
+                if (!ok || sensor >= bestSensor)
+                    continue;
+
+                bool okRead = false;
+                const int milliC = Misc::ReadFile(dir.filePath(input)).trimmed().toInt(&okRead);
+                if (!okRead)
+                    continue;
+
+                bestSensor = sensor;
+                bestMilliC = milliC;
+            }
+        }
+
+        return bestMilliC > 0 ? bestMilliC / 1000 : -1;
+    }
+
+    //! Parses one client fdinfo file into per-engine-class counters.
+    //! Handles legacy i915 "drm-engine-<key>:" (nanoseconds busy) and xe
+    //! "drm-cycles-<key>:" / "drm-total-cycles-<key>:" (GPU clock domain).
+    bool parseFdInfoFile(const QString &infoPath, const QString &pdevId, QHash<QString, GpuIntelSysmanBackend::FdEngineSnapshot> &out)
+    {
+        const QString content = Misc::ReadFile(infoPath);
+        if (content.isEmpty())
+            return false;
+
+        if (!content.contains(QLatin1String("drm-pdev:\t") + pdevId)
+            && !content.contains(QLatin1String("drm-pdev: ") + pdevId))
+            return false;
+
+        bool found = false;
+        for (const auto &line : QStringView(content).split('\n'))
+        {
+            if (line.startsWith(QLatin1String("drm-engine-capacity-")))
+            {
+                // Static metadata: number of parallel engines in the class
+                // (e.g. vcs=2, ccs=4). Not a busy counter — deliberately ignored.
+                continue;
+            }
+            else if (line.startsWith(QLatin1String("drm-engine-")))
+            {
+                // "drm-engine-rcs: <busy_ns> <timestamp>"
+                const int colonPos = line.indexOf(':');
+                if (colonPos < 0)
+                    continue;
+                const QString key = line.mid(11, colonPos - 11).toString();
+                const QStringView valStr = line.mid(colonPos + 1).trimmed();
+                const int spacePos = valStr.indexOf(QLatin1Char(' '));
+                out[key].busyNs += (spacePos > 0 ? valStr.left(spacePos) : valStr).toULongLong();
+                found = true;
+            }
+            else if (line.startsWith(QLatin1String("drm-total-cycles-")))
+            {
+                // "drm-total-cycles-rcs: <cycles>" — shared GT clock reference,
+                // identical for every client; keep the maximum seen
+                const int colonPos = line.indexOf(':');
+                if (colonPos < 0)
+                    continue;
+                const QString key = line.mid(17, colonPos - 17).toString();
+                out[key].totalCycles = qMax(out[key].totalCycles, line.mid(colonPos + 1).trimmed().toULongLong());
+                found = true;
+            }
+            else if (line.startsWith(QLatin1String("drm-cycles-")))
+            {
+                // "drm-cycles-rcs: <busy_cycles>" — summed over clients
+                const int colonPos = line.indexOf(':');
+                if (colonPos < 0)
+                    continue;
+                const QString key = line.mid(11, colonPos - 11).toString();
+                out[key].cycles += line.mid(colonPos + 1).trimmed().toULongLong();
+                found = true;
+            }
+        }
+        return found;
+    }
+
+    //! Scans every /proc/*/fdinfo of clients holding the given render node,
+    //! summing per-engine-class busy counters across clients.
+    QHash<QString, GpuIntelSysmanBackend::FdEngineSnapshot> scanFdInfoEngines(const QString &renderNodePath, const QString &pdevId,
+                                                                              QStringList &cachedPaths, bool fullRescan)
+    {
+        QHash<QString, GpuIntelSysmanBackend::FdEngineSnapshot> totals;
+
+        if (!fullRescan)
+        {
+            QStringList stillValid;
+            for (const QString &path : std::as_const(cachedPaths))
+            {
+                if (parseFdInfoFile(path, pdevId, totals))
+                    stillValid.append(path);
+            }
+            cachedPaths = stillValid;
+            return totals;
+        }
+
+        QStringList newCache;
+        const QDir procDir(QStringLiteral("/proc"));
+        const QStringList pids = procDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+
+        for (const QString &pidEntry : pids)
+        {
+            bool ok = false;
+            pidEntry.toInt(&ok);
+            if (!ok)
+                continue;
+
+            const QString fdDirPath = QStringLiteral("/proc/") + pidEntry + QStringLiteral("/fd");
+            const QDir fdDir(fdDirPath);
+            if (!fdDir.exists())
+                continue;
+
+            const QStringList fdEntries = fdDir.entryList(QDir::NoDotAndDotDot);
+            for (const QString &fdNum : fdEntries)
+            {
+                const QString linkPath = fdDirPath + QLatin1Char('/') + fdNum;
+                char buf[PATH_MAX];
+                const ssize_t len = ::readlink(linkPath.toLocal8Bit().constData(), buf, sizeof(buf) - 1);
+                if (len <= 0)
+                    continue;
+                buf[len] = '\0';
+                const QByteArray target(buf, static_cast<int>(len));
+
+                if (target != renderNodePath.toLatin1())
+                    continue;
+
+                const QString infoPath = QStringLiteral("/proc/") + pidEntry + QStringLiteral("/fdinfo/") + fdNum;
+                if (parseFdInfoFile(infoPath, pdevId, totals))
+                    newCache.append(infoPath);
+            }
+        }
+
+        cachedPaths = newCache;
+        return totals;
+    }
 }
 
 GpuIntelSysmanBackend::~GpuIntelSysmanBackend()
@@ -451,6 +633,8 @@ bool GpuIntelSysmanBackend::Sample(std::vector<std::unique_ptr<GPU::GPUInfo>> &g
     if (!this->m_available)
         return false;
 
+    const qint64 fdInfoElapsedNs = this->m_fdInfoTimerStarted ? this->m_fdInfoTimer.nsecsElapsed() : 0;
+
     uint32_t driverCount = 0;
     if (pZesDriverGet(&driverCount, nullptr) != ZE_RESULT_SUCCESS || driverCount == 0)
         return false;
@@ -556,6 +740,13 @@ bool GpuIntelSysmanBackend::Sample(std::vector<std::unique_ptr<GPU::GPUInfo>> &g
                     zeroMissingEngines(gpu, seenEngineKeys);
                     gpu.UtilPct = qBound(0.0, utilAccumulator, 100.0);
                 }
+            }
+            else
+            {
+                // Sysman cannot enumerate engine groups here (non-root processes get
+                // ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS on Linux). Fall back to
+                // per-client DRM fdinfo busy counters instead.
+                this->sampleFdInfoEngines(gpu, id, fdInfoElapsedNs);
             }
             gpu.UtilHistory.Push(gpu.UtilPct);
 
@@ -669,6 +860,27 @@ bool GpuIntelSysmanBackend::Sample(std::vector<std::unique_ptr<GPU::GPUInfo>> &g
                 }
             }
 
+            if (gpu.TemperatureC < 0)
+            {
+                // Sysman exposes no temperature sensors when PMT telemetry is
+                // unavailable (typical on xe without intel_vsec/PMT nodes). The
+                // kernel hwmon interface always has the package sensor, so read it.
+                const int hwmonTempC = readHwmonTemperatureC(id);
+                if (hwmonTempC >= 0)
+                {
+                    gpu.TemperatureC = hwmonTempC;
+                    this->setHwmonTempFallback(true);
+                }
+                else
+                {
+                    this->setHwmonTempFallback(false);
+                }
+            }
+            else
+            {
+                this->setHwmonTempFallback(false);
+            }
+
             uint32_t powerCount = 0;
             if (pZesDeviceEnumPowerDomains(device, &powerCount, nullptr) == ZE_RESULT_SUCCESS && powerCount > 0)
             {
@@ -767,7 +979,97 @@ bool GpuIntelSysmanBackend::Sample(std::vector<std::unique_ptr<GPU::GPUInfo>> &g
         }
     }
 
+    this->m_fdInfoTimer.start();
+    this->m_fdInfoTimerStarted = true;
+
     return !seenIds.isEmpty();
+}
+
+void GpuIntelSysmanBackend::sampleFdInfoEngines(GPU::GPUInfo &gpu, const QString &bdf, qint64 intervalNs)
+{
+    if (this->m_fdRenderNode.isEmpty())
+        this->m_fdRenderNode = renderNodeForBdf(bdf);
+
+    if (this->m_fdRenderNode.isEmpty())
+    {
+        this->setFdEngineFallback(false);
+        gpu.UtilPct = 0.0;
+        return;
+    }
+
+    const bool fullRescan = (++this->m_fdInfoRescanCounter % 5 == 1) || this->m_fdInfoPaths.isEmpty();
+    const QHash<QString, FdEngineSnapshot> cur = scanFdInfoEngines(this->m_fdRenderNode, bdf, this->m_fdInfoPaths, fullRescan);
+
+    QSet<QString> seenEngineKeys;
+    double bestPct = 0.0;
+
+    for (auto it = cur.cbegin(); it != cur.cend(); ++it)
+    {
+        const QString &key = it.key();
+        const FdEngineSnapshot &snap = it.value();
+        const QString stateKey = bdf + QLatin1Char('/') + key;
+
+        double pct = 0.0;
+        if (this->m_prevFdEngines.contains(stateKey))
+        {
+            const FdEngineSnapshot &prev = this->m_prevFdEngines.value(stateKey);
+            if (snap.totalCycles > 0 && snap.totalCycles > prev.totalCycles)
+            {
+                // xe: utilization = delta busy cycles / delta GPU clock-domain total
+                const qint64 dBusy = static_cast<qint64>(snap.cycles) - static_cast<qint64>(prev.cycles);
+                const qint64 dTotal = static_cast<qint64>(snap.totalCycles) - static_cast<qint64>(prev.totalCycles);
+                if (dTotal > 0 && dBusy >= 0)
+                    pct = static_cast<double>(dBusy) / static_cast<double>(dTotal) * 100.0;
+            }
+            else if (intervalNs > 0)
+            {
+                // i915: busy counters are already in nanoseconds
+                const qint64 dBusy = static_cast<qint64>(snap.busyNs) - static_cast<qint64>(prev.busyNs);
+                if (dBusy >= 0)
+                    pct = static_cast<double>(dBusy) / static_cast<double>(intervalNs) * 100.0;
+            }
+        }
+        this->m_prevFdEngines.insert(stateKey, snap);
+
+        GPU::GPUEngineInfo *engine = gpu.FindEngine(key);
+        if (!engine)
+        {
+            auto newEngine = std::make_unique<GPU::GPUEngineInfo>();
+            newEngine->Key = key;
+            newEngine->Label = fdEngineLabel(key);
+            gpu.Engines.push_back(std::move(newEngine));
+            engine = gpu.Engines.back().get();
+        }
+        engine->Pct = qBound(0.0, pct, 100.0);
+        engine->History.Push(engine->Pct);
+        seenEngineKeys.insert(key);
+        bestPct = qMax(bestPct, pct);
+    }
+
+    zeroMissingEngines(gpu, seenEngineKeys);
+    // Equivalent to the sysman ZES_ENGINE_GROUP_ALL aggregate: busiest engine class.
+    gpu.UtilPct = qBound(0.0, bestPct, 100.0);
+    this->setFdEngineFallback(true);
+}
+
+void GpuIntelSysmanBackend::setFdEngineFallback(bool active)
+{
+    if (this->m_fdEngineFallbackActive == active)
+        return;
+
+    this->m_fdEngineFallbackActive = active;
+    if (active)
+        LOG_DEBUG("Intel Sysman: engine activity unavailable, falling back to per-client DRM fdinfo counters");
+}
+
+void GpuIntelSysmanBackend::setHwmonTempFallback(bool active)
+{
+    if (this->m_hwmonTempFallbackActive == active)
+        return;
+
+    this->m_hwmonTempFallbackActive = active;
+    if (active)
+        LOG_DEBUG("Intel Sysman: no temperature sensors exposed, falling back to hwmon");
 }
 
 void GpuIntelSysmanBackend::unload()
@@ -777,6 +1079,12 @@ void GpuIntelSysmanBackend::unload()
     this->m_prevPciRxById.clear();
     this->m_prevPciTxById.clear();
     this->m_prevEngineByKey.clear();
+    this->m_prevFdEngines.clear();
+    this->m_fdInfoPaths.clear();
+    this->m_fdInfoRescanCounter = 0;
+    this->m_fdInfoTimerStarted = false;
+    this->m_fdEngineFallbackActive = false;
+    this->m_hwmonTempFallbackActive = false;
 
     pZesInit = nullptr;
     pZesDriverGet = nullptr;
