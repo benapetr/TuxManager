@@ -5,7 +5,7 @@ This directory contains Linux packaging scripts for Tux Manager.
 ## Supported targets
 
 - Debian/Ubuntu (`.deb`) via `package-deb.sh`
-- Fedora/RHEL/Alma/Rocky (`.rpm` + `.src.rpm`) via `package-rpm.sh`
+- Fedora/RHEL/Alma/Rocky/openSUSE (`.rpm` + `.src.rpm`) via `package-rpm.sh`
 - AppImage (`.AppImage`) via `package-appimage.sh`
 - Arch Linux (`.pkg.tar.*`) via `package-arch.sh`
 - Arch Linux / AUR metadata via `arch/PKGBUILD`, `.SRCINFO`, and `.github/workflows/build-arch-aur.yml`
@@ -38,6 +38,19 @@ sudo dnf install rpm-build rsync git pkgconf-pkg-config qt6-qtbase-devel
 Notes:
 - The script can also build with Qt5 if only that is available (`qt5-qtbase-devel`).
 - The script uses `rpmbuild` and creates both binary RPM and source RPM.
+
+### openSUSE
+
+Required build tools/packages:
+
+```bash
+sudo zypper install rpm-build git gzip pkgconf-pkg-config \
+  qt6-base-common-devel qt6-core-devel qt6-gui-devel qt6-widgets-devel
+```
+
+Notes:
+- The same `package-rpm.sh` script detects openSUSE and uses its Qt 6 package names.
+- The script creates both a binary RPM and a source RPM.
 
 ### Flatpak
 
@@ -223,10 +236,12 @@ sudo dpkg -i packaging/output/tux-manager_*.deb
 sudo apt-get install -f
 ```
 
-### Fedora/RHEL family
+### Fedora/RHEL family and openSUSE
 
 ```bash
 sudo dnf install packaging/output/tux-manager-*.rpm
+# or, on openSUSE:
+sudo zypper install packaging/output/tux-manager-*.rpm
 ```
 
 ### Flatpak
