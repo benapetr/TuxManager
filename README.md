@@ -27,10 +27,10 @@ A Linux Task Manager alternative built with Qt6, inspired by the Windows Task Ma
 ### Debian / Ubuntu / Fedora / EL derivatives (Rocky/Alma/OL)
 Use prebuilt packages that can be downloaded from [releases](https://github.com/benapetr/TuxManager/releases)
 
-### AUR
-Use an AUR helper like paru or yay:
+### Arch Linux
+Install from the official repositories:
 ```bash
-yay -S tuxmanager
+sudo pacman -S tuxmanager
 ```
 
 ### Nix flake
