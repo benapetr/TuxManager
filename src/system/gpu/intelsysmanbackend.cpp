@@ -365,6 +365,15 @@ namespace
         return renderNodes.isEmpty() ? QString() : QStringLiteral("/dev/dri/") + renderNodes.first();
     }
 
+    //! Primary/control DRM node for a BDF (some compositors do direct KMS/GEM
+    //! access via /dev/dri/cardN rather than the render node).
+    QString cardNodeForBdf(const QString &bdf)
+    {
+        const QDir drmDir(QStringLiteral("/sys/bus/pci/devices/") + bdf + QStringLiteral("/drm"));
+        const QStringList cardNodes = drmDir.entryList({QStringLiteral("card[0-9]*")}, QDir::Dirs);
+        return cardNodes.isEmpty() ? QString() : QStringLiteral("/dev/dri/") + cardNodes.first();
+    }
+
     //! Reads the GPU package temperature from hwmon sysfs (fallback for sysman,
     //! which has no sensors when PMT telemetry is unavailable). Prefers the
     //! lowest-numbered sensor; on xe that is temp2_input ("pkg").
@@ -402,123 +411,6 @@ namespace
         return bestMilliC > 0 ? bestMilliC / 1000 : -1;
     }
 
-    //! Parses one client fdinfo file into per-engine-class counters.
-    //! Handles legacy i915 "drm-engine-<key>:" (nanoseconds busy) and xe
-    //! "drm-cycles-<key>:" / "drm-total-cycles-<key>:" (GPU clock domain).
-    bool parseFdInfoFile(const QString &infoPath, const QString &pdevId, QHash<QString, GpuIntelSysmanBackend::FdEngineSnapshot> &out)
-    {
-        const QString content = Misc::ReadFile(infoPath);
-        if (content.isEmpty())
-            return false;
-
-        if (!content.contains(QLatin1String("drm-pdev:\t") + pdevId)
-            && !content.contains(QLatin1String("drm-pdev: ") + pdevId))
-            return false;
-
-        bool found = false;
-        for (const auto &line : QStringView(content).split('\n'))
-        {
-            if (line.startsWith(QLatin1String("drm-engine-capacity-")))
-            {
-                // Static metadata: number of parallel engines in the class
-                // (e.g. vcs=2, ccs=4). Not a busy counter — deliberately ignored.
-                continue;
-            }
-            else if (line.startsWith(QLatin1String("drm-engine-")))
-            {
-                // "drm-engine-rcs: <busy_ns> <timestamp>"
-                const int colonPos = line.indexOf(':');
-                if (colonPos < 0)
-                    continue;
-                const QString key = line.mid(11, colonPos - 11).toString();
-                const QStringView valStr = line.mid(colonPos + 1).trimmed();
-                const int spacePos = valStr.indexOf(QLatin1Char(' '));
-                out[key].busyNs += (spacePos > 0 ? valStr.left(spacePos) : valStr).toULongLong();
-                found = true;
-            }
-            else if (line.startsWith(QLatin1String("drm-total-cycles-")))
-            {
-                // "drm-total-cycles-rcs: <cycles>" — shared GT clock reference,
-                // identical for every client; keep the maximum seen
-                const int colonPos = line.indexOf(':');
-                if (colonPos < 0)
-                    continue;
-                const QString key = line.mid(17, colonPos - 17).toString();
-                out[key].totalCycles = qMax(out[key].totalCycles, line.mid(colonPos + 1).trimmed().toULongLong());
-                found = true;
-            }
-            else if (line.startsWith(QLatin1String("drm-cycles-")))
-            {
-                // "drm-cycles-rcs: <busy_cycles>" — summed over clients
-                const int colonPos = line.indexOf(':');
-                if (colonPos < 0)
-                    continue;
-                const QString key = line.mid(11, colonPos - 11).toString();
-                out[key].cycles += line.mid(colonPos + 1).trimmed().toULongLong();
-                found = true;
-            }
-        }
-        return found;
-    }
-
-    //! Scans every /proc/*/fdinfo of clients holding the given render node,
-    //! summing per-engine-class busy counters across clients.
-    QHash<QString, GpuIntelSysmanBackend::FdEngineSnapshot> scanFdInfoEngines(const QString &renderNodePath, const QString &pdevId,
-                                                                              QStringList &cachedPaths, bool fullRescan)
-    {
-        QHash<QString, GpuIntelSysmanBackend::FdEngineSnapshot> totals;
-
-        if (!fullRescan)
-        {
-            QStringList stillValid;
-            for (const QString &path : std::as_const(cachedPaths))
-            {
-                if (parseFdInfoFile(path, pdevId, totals))
-                    stillValid.append(path);
-            }
-            cachedPaths = stillValid;
-            return totals;
-        }
-
-        QStringList newCache;
-        const QDir procDir(QStringLiteral("/proc"));
-        const QStringList pids = procDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-
-        for (const QString &pidEntry : pids)
-        {
-            bool ok = false;
-            pidEntry.toInt(&ok);
-            if (!ok)
-                continue;
-
-            const QString fdDirPath = QStringLiteral("/proc/") + pidEntry + QStringLiteral("/fd");
-            const QDir fdDir(fdDirPath);
-            if (!fdDir.exists())
-                continue;
-
-            const QStringList fdEntries = fdDir.entryList(QDir::NoDotAndDotDot);
-            for (const QString &fdNum : fdEntries)
-            {
-                const QString linkPath = fdDirPath + QLatin1Char('/') + fdNum;
-                char buf[PATH_MAX];
-                const ssize_t len = ::readlink(linkPath.toLocal8Bit().constData(), buf, sizeof(buf) - 1);
-                if (len <= 0)
-                    continue;
-                buf[len] = '\0';
-                const QByteArray target(buf, static_cast<int>(len));
-
-                if (target != renderNodePath.toLatin1())
-                    continue;
-
-                const QString infoPath = QStringLiteral("/proc/") + pidEntry + QStringLiteral("/fdinfo/") + fdNum;
-                if (parseFdInfoFile(infoPath, pdevId, totals))
-                    newCache.append(infoPath);
-            }
-        }
-
-        cachedPaths = newCache;
-        return totals;
-    }
 }
 
 GpuIntelSysmanBackend::~GpuIntelSysmanBackend()
@@ -979,57 +871,293 @@ bool GpuIntelSysmanBackend::Sample(std::vector<std::unique_ptr<GPU::GPUInfo>> &g
         }
     }
 
+    // Drop fdinfo fallback state for any BDF that no longer shows up (device
+    // unplugged, driver rebound) so it doesn't grow unbounded across restarts.
+    for (auto it = this->m_fdInfoByBdf.begin(); it != this->m_fdInfoByBdf.end(); )
+    {
+        if (seenIds.contains(it.key()))
+            ++it;
+        else
+            it = this->m_fdInfoByBdf.erase(it);
+    }
+
     this->m_fdInfoTimer.start();
     this->m_fdInfoTimerStarted = true;
 
     return !seenIds.isEmpty();
 }
 
+//! Parses one client's fdinfo file. Handles legacy i915 "drm-engine-<key>:"
+//! (nanoseconds busy) and xe "drm-cycles-<key>:" / "drm-total-cycles-<key>:"
+//! (GPU clock domain). "drm-engine-capacity-<key>:" and "drm-client-id:" are
+//! metadata, not busy counters, and are returned via the out-parameters
+//! instead of being folded into perEngine.
+bool GpuIntelSysmanBackend::parseFdInfoFile(const QString &infoPath, const QString &pdevId,
+                                            QHash<QString, FdEngineSnapshot> &perEngine,
+                                            QHash<QString, quint64> &totalCyclesThisScan,
+                                            QHash<QString, quint64> &capacityThisScan,
+                                            int &clientId)
+{
+    const QString content = Misc::ReadFile(infoPath);
+    if (content.isEmpty())
+        return false;
+
+    if (!content.contains(QLatin1String("drm-pdev:\t") + pdevId)
+        && !content.contains(QLatin1String("drm-pdev: ") + pdevId))
+        return false;
+
+    // Prefix lengths are derived from the literal itself (rather than hardcoded)
+    // so the key-extraction offset can never drift out of sync with the prefix
+    // actually matched by startsWith() below.
+    static const QLatin1String kCapacityPrefix("drm-engine-capacity-");
+    static const QLatin1String kEnginePrefix("drm-engine-");
+    static const QLatin1String kTotalCyclesPrefix("drm-total-cycles-");
+    static const QLatin1String kCyclesPrefix("drm-cycles-");
+
+    clientId = -1;
+    bool found = false;
+    for (const auto &line : QStringView(content).split('\n'))
+    {
+        if (line.startsWith(QLatin1String("drm-client-id:")))
+        {
+            clientId = line.mid(line.indexOf(':') + 1).trimmed().toInt();
+        }
+        else if (line.startsWith(kCapacityPrefix))
+        {
+            // Number of identical hardware instances summed into the
+            // corresponding drm-engine-*/drm-cycles-* counter below (e.g.
+            // vcs=2, ccs=4). Shared by every client — last writer wins.
+            const int colonPos = line.indexOf(':');
+            if (colonPos < 0)
+                continue;
+            const QString key = line.mid(kCapacityPrefix.size(), colonPos - kCapacityPrefix.size()).toString();
+            capacityThisScan[key] = qMax<quint64>(1, line.mid(colonPos + 1).trimmed().toULongLong());
+        }
+        else if (line.startsWith(kEnginePrefix))
+        {
+            // "drm-engine-rcs: <busy_ns> <timestamp>"
+            const int colonPos = line.indexOf(':');
+            if (colonPos < 0)
+                continue;
+            const QString key = line.mid(kEnginePrefix.size(), colonPos - kEnginePrefix.size()).toString();
+            const QStringView valStr = line.mid(colonPos + 1).trimmed();
+            const int spacePos = valStr.indexOf(QLatin1Char(' '));
+            perEngine[key].busyNs += (spacePos > 0 ? valStr.left(spacePos) : valStr).toULongLong();
+            found = true;
+        }
+        else if (line.startsWith(kTotalCyclesPrefix))
+        {
+            // "drm-total-cycles-rcs: <cycles>" — shared GT clock reference,
+            // identical for every client; keep the maximum seen this scan.
+            const int colonPos = line.indexOf(':');
+            if (colonPos < 0)
+                continue;
+            const QString key = line.mid(kTotalCyclesPrefix.size(), colonPos - kTotalCyclesPrefix.size()).toString();
+            totalCyclesThisScan[key] = qMax(totalCyclesThisScan.value(key), line.mid(colonPos + 1).trimmed().toULongLong());
+            found = true;
+        }
+        else if (line.startsWith(kCyclesPrefix))
+        {
+            // "drm-cycles-rcs: <busy_cycles>"
+            const int colonPos = line.indexOf(':');
+            if (colonPos < 0)
+                continue;
+            const QString key = line.mid(kCyclesPrefix.size(), colonPos - kCyclesPrefix.size()).toString();
+            perEngine[key].cycles += line.mid(colonPos + 1).trimmed().toULongLong();
+            found = true;
+        }
+    }
+    return found;
+}
+
+//! Scans every /proc/*/fdinfo of clients holding the given render or card node,
+//! returning per-client (not summed) engine-class counters. A client exposed
+//! through more than one fd (duplicated/inherited via fork()/dup(), common for
+//! compositors) is counted once via drm-client-id dedup — falling back to the
+//! fdinfo path itself as an identity when the driver does not report one.
+GpuIntelSysmanBackend::FdPerClientEngines GpuIntelSysmanBackend::scanFdInfoEngines(FdInfoGpuState &state, const QString &pdevId,
+                                                                                    QHash<QString, quint64> &totalCyclesThisScan,
+                                                                                    QHash<QString, quint64> &capacityThisScan,
+                                                                                    bool fullRescan)
+{
+    FdPerClientEngines result;
+    QSet<QString> seenClientKeys;
+
+    auto tryParse = [&](const QString &infoPath) -> bool
+    {
+        QHash<QString, FdEngineSnapshot> perEngine;
+        int clientId = -1;
+        if (!this->parseFdInfoFile(infoPath, pdevId, perEngine, totalCyclesThisScan, capacityThisScan, clientId))
+            return false;
+
+        const QString clientKey = clientId >= 0 ? QStringLiteral("id:") + QString::number(clientId)
+                                                 : QStringLiteral("path:") + infoPath;
+        if (seenClientKeys.contains(clientKey))
+            return false; // duplicate fd for a client already counted this scan
+
+        seenClientKeys.insert(clientKey);
+        result.insert(clientKey, perEngine);
+        return true;
+    };
+
+    if (!fullRescan)
+    {
+        QStringList stillValid;
+        for (const QString &path : std::as_const(state.cachedPaths))
+        {
+            if (tryParse(path))
+                stillValid.append(path);
+        }
+        state.cachedPaths = stillValid;
+        return result;
+    }
+
+    QStringList newCache;
+    const QDir procDir(QStringLiteral("/proc"));
+    const QStringList pids = procDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+
+    for (const QString &pidEntry : pids)
+    {
+        bool ok = false;
+        pidEntry.toInt(&ok);
+        if (!ok)
+            continue;
+
+        const QString fdDirPath = QStringLiteral("/proc/") + pidEntry + QStringLiteral("/fd");
+        const QDir fdDir(fdDirPath);
+        if (!fdDir.exists())
+            continue;
+
+        const QStringList fdEntries = fdDir.entryList(QDir::NoDotAndDotDot);
+        for (const QString &fdNum : fdEntries)
+        {
+            const QString linkPath = fdDirPath + QLatin1Char('/') + fdNum;
+            char buf[PATH_MAX];
+            const ssize_t len = ::readlink(linkPath.toLocal8Bit().constData(), buf, sizeof(buf) - 1);
+            if (len <= 0)
+                continue;
+            buf[len] = '\0';
+            const QByteArray target(buf, static_cast<int>(len));
+
+            if (target != state.renderNodePath.toLatin1()
+                && (state.cardNodePath.isEmpty() || target != state.cardNodePath.toLatin1()))
+                continue;
+
+            const QString infoPath = QStringLiteral("/proc/") + pidEntry + QStringLiteral("/fdinfo/") + fdNum;
+            if (tryParse(infoPath))
+                newCache.append(infoPath);
+        }
+    }
+
+    state.cachedPaths = newCache;
+    return result;
+}
+
 void GpuIntelSysmanBackend::sampleFdInfoEngines(GPU::GPUInfo &gpu, const QString &bdf, qint64 intervalNs)
 {
-    if (this->m_fdRenderNode.isEmpty())
-        this->m_fdRenderNode = renderNodeForBdf(bdf);
+    FdInfoGpuState &state = this->m_fdInfoByBdf[bdf];
 
-    if (this->m_fdRenderNode.isEmpty())
+    if (state.renderNodePath.isEmpty())
+        state.renderNodePath = renderNodeForBdf(bdf);
+    if (state.cardNodePath.isEmpty())
+        state.cardNodePath = cardNodeForBdf(bdf);
+
+    if (state.renderNodePath.isEmpty())
     {
         this->setFdEngineFallback(false);
         gpu.UtilPct = 0.0;
         return;
     }
 
-    const bool fullRescan = (++this->m_fdInfoRescanCounter % 5 == 1) || this->m_fdInfoPaths.isEmpty();
-    const QHash<QString, FdEngineSnapshot> cur = scanFdInfoEngines(this->m_fdRenderNode, bdf, this->m_fdInfoPaths, fullRescan);
+    const bool fullRescan = (++state.rescanCounter % 5 == 1) || state.cachedPaths.isEmpty();
+
+    QHash<QString, quint64> totalCyclesThisScan;
+    QHash<QString, quint64> capacityThisScan;
+    const FdPerClientEngines perClient = this->scanFdInfoEngines(state, bdf, totalCyclesThisScan, capacityThisScan, fullRescan);
+
+    // Sum each client's *delta* against its own previous sample, so a client
+    // discovered mid-run (only ever seen on a rescan cycle) never dumps its
+    // whole lifetime counter in as an instantaneous burst. A counter that
+    // dips (a driver glitch, not a real reset — DRM fdinfo counters are
+    // defined to be monotonic while a client is alive) retains its previous
+    // high-water mark as the baseline instead of dropping to the lower
+    // reading, so a subsequent partial recovery is never miscounted as fresh
+    // activity.
+    QHash<QString, FdEngineSnapshot> deltaByEngine;
+    QHash<QString, FdEngineSnapshot> nextPrevClientEngines;
+    QSet<QString> allEngineKeys;
+
+    for (auto clientIt = perClient.cbegin(); clientIt != perClient.cend(); ++clientIt)
+    {
+        const QString &clientKey = clientIt.key();
+        const QHash<QString, FdEngineSnapshot> &engines = clientIt.value();
+        for (auto engIt = engines.cbegin(); engIt != engines.cend(); ++engIt)
+        {
+            const QString &engineKey = engIt.key();
+            const FdEngineSnapshot &cur = engIt.value();
+            const QString clientStateKey = clientKey + QLatin1Char('/') + engineKey;
+            allEngineKeys.insert(engineKey);
+
+            FdEngineSnapshot next = cur;
+            const auto prevIt = state.prevClientEngines.constFind(clientStateKey);
+            if (prevIt != state.prevClientEngines.constEnd())
+            {
+                const FdEngineSnapshot &prev = prevIt.value();
+                FdEngineSnapshot &delta = deltaByEngine[engineKey];
+                if (cur.busyNs >= prev.busyNs)
+                    delta.busyNs += cur.busyNs - prev.busyNs;
+                else
+                    next.busyNs = prev.busyNs;
+                if (cur.cycles >= prev.cycles)
+                    delta.cycles += cur.cycles - prev.cycles;
+                else
+                    next.cycles = prev.cycles;
+            }
+            // else: first time this client/engine pair is seen — contribute
+            // nothing this sample (it has no baseline yet), just record one.
+
+            nextPrevClientEngines.insert(clientStateKey, next);
+        }
+    }
+    state.prevClientEngines = std::move(nextPrevClientEngines);
+
+    // Class-level metadata (xe's shared GT reference clock, and engine
+    // capacity) is captured for every class seen this scan — including one
+    // whose only client has no busy-counter baseline yet — so the first
+    // sample where a client delta actually becomes available compares
+    // against the previous sample's reading instead of a zeroed baseline.
+    for (auto it = totalCyclesThisScan.cbegin(); it != totalCyclesThisScan.cend(); ++it)
+        allEngineKeys.insert(it.key());
+    for (auto it = capacityThisScan.cbegin(); it != capacityThisScan.cend(); ++it)
+        allEngineKeys.insert(it.key());
 
     QSet<QString> seenEngineKeys;
     double bestPct = 0.0;
 
-    for (auto it = cur.cbegin(); it != cur.cend(); ++it)
+    for (const QString &key : std::as_const(allEngineKeys))
     {
-        const QString &key = it.key();
-        const FdEngineSnapshot &snap = it.value();
-        const QString stateKey = bdf + QLatin1Char('/') + key;
+        const FdEngineSnapshot delta = deltaByEngine.value(key);
+
+        FdEngineClassState &classState = state.classes[key];
+        const quint64 curTotalCycles = totalCyclesThisScan.value(key, 0);
+        const quint64 capacity = qMax<quint64>(1, capacityThisScan.value(key, classState.capacity));
+        classState.capacity = capacity;
 
         double pct = 0.0;
-        if (this->m_prevFdEngines.contains(stateKey))
+        if (curTotalCycles > 0 && curTotalCycles > classState.prevTotalCycles)
         {
-            const FdEngineSnapshot &prev = this->m_prevFdEngines.value(stateKey);
-            if (snap.totalCycles > 0 && snap.totalCycles > prev.totalCycles)
-            {
-                // xe: utilization = delta busy cycles / delta GPU clock-domain total
-                const qint64 dBusy = static_cast<qint64>(snap.cycles) - static_cast<qint64>(prev.cycles);
-                const qint64 dTotal = static_cast<qint64>(snap.totalCycles) - static_cast<qint64>(prev.totalCycles);
-                if (dTotal > 0 && dBusy >= 0)
-                    pct = static_cast<double>(dBusy) / static_cast<double>(dTotal) * 100.0;
-            }
-            else if (intervalNs > 0)
-            {
-                // i915: busy counters are already in nanoseconds
-                const qint64 dBusy = static_cast<qint64>(snap.busyNs) - static_cast<qint64>(prev.busyNs);
-                if (dBusy >= 0)
-                    pct = static_cast<double>(dBusy) / static_cast<double>(intervalNs) * 100.0;
-            }
+            // xe: utilization = delta busy cycles / (delta GPU clock-domain total * capacity)
+            const quint64 dTotal = curTotalCycles - classState.prevTotalCycles;
+            if (dTotal > 0)
+                pct = static_cast<double>(delta.cycles) / (static_cast<double>(dTotal) * static_cast<double>(capacity)) * 100.0;
         }
-        this->m_prevFdEngines.insert(stateKey, snap);
+        else if (intervalNs > 0)
+        {
+            // i915: busy counters are already in nanoseconds
+            pct = static_cast<double>(delta.busyNs) / (static_cast<double>(intervalNs) * static_cast<double>(capacity)) * 100.0;
+        }
+        if (curTotalCycles > 0)
+            classState.prevTotalCycles = curTotalCycles;
 
         GPU::GPUEngineInfo *engine = gpu.FindEngine(key);
         if (!engine)
@@ -1043,7 +1171,7 @@ void GpuIntelSysmanBackend::sampleFdInfoEngines(GPU::GPUInfo &gpu, const QString
         engine->Pct = qBound(0.0, pct, 100.0);
         engine->History.Push(engine->Pct);
         seenEngineKeys.insert(key);
-        bestPct = qMax(bestPct, pct);
+        bestPct = qMax(bestPct, engine->Pct);
     }
 
     zeroMissingEngines(gpu, seenEngineKeys);
@@ -1079,9 +1207,7 @@ void GpuIntelSysmanBackend::unload()
     this->m_prevPciRxById.clear();
     this->m_prevPciTxById.clear();
     this->m_prevEngineByKey.clear();
-    this->m_prevFdEngines.clear();
-    this->m_fdInfoPaths.clear();
-    this->m_fdInfoRescanCounter = 0;
+    this->m_fdInfoByBdf.clear();
     this->m_fdInfoTimerStarted = false;
     this->m_fdEngineFallbackActive = false;
     this->m_hwmonTempFallbackActive = false;
