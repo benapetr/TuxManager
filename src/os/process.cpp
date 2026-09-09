@@ -21,6 +21,7 @@
 #include <QDir>
 #include <QFile>
 #include <QHash>
+#include <QObject>
 
 #include <pwd.h>
 #include <sys/stat.h>
@@ -61,14 +62,14 @@ QString Process::GetStateString(char state)
 {
     switch (state)
     {
-        case 'R': return "Running";
-        case 'S': return "Sleeping";
-        case 'D': return "Disk sleep";
-        case 'Z': return "Zombie";
-        case 'T': return "Stopped";
-        case 't': return "Tracing stop";
-        case 'I': return "Idle";
-        case 'X': return "Dead";
+        case 'R': return QObject::tr("Running");
+        case 'S': return QObject::tr("Sleeping");
+        case 'D': return QObject::tr("Disk sleep");
+        case 'Z': return QObject::tr("Zombie");
+        case 'T': return QObject::tr("Stopped");
+        case 't': return QObject::tr("Tracing stop");
+        case 'I': return QObject::tr("Idle");
+        case 'X': return QObject::tr("Dead");
         default:  return QString(state);
     }
 }

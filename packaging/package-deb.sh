@@ -76,7 +76,8 @@ if command -v dpkg-query >/dev/null 2>&1; then
     require_pkg debhelper
     require_pkg dpkg-dev
     require_pkg pkg-config
-    require_one_of qtbase5-dev qt6-base-dev
+    require_one_of qt6-base-dev qtbase5-dev
+    require_one_of qt6-l10n-tools qttools5-dev-tools
 
     if [ ${#missing[@]} -gt 0 ] || [ ${#missing_groups[@]} -gt 0 ]; then
         echo "Missing build dependencies detected."

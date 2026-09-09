@@ -33,6 +33,7 @@ jobs:
             qmake6 \
             qt6-base-dev \
             qt6-base-dev-tools \
+            qt6-l10n-tools \
             libgl1-mesa-dev
 
       - name: Checkout

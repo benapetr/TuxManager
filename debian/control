@@ -4,13 +4,15 @@ Priority: optional
 Maintainer: Petr Bena <petr@bena.rocks>
 Build-Depends: debhelper-compat (= 12),
  pkg-config,
- qtbase5-dev | qt6-base-dev
+ qt6-base-dev | qtbase5-dev,
+ qt6-l10n-tools | qttools5-dev-tools
 Standards-Version: 4.6.2
 Rules-Requires-Root: no
 
 Package: tux-manager
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: qt6-translations-l10n | qttranslations5-l10n
 Description: Tux Manager - Linux system monitor inspired by Windows Task Manager
  Tux Manager is a C++/Qt system monitor with tabs for processes,
  performance, users and services.

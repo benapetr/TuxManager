@@ -238,24 +238,24 @@ QString ProcessTreeModel::columnHeader(Column col)
 {
     switch (col)
     {
-        case ColPid:      return "PID";
-        case ColName:     return "Name";
-        case ColUser:     return "User";
-        case ColState:    return "State";
-        case ColCpu:      return "CPU %";
-        case ColMemRss:   return "MEM RES";
-        case ColMemVirt:  return "MEM VIRT";
-        case ColMemShared:return "MEM SHR";
-        case ColMemText:  return "MEM TEXT";
-        case ColMemData:  return "MEM DATA";
-        case ColIoReads:  return "IO Reads";
-        case ColIoWrites: return "IO Writes";
-        case ColIoReadsPerSec: return "IO Read/s";
-        case ColIoWritesPerSec:return "IO Write/s";
-        case ColThreads:  return "Threads";
-        case ColPriority: return "Priority";
-        case ColNice:     return "Nice";
-        case ColCmdline:  return "Command";
+        case ColPid:      return tr("PID");
+        case ColName:     return tr("Name");
+        case ColUser:     return tr("User");
+        case ColState:    return tr("State");
+        case ColCpu:      return tr("CPU %");
+        case ColMemRss:   return tr("MEM RES");
+        case ColMemVirt:  return tr("MEM VIRT");
+        case ColMemShared:return tr("MEM SHR");
+        case ColMemText:  return tr("MEM TEXT");
+        case ColMemData:  return tr("MEM DATA");
+        case ColIoReads:  return tr("IO Reads");
+        case ColIoWrites: return tr("IO Writes");
+        case ColIoReadsPerSec: return tr("IO Read/s");
+        case ColIoWritesPerSec:return tr("IO Write/s");
+        case ColThreads:  return tr("Threads");
+        case ColPriority: return tr("Priority");
+        case ColNice:     return tr("Nice");
+        case ColCmdline:  return tr("Command");
         default:          return {};
     }
 }

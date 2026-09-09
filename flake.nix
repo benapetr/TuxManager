@@ -25,7 +25,7 @@
             version = "1.0.7";
             src = ./.;
             
-            nativeBuildInputs = with pkgs.kdePackages; [ qmake wrapQtAppsHook ];
+            nativeBuildInputs = with pkgs.kdePackages; [ qmake qttools wrapQtAppsHook ];
             buildInputs = with pkgs.kdePackages; [ qtbase ];
 
             configurePhase = "qmake6 $src/src";

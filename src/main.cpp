@@ -18,6 +18,7 @@
 
 #include "mainwindow.h"
 #include "configuration.h"
+#include "i18n.h"
 #include "logger.h"
 #include "globals.h"
 
@@ -103,6 +104,11 @@ int main(int argc, char *argv[])
     // ── Bootstrap ─────────────────────────────────────────────────────────────
     CFG->Load();
     CFG->ForceGpuDrm = parser.isSet(forceDrmOption);
+
+    // Install translations for the system language before any widget is
+    // created, so all tr() calls already resolve to the right text.
+    I18n::InstallTranslators();
+
     LOG_INFO(QString("%1 %2 starting (verbosity=%3)").arg(a.applicationName(), a.applicationVersion()).arg(verbosity));
 
     MainWindow w;

@@ -20,23 +20,23 @@ This directory contains Linux packaging scripts for Tux Manager.
 Required build tools/packages:
 
 ```bash
-sudo apt-get install build-essential debhelper dpkg-dev pkg-config qt6-base-dev
+sudo apt-get install build-essential debhelper dpkg-dev pkg-config qt6-base-dev qt6-l10n-tools
 ```
 
 Notes:
-- The script accepts either `qmake6` or `qmake`.
-- Qt5 can also work if your distro provides it (`qtbase5-dev`).
+- On distributions without Qt6, install `qtbase5-dev qttools5-dev-tools` instead.
+- The script prefers `qmake6` when both Qt versions are installed.
 
 ### Fedora/RHEL family
 
 Required build tools/packages:
 
 ```bash
-sudo dnf install rpm-build rsync git pkgconf-pkg-config qt6-qtbase-devel
+sudo dnf install rpm-build rsync git pkgconf-pkg-config qt6-qtbase-devel qt6-linguist
 ```
 
 Notes:
-- The script can also build with Qt5 if only that is available (`qt5-qtbase-devel`).
+- The script can also build with Qt5 if `qt5-qtbase-devel` and `qt5-linguist` are installed.
 - The script uses `rpmbuild` and creates both binary RPM and source RPM.
 
 ### Flatpak
@@ -66,7 +66,7 @@ Required tools/packages:
 Download released appimages from all 3, put them into some directory and create symlinks with bare names, then add this folder to PATH variable
 
 ```bash
-sudo apt-get install build-essential pkg-config qt6-base-dev
+sudo apt-get install build-essential pkg-config qt6-base-dev qt6-l10n-tools
 linuxdeploy --version
 linuxdeploy-plugin-qt --help
 linuxdeploy-plugin-appimage --help
@@ -82,7 +82,7 @@ Notes:
 Required build tools/packages:
 
 ```bash
-sudo pacman -S --needed base-devel git qt6-base
+sudo pacman -S --needed base-devel git qt6-base qt6-tools
 ```
 
 Notes:

@@ -13,6 +13,7 @@ SOURCES += \
     aboutdialog.cpp \
     colorschemedialog.cpp \
     colorscheme.cpp \
+    i18n.cpp \
     main.cpp \
     mainwindow.cpp \
     metrics.cpp \
@@ -68,6 +69,7 @@ HEADERS += \
     colorschemedialog.h \
     colorscheme.h \
     globals.h \
+    i18n.h \
     mainwindow.h \
     metrics.h \
     misc.h \
@@ -137,6 +139,15 @@ FORMS += \
 
 RESOURCES += \
     resources.qrc
+
+# ── Translations ──────────────────────────────────────────────────────────────
+# Qt Linguist machinery: the .ts files in TRANSLATIONS are compiled into .qm at
+# build time (lrelease) and embedded into the binary under :/i18n/. That keeps
+# the translations working no matter where the application is installed from.
+TRANSLATIONS += \
+    translations/tux-manager_zh_CN.ts
+
+CONFIG += lrelease embed_translations
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

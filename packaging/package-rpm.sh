@@ -82,8 +82,10 @@ if command -v rpm >/dev/null 2>&1; then
 
     if [ "$QT_MAJOR" -eq 5 ]; then
         require_pkg qt5-qtbase-devel
+        require_pkg qt5-linguist
     else
         require_pkg qt6-qtbase-devel
+        require_pkg qt6-linguist
     fi
 
     if [ ${#missing[@]} -gt 0 ]; then
@@ -186,8 +188,10 @@ Source0:        %{name}-%{version}.tar.gz
 
 %if 0%{?qt_major} == 5
 BuildRequires:  qt5-qtbase-devel
+BuildRequires:  qt5-linguist
 %else
 BuildRequires:  qt6-qtbase-devel
+BuildRequires:  qt6-linguist
 %endif
 BuildRequires:  pkgconf-pkg-config
 

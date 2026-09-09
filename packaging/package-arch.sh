@@ -44,7 +44,7 @@ if [[ ${EUID:-$(id -u)} -eq 0 ]]; then
     exit 1
 fi
 
-for cmd in makepkg qmake6 tar b2sum; do
+for cmd in makepkg qmake6 lrelease6 tar b2sum; do
     if ! command -v "$cmd" >/dev/null 2>&1; then
         echo "Error: required command not found: $cmd"
         exit 1
@@ -87,7 +87,7 @@ arch=('x86_64')
 url="${APP_HOMEPAGE_URL}"
 license=('GPL-3.0-or-later')
 depends=('qt6-base')
-makedepends=('qt6-base')
+makedepends=('qt6-base' 'qt6-tools')
 options=('!debug')
 source=("${APP_NAME}-${APP_VERSION}.tar.gz::file://${SOURCE_TARBALL}")
 b2sums=('${LOCAL_CHECKSUM}')
