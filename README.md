@@ -56,15 +56,20 @@ make -j$(nproc)
 ./tux-manager
 ```
 
+## Translating
+
 To test a different UI locale without changing the system settings, override
 the process locale when launching the application:
 
 ```bash
 LC_ALL=zh_CN.UTF-8 ./tux-manager  # Simplified Chinese
+LC_ALL=cs_CZ.UTF-8 ./tux-manager  # Czech
 LC_ALL=C ./tux-manager            # Built-in English
 ```
 
 The requested locale may need to be generated or installed on the host system.
+
+**Important note regarding AI-assisted translations:** Please do NOT submit translations generated "blindly" by AI without review by a native speaker of the language.
 
 ## Core philosophy and goals of this project
 

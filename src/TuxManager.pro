@@ -145,7 +145,8 @@ RESOURCES += \
 # build time (lrelease) and embedded into the binary under :/i18n/. That keeps
 # the translations working no matter where the application is installed from.
 TRANSLATIONS += \
-    translations/tux-manager_zh_CN.ts
+    translations/tux-manager_zh_CN.ts \
+    translations/tux-manager_cs_CZ.ts
 
 CONFIG += lrelease embed_translations
 

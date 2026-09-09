@@ -184,7 +184,7 @@ void Storage::refreshDisks(const QSet<QString> &measurableDevices)
     const QStringList trackedDevices = listTrackedBlockDevices(measurableDevices);
     const QSet<QString> baseDevices(trackedDevices.cbegin(), trackedDevices.cend());
     QHash<QString, bool> systemByBase;
-    QHash<QString, bool> pageFileByBase;
+    QHash<QString, bool> swapDeviceByBase;
     QHash<QString, qint64> formattedByBase;
 
     for (auto it = mountPointsByRaw.cbegin(); it != mountPointsByRaw.cend(); ++it)
@@ -215,7 +215,7 @@ void Storage::refreshDisks(const QSet<QString> &measurableDevices)
         for (const QString &b : bases)
         {
             if (baseDevices.contains(b))
-                pageFileByBase[b] = true;
+                swapDeviceByBase[b] = true;
         }
     }
 
@@ -255,7 +255,7 @@ void Storage::refreshDisks(const QSet<QString> &measurableDevices)
         d->CapacityBytes = qMax<qint64>(0, sizeSecs) * 512LL;
         d->FormattedBytes = qMax<qint64>(0, formattedByBase.value(name, 0));
         d->IsSystemDisk = systemByBase.value(name, false);
-        d->HasPageFile = pageFileByBase.value(name, false);
+        d->HasSwapDevice = swapDeviceByBase.value(name, false);
     }
 }
 

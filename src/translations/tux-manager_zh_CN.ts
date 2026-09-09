@@ -269,8 +269,8 @@
     </message>
     <message>
         <location filename="../perf/diskdetailwidget.ui" line="175" />
-        <source>Page file</source>
-        <translation type="finished">页面文件</translation>
+        <source>Swap device</source>
+        <translation type="finished">交换设备</translation>
     </message>
     <message>
         <location filename="../perf/diskdetailwidget.ui" line="178" />

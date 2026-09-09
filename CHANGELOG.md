@@ -1,6 +1,7 @@
 # Next
-  * Added localization support based on the system locale
-    * Added a complete Simplified Chinese translation
+  * Added localization support based on the system locale for:
+    * Simplified Chinese
+    * Czech
   * Added shared, text/code and data/stack memory columns to the process table and tree
     * Existing saved column layouts are migrated safely to the new column schema
   * Improved consistency when switching between flat and tree process views
