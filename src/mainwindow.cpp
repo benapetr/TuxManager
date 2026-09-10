@@ -20,6 +20,17 @@
 #include "ui_mainwindow.h"
 #include "configuration.h"
 
+#include <QDebug>
+#include <QWidget>
+#include <QLayout>
+#include <QLayoutItem>
+
+#include <QDebug>
+#include <QWidget>
+#include <QLayout>
+#include <QLayoutItem>
+#include <QTabWidget>
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , m_processRefreshService(new OS::ProcessRefreshService(this))
