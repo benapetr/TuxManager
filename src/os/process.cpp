@@ -24,6 +24,7 @@
 #include <QObject>
 
 #include <pwd.h>
+#include <climits>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -89,6 +90,11 @@ bool OS::operator<(const Process::Identity &lhs, const Process::Identity &rhs)
 bool OS::operator==(const Process::Identity &lhs, const Process::Identity &rhs)
 {
     return lhs.PID == rhs.PID && lhs.StartTimeTicks == rhs.StartTimeTicks;
+}
+
+size_t OS::qHash(const Process::Identity &key, size_t seed)
+{
+    return qHashMulti(seed, static_cast<qint64>(key.PID), key.StartTimeTicks);
 }
 
 // ── Private: load a single process ───────────────────────────────────────────
@@ -249,6 +255,39 @@ void Process::loadUserAndCmdline(Process &proc)
         proc.CmdLine = proc.Name; // fallback: use comm name
 }
 
+void Process::loadAppInfo(Process &proc)
+{
+    // Only the unified hierarchy line of /proc/pid/cgroup is relevant; cgroup v1 controller lines are ignored.
+    QFile cgroupFile(QString("/proc/%1/cgroup").arg(proc.PID));
+    if (cgroupFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        for (;;)
+        {
+            const QByteArray line = cgroupFile.readLine();
+            if (line.isNull())
+                break;
+            if (line.startsWith("0::"))
+            {
+                proc.CGroup = QString::fromUtf8(line.mid(3).trimmed());
+                break;
+            }
+        }
+        cgroupFile.close();
+    }
+
+    // readlink on /proc/pid/exe fails with EACCES for processes of other users unless running as root.
+    char buffer[PATH_MAX];
+    const QByteArray link_path = QString("/proc/%1/exe").arg(proc.PID).toLocal8Bit();
+    const ssize_t len = ::readlink(link_path.constData(), buffer, sizeof(buffer) - 1);
+    if (len > 0)
+    {
+        QString exe = QString::fromLocal8Bit(buffer, static_cast<int>(len));
+        if (exe.endsWith(QLatin1String(" (deleted)")))
+            exe.chop(10);
+        proc.ExePath = exe;
+    }
+}
+
 // ── Public: load all processes ────────────────────────────────────────────────
 
 QList<Process> Process::LoadAll()
@@ -296,6 +335,8 @@ QList<Process> Process::LoadAll(const LoadOptions &options)
         }
 
         loadUserAndCmdline(proc);
+        if (options.CollectAppInfo && !proc.IsKernelThread)
+            loadAppInfo(proc);
         list.append(proc);
     }
 

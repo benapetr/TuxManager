@@ -39,7 +39,8 @@ void ProcessRefreshWorker::fetch(int consumer,
                                  bool collectIOMetrics,
                                  bool isSuperuser,
                                  uint effectiveUid,
-                                 uint myUid)
+                                 uint myUid,
+                                 bool collectAppInfo)
 {
     const quint64 totalJiffies = Proc::ReadTotalCpuJiffies();
     const quint64 periodJiffies =
@@ -53,6 +54,7 @@ void ProcessRefreshWorker::fetch(int consumer,
     opts.CollectIOMetrics = collectIOMetrics;
     opts.IsSuperuser = isSuperuser;
     opts.EffectiveUID = static_cast<uid_t>(effectiveUid);
+    opts.CollectAppInfo = collectAppInfo;
 
     QList<Process> fresh = Process::LoadAll(opts);
 
@@ -170,5 +172,6 @@ void ProcessRefreshService::RequestSnapshot(Consumer consumer, quint64 token, co
                         options.CollectIOMetrics,
                         options.IsSuperuser,
                         static_cast<uint>(options.EffectiveUID),
-                        static_cast<uint>(options.MyUID));
+                        static_cast<uint>(options.MyUID),
+                        options.CollectAppInfo);
 }

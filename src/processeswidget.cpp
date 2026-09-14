@@ -179,6 +179,9 @@ void ProcessesWidget::setupTable()
 
     QTableView *tv = this->ui->tableView;
     this->m_treeView = new QTreeView(this);
+    tv->setIconSize(QSize(16, 16));
+    this->m_treeView->setIconSize(QSize(16, 16));
+    this->applyIconSetting();
 
     if (QVBoxLayout *vl = qobject_cast<QVBoxLayout *>(this->layout()))
     {
@@ -404,6 +407,7 @@ void ProcessesWidget::startRefresh()
     options.CollectIOMetrics = CFG->IOMetricsEnabled;
     options.IsSuperuser = CFG->IsSuperuser;
     options.EffectiveUID = CFG->EUID;
+    options.CollectAppInfo = CFG->ShowProcessIcons;
 
     this->m_processRefreshService->RequestSnapshot(OS::ProcessRefreshService::Consumer::Processes,
                                                    this->m_refreshToken,
@@ -454,6 +458,8 @@ void ProcessesWidget::onRefreshFinished(int consumer, quint64 token, const QList
             treeScroll = sb->value();
     }
     this->m_lastProcessSnapshot = processes;
+    if (this->m_appRegistry)
+        this->m_appRegistry->Annotate(this->m_lastProcessSnapshot);
     this->m_model->SetProcesses(this->m_lastProcessSnapshot);
 
     if (this->m_treeViewMode)
@@ -645,6 +651,11 @@ void ProcessesWidget::onTableContextMenu(const QPoint &pos)
     otherUsersAct->setChecked(this->m_proxy->ShowOtherUsersProcs);
     connect(otherUsersAct, &QAction::toggled, this, &ProcessesWidget::setShowOtherUsersProcesses);
 
+    QAction *iconsAct = viewMenu->addAction(tr("Show icons"));
+    iconsAct->setCheckable(true);
+    iconsAct->setChecked(CFG->ShowProcessIcons);
+    connect(iconsAct, &QAction::toggled, this, &ProcessesWidget::setShowIcons);
+
     viewMenu->addSeparator();
     QAction *tableModeAct = viewMenu->addAction(tr("Table view"));
     tableModeAct->setCheckable(true);
@@ -729,6 +740,11 @@ void ProcessesWidget::onTreeContextMenu(const QPoint &pos)
     otherUsersAct->setCheckable(true);
     otherUsersAct->setChecked(this->m_proxy->ShowOtherUsersProcs);
     connect(otherUsersAct, &QAction::toggled, this, &ProcessesWidget::setShowOtherUsersProcesses);
+
+    QAction *iconsAct = viewMenu->addAction(tr("Show icons"));
+    iconsAct->setCheckable(true);
+    iconsAct->setChecked(CFG->ShowProcessIcons);
+    connect(iconsAct, &QAction::toggled, this, &ProcessesWidget::setShowIcons);
 
     viewMenu->addSeparator();
     QAction *tableModeAct = viewMenu->addAction(tr("Table view"));
@@ -912,6 +928,29 @@ void ProcessesWidget::setShowOtherUsersProcesses(bool checked)
     this->m_proxy->ApplyFilters();
     this->onTimerTick();
     LOG_DEBUG(QString("ShowOtherUsersProcs = %1").arg(checked));
+}
+
+void ProcessesWidget::setShowIcons(bool checked)
+{
+    CFG->ShowProcessIcons = checked;
+    this->applyIconSetting();
+    this->onTimerTick();
+    LOG_DEBUG(QString("ShowProcessIcons = %1").arg(checked));
+}
+
+// Creates or drops the registry according to the setting and points both models at it.
+void ProcessesWidget::applyIconSetting()
+{
+    if (CFG->ShowProcessIcons && !this->m_appRegistry)
+    {
+        this->m_appRegistry = new OS::AppRegistry(this);
+    } else if (!CFG->ShowProcessIcons && this->m_appRegistry)
+    {
+        delete this->m_appRegistry;
+        this->m_appRegistry = nullptr;
+    }
+    this->m_model->SetAppRegistry(this->m_appRegistry);
+    this->m_treeModel->SetAppRegistry(this->m_appRegistry);
 }
 
 void ProcessesWidget::captureExpandedTreePids(const QModelIndex &parentProxy, QSet<pid_t> &expandedPids) const

@@ -139,6 +139,15 @@ rm -f "$PROJECT_ROOT"/*.AppImage
 export QMAKE
 QMAKE="$(command -v "$QMAKE_CMD")"
 
+# The application does not link Qt Svg, so linuxdeploy-plugin-qt would not bundle the SVG
+# icon engine. Without it QIcon::fromTheme() silently skips every SVG icon of the host icon
+# theme (Breeze, Adwaita and most others are SVG only).
+export EXTRA_QT_MODULES="${EXTRA_QT_MODULES:+$EXTRA_QT_MODULES;}svg"
+
+# The strip binary shipped inside linuxdeploy predates .relr.dyn sections produced by
+# current binutils and aborts the build on such libraries.
+export NO_STRIP="${NO_STRIP:-true}"
+
 linuxdeploy \
     --appdir "$APPDIR" \
     --desktop-file "$APPDIR/usr/share/applications/io.github.benapetr.TuxManager.desktop" \

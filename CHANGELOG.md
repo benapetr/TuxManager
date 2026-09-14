@@ -1,4 +1,5 @@
 # 1.0.8
+  * Added application icons to the process table and tree
   * Added localization support based on the system locale for:
     * Simplified Chinese
     * Czech

@@ -17,6 +17,8 @@
  */
 
 #include "processmodel.h"
+
+#include "appregistry.h"
 #include "proc.h"
 #include "../configuration.h"
 #include "../misc.h"
@@ -101,6 +103,13 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
         return {};
 
     const Process &proc = this->m_processes.at(index.row());
+
+    if (role == Qt::DecorationRole)
+    {
+        if (index.column() == ColName && this->m_appRegistry)
+            return this->m_appRegistry->IconFor(proc.IconName);
+        return {};
+    }
 
     if (role == Qt::DisplayRole)
     {
