@@ -161,21 +161,26 @@ else
     DEB_VERSION="${APP_VERSION}"
 fi
 
-BACKUP_CHANGELOG=""
-if [ -f "$CHANGELOG_PATH" ]; then
-    BACKUP_CHANGELOG=$(mktemp)
-    cp "$CHANGELOG_PATH" "$BACKUP_CHANGELOG"
+if [ ! -f "$CHANGELOG_PATH" ]; then
+    echo "Error: Debian changelog not found at $CHANGELOG_PATH" >&2
+    exit 1
 fi
+BACKUP_CHANGELOG=$(mktemp)
+cp "$CHANGELOG_PATH" "$BACKUP_CHANGELOG"
 
 trap 'if [ -n "$BACKUP_CHANGELOG" ] && [ -f "$BACKUP_CHANGELOG" ]; then cp "$BACKUP_CHANGELOG" "$CHANGELOG_PATH"; rm -f "$BACKUP_CHANGELOG"; fi' EXIT
 
-cat > "$CHANGELOG_PATH" <<EOF
+{
+cat <<EOF
 ${APP_NAME} (${DEB_VERSION}) unstable; urgency=medium
 
   * Automated build.
 
  -- ${MAINTAINER}  $(date -R)
+
 EOF
+cat "$BACKUP_CHANGELOG"
+} > "$CHANGELOG_PATH"
 
 echo ""
 echo "Step 1: Building package with debhelper..."
