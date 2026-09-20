@@ -20,7 +20,7 @@
 #define OS_PROCESS_H
 
 #include <QList>
-#include <QHashFunctions>
+#include <QHash>
 #include <QMetaType>
 #include <QString>
 #include <sys/types.h>
@@ -97,7 +97,11 @@ namespace OS
 
     bool operator<(const Process::Identity &lhs, const Process::Identity &rhs);
     bool operator==(const Process::Identity &lhs, const Process::Identity &rhs);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     size_t qHash(const Process::Identity &key, size_t seed = 0);
+#else
+    uint qHash(const Process::Identity &key, uint seed = 0);
+#endif
 } // namespace Os
 
 Q_DECLARE_METATYPE(OS::Process)

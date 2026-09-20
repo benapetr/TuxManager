@@ -92,9 +92,13 @@ bool OS::operator==(const Process::Identity &lhs, const Process::Identity &rhs)
     return lhs.PID == rhs.PID && lhs.StartTimeTicks == rhs.StartTimeTicks;
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 size_t OS::qHash(const Process::Identity &key, size_t seed)
+#else
+uint OS::qHash(const Process::Identity &key, uint seed)
+#endif
 {
-    return qHashMulti(seed, static_cast<qint64>(key.PID), key.StartTimeTicks);
+    return ::qHash(key.StartTimeTicks, ::qHash(static_cast<quint32>(key.PID), seed));
 }
 
 // ── Private: load a single process ───────────────────────────────────────────
