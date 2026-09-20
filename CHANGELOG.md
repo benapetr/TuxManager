@@ -1,4 +1,4 @@
-# Next
+# 1.0.8
   * Added localization support based on the system locale for:
     * Simplified Chinese
     * Czech

@@ -12,6 +12,8 @@ Canonical/manual version definitions:
    Flatpak/AppStream release metadata.
 5. `flake.nix` (`version = "..."`)
    Nix package version (currently separate from packaging/config).
+6. `CHANGELOG.md`
+   Make sure we have the version reflected there instead of "Next"
 
 Derived/generated version locations (usually do not edit manually):
 
