@@ -23,6 +23,8 @@
 
 #include <QPainter>
 #include <QPaintEvent>
+#include <QStyle>
+#include <QStyleOption>
 #include <QVBoxLayout>
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QEnterEvent>
@@ -90,20 +92,30 @@ void SidePanelItem::paintEvent(QPaintEvent *event)
 
     const QRect r = this->rect();
 
-    // Background
-    QColor bg;
-    if (this->m_selected)
-    {
-        bg = scheme->SidePanelItemSelectedBackgroundColor;
-    } else if (this->m_hovered)
-    {
-        bg = scheme->SidePanelItemHoverBackgroundColor;
-    } else
-    {
-        bg = scheme->SidePanelItemBackgroundColor;
+    // Selection bg
+
+    QStyleOptionViewItem option;
+    option.initFrom(this);
+
+    if (this->m_selected) {
+        option.state |= QStyle::State_Selected;
+
+        // If window loses focus, drop State_Active to trigger the GRAY look
+        if (this->isActiveWindow() && this->hasFocus()) {
+            option.state |= QStyle::State_Active;
+        }
+    } else {
+        // Not selected, but window must be active to show the BLUE hover look
+        if (this->isActiveWindow()) {
+            option.state |= QStyle::State_Active;
+        }
     }
 
-    p.fillRect(r, bg);
+    if (this->m_hovered) {
+        option.state |= QStyle::State_MouseOver;
+    }
+
+    style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, &p, nullptr);
 
     // Title/subtitle (single row): elide both sides to prevent overlap.
     QFont titleFont = this->font();
@@ -140,14 +152,6 @@ void SidePanelItem::paintEvent(QPaintEvent *event)
         p.drawText(QRect(r.width() - right - subW, top, subW, textH),
                    Qt::AlignRight | Qt::AlignVCenter,
                    subText);
-    }
-
-    // Selection border
-    if (this->m_selected)
-    {
-        p.setPen(QPen(scheme->SidePanelItemSelectedBorderColor, 2));
-        p.setBrush(Qt::NoBrush);
-        p.drawRect(r.adjusted(1, 1, -1, -1));
     }
 }
 

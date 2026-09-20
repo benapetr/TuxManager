@@ -38,6 +38,7 @@
 #include <QPalette>
 #include <QPainter>
 #include <QRegularExpression>
+#include <QScrollArea>
 #include <QSplitter>
 #include <QSplitterHandle>
 
@@ -187,7 +188,13 @@ void PerformanceWidget::setupLayout()
     this->m_splitter = new PerformanceSplitter(this);
     this->m_splitter->setChildrenCollapsible(false);
     this->m_splitter->addWidget(this->m_sidePanel);
-    this->m_splitter->addWidget(this->m_stack);
+
+    auto *scrollArea = new QScrollArea;
+    scrollArea->setFrameShape(QFrame::NoFrame);
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setWidget(this->m_stack);
+    this->m_splitter->addWidget(scrollArea);
+
     this->m_splitter->setStretchFactor(0, 0);
     this->m_splitter->setStretchFactor(1, 1);
 
