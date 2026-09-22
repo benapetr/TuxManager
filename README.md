@@ -33,6 +33,9 @@ Install from the official repositories:
 sudo pacman -S tuxmanager
 ```
 
+### Nixpkgs
+The package is available as `tux-manager` in the unstable channels and will be available in the `nixos-26.11` stable channel and later.
+
 ### Nix flake
 Add the following to your `flake.nix`:
 ```nix
