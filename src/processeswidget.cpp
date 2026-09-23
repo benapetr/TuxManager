@@ -25,6 +25,7 @@
 #include "ui_processeswidget.h"
 #include "ui/uihelper.h"
 
+#include <QAction>
 #include <QClipboard>
 #include <QGuiApplication>
 #include <QHeaderView>
@@ -338,6 +339,15 @@ void ProcessesWidget::setupTable()
         this->saveTreeHeaderState();
     }
     connect(this->m_treeView, &QTreeView::customContextMenuRequested, this, &ProcessesWidget::onTreeContextMenu);
+
+    // Del keyboard shortcut to terminate process
+    QAction *terminate_action = new QAction(tr("Terminate  (SIGTERM)"), this);
+    terminate_action->setShortcut(QKeySequence::Delete);
+    terminate_action->setShortcutContext(Qt::WidgetShortcut);
+    connect(terminate_action, &QAction::triggered, this, &ProcessesWidget::terminateSelectedProcesses);
+    tv->addAction(terminate_action);
+    this->m_treeView->addAction(terminate_action);
+
     this->updateIOMetricsEnabledState(false);
 
     this->setTreeViewMode(CFG->ProcessTreeView);
@@ -712,6 +722,8 @@ void ProcessesWidget::onTableContextMenu(const QPoint &pos)
     menu.addSeparator();
     QAction *termAction = menu.addAction(tr("Terminate  (SIGTERM)"));
     termAction->setEnabled(hasSelection);
+    termAction->setShortcut(QKeySequence::Delete);
+    termAction->setShortcutVisibleInContextMenu(true);
     connect(termAction, &QAction::triggered, this, &ProcessesWidget::terminateSelectedProcesses);
 
     QAction *killAction = menu.addAction(tr("Kill  (SIGKILL)"));
@@ -774,6 +786,8 @@ void ProcessesWidget::onTreeContextMenu(const QPoint &pos)
     menu.addSeparator();
     QAction *termAction = menu.addAction(tr("Terminate  (SIGTERM)"));
     termAction->setEnabled(hasSelection);
+    termAction->setShortcut(QKeySequence::Delete);
+    termAction->setShortcutVisibleInContextMenu(true);
     connect(termAction, &QAction::triggered, this, &ProcessesWidget::terminateSelectedProcesses);
 
     QAction *killAction = menu.addAction(tr("Kill  (SIGKILL)"));
