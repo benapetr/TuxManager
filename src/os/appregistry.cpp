@@ -22,6 +22,7 @@
 
 #include <QApplication>
 #include <QDir>
+#include <QDirIterator>
 #include <QElapsedTimer>
 #include <QFile>
 #include <QFileInfo>
@@ -31,6 +32,10 @@
 #include <QStandardPaths>
 #include <QStyle>
 #include <QTimer>
+
+#include <algorithm>
+#include <climits>
+#include <unistd.h>
 
 using namespace OS;
 
@@ -200,6 +205,58 @@ namespace
             return QString();
         return info.canonicalFilePath();
     }
+
+    // Only the unified hierarchy line of /proc/pid/cgroup is relevant; cgroup v1 controller lines are ignored.
+    QString readCGroup(pid_t pid)
+    {
+        QFile file(QString("/proc/%1/cgroup").arg(pid));
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+            return QString();
+
+        for (;;)
+        {
+            const QByteArray line = file.readLine();
+            if (line.isNull())
+                break;
+            if (line.startsWith("0::"))
+                return QString::fromUtf8(line.mid(3).trimmed());
+        }
+        return QString();
+    }
+
+    // readlink on /proc/pid/exe fails with EACCES for processes of other users unless running as root.
+    QString readExePath(pid_t pid)
+    {
+        char buffer[PATH_MAX];
+        const QByteArray link_path = QString("/proc/%1/exe").arg(pid).toLocal8Bit();
+        const ssize_t len = ::readlink(link_path.constData(), buffer, sizeof(buffer) - 1);
+        if (len <= 0)
+            return QString();
+
+        QString exe = QString::fromLocal8Bit(buffer, static_cast<int>(len));
+        if (exe.endsWith(QLatin1String(" (deleted)")))
+            exe.chop(10);
+        return exe;
+    }
+
+    // Inherits= list from a theme's index.theme, or an empty list when the file is missing.
+    QStringList themeParents(const QString &index_path)
+    {
+        QFile file(index_path);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+            return QStringList();
+
+        for (;;)
+        {
+            const QByteArray raw = file.readLine();
+            if (raw.isNull())
+                break;
+            const QString line = QString::fromUtf8(raw).trimmed();
+            if (line.startsWith(QLatin1String("Inherits=")))
+                return line.mid(9).split(',', Qt::SkipEmptyParts);
+        }
+        return QStringList();
+    }
 }
 
 AppRegistry::AppRegistry(QObject *parent) : QObject(parent)
@@ -273,6 +330,10 @@ QIcon AppRegistry::IconFor(const QString &icon_name)
 {
     const QString key = icon_name.isEmpty() ? GENERIC_ICON_NAME : icon_name;
 
+    // Views may repaint between Invalidate() and the next Annotate(); without the theme
+    // index every lookup would miss and the generic fallback would get cached.
+    this->ensureIndexed();
+
     const auto it = this->m_icons.constFind(key);
     if (it != this->m_icons.cend())
         return it.value();
@@ -282,7 +343,7 @@ QIcon AppRegistry::IconFor(const QString &icon_name)
     {
         if (QFile::exists(key))
             icon = QIcon(key);
-    } else if (QIcon::hasThemeIcon(key))
+    } else if (this->themeHasIcon(key))
     {
         icon = QIcon::fromTheme(key);
     } else
@@ -315,6 +376,8 @@ void AppRegistry::Invalidate()
     this->m_bySnap.clear();
     this->m_resolved.clear();
     this->m_icons.clear();
+    this->m_themeIconNames.clear();
+    this->m_themeIndexComplete = false;
 }
 
 QString AppRegistry::AppIdFromCGroup(const QString &cgroup_path)
@@ -375,10 +438,13 @@ void AppRegistry::buildIndex()
     if (theme_paths_changed)
         QIcon::setThemeSearchPaths(theme_paths);
 
+    this->indexIconTheme();
+
     this->m_indexed = true;
-    LOG_DEBUG(QString("AppRegistry: indexed %1 desktop entries (%2 unique executables) in %3 ms")
+    LOG_DEBUG(QString("AppRegistry: indexed %1 desktop entries (%2 unique executables) and %3 theme icons in %4 ms")
                   .arg(this->m_byId.size())
                   .arg(this->m_byExec.size())
+                  .arg(this->m_themeIconNames.size())
                   .arg(timer.elapsed()));
 }
 
@@ -449,6 +515,87 @@ void AppRegistry::indexDirectory(const QString &dir)
         if (!this->m_byExecBasename.contains(basename))
             this->m_byExecBasename.insert(basename, entry.Id);
     }
+}
+
+// QIcon::hasThemeIcon stats every directory of every theme in the chain for each miss and
+// retries with dash-separated prefixes, which costs milliseconds per process name on the GUI
+// thread. One directory walk up front lets themeHasIcon() reject misses with a binary search.
+void AppRegistry::indexIconTheme()
+{
+    this->m_themeIconNames.clear();
+    this->m_themeIndexComplete = true;
+
+    QStringList themes = {QIcon::themeName(), QIcon::fallbackThemeName(), QStringLiteral("hicolor")};
+    const QStringList search_paths = QIcon::themeSearchPaths();
+    const QSet<QString> extensions = {"png", "svg", "svgz", "xpm"};
+
+    const auto add_names = [&](const QString &dir, QDirIterator::IteratorFlags flags)
+    {
+        QDirIterator it(dir, QDir::Files, flags);
+        while (it.hasNext())
+        {
+            it.next();
+            const QString file = it.fileName();
+            const int dot = file.lastIndexOf('.');
+            if (dot > 0 && extensions.contains(file.mid(dot + 1)))
+                this->m_themeIconNames.push_back(qHash(file.left(dot)));
+        }
+    };
+
+    // themes grows while iterating as Inherits= parents are discovered.
+    for (int i = 0; i < themes.size(); ++i)
+    {
+        const QString theme = themes.at(i).trimmed();
+        if (theme.isEmpty())
+            continue;
+        bool on_disk = false;
+        bool in_resource = false;
+        for (const QString &base : search_paths)
+        {
+            const QString theme_dir = base + '/' + theme;
+            if (!QDir(theme_dir).exists())
+                continue;
+            // Walking a compiled-in resource theme (the KDE platform theme registers Breeze
+            // under :/icons) faults in the whole library, tens of MB of RSS. Normally the same
+            // theme is installed on disk as well.
+            if (base.startsWith(':'))
+            {
+                in_resource = true;
+                continue;
+            }
+            on_disk = true;
+            for (const QString &parent : themeParents(theme_dir + QLatin1String("/index.theme")))
+            {
+                if (!themes.contains(parent.trimmed()))
+                    themes.append(parent.trimmed());
+            }
+            add_names(theme_dir, QDirIterator::Subdirectories);
+        }
+        if (in_resource && !on_disk)
+            this->m_themeIndexComplete = false;
+    }
+
+    // Unthemed icons that QIcon::fromTheme also falls back to, including the legacy pixmaps directories.
+    QStringList fallback_dirs = QIcon::fallbackSearchPaths();
+    fallback_dirs += QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "pixmaps", QStandardPaths::LocateDirectory);
+    fallback_dirs.removeDuplicates();
+    for (const QString &dir : fallback_dirs)
+        add_names(dir, QDirIterator::NoIteratorFlags);
+
+    std::sort(this->m_themeIconNames.begin(), this->m_themeIconNames.end());
+    this->m_themeIconNames.erase(std::unique(this->m_themeIconNames.begin(), this->m_themeIconNames.end()), this->m_themeIconNames.end());
+    this->m_themeIconNames.shrink_to_fit();
+}
+
+// The index is a superset of what Qt resolves (it ignores Directories= and may include the
+// fallback theme), so only its misses are final; hits are confirmed by Qt, which is cheap
+// when the icon exists.
+bool AppRegistry::themeHasIcon(const QString &name) const
+{
+    if (!this->m_themeIndexComplete)
+        return QIcon::hasThemeIcon(name);
+    return std::binary_search(this->m_themeIconNames.cbegin(), this->m_themeIconNames.cend(), qHash(name))
+           && QIcon::hasThemeIcon(name);
 }
 
 bool AppRegistry::parseDesktopFile(const QString &path, DesktopEntry &out) const
@@ -537,11 +684,13 @@ QString AppRegistry::resolveExec(const QString &exec) const
     return QString();
 }
 
+// Runs once per process identity, so /proc is only read for processes not seen before.
 QString AppRegistry::resolveOwn(const Process &proc) const
 {
-    if (!proc.CGroup.isEmpty())
+    const QString cgroup = readCGroup(proc.PID);
+    if (!cgroup.isEmpty())
     {
-        const QString app_id = AppIdFromCGroup(proc.CGroup);
+        const QString app_id = AppIdFromCGroup(cgroup);
         if (!app_id.isEmpty())
         {
             const auto it = this->m_byId.constFind(app_id);
@@ -550,7 +699,8 @@ QString AppRegistry::resolveOwn(const Process &proc) const
         }
     }
 
-    if (proc.ExePath.startsWith(QLatin1String("/app/")) || proc.ExePath.startsWith(QLatin1String("/usr/")))
+    const QString exe_path = readExePath(proc.PID);
+    if (exe_path.startsWith(QLatin1String("/app/")) || exe_path.startsWith(QLatin1String("/usr/")))
     {
         const QString app_id = flatpakAppId(proc.PID);
         if (!app_id.isEmpty())
@@ -561,7 +711,7 @@ QString AppRegistry::resolveOwn(const Process &proc) const
         }
     }
 
-    QString exe = proc.ExePath;
+    QString exe = exe_path;
     if (exe.isEmpty())
         exe = canonicalExecutable(QStandardPaths::findExecutable(proc.Name));
 
@@ -589,7 +739,7 @@ QString AppRegistry::resolveOwn(const Process &proc) const
     }
 
     const QString theme_name = proc.Name.section(' ', 0, 0).toLower();
-    if (!theme_name.isEmpty() && QIcon::hasThemeIcon(theme_name))
+    if (!theme_name.isEmpty() && this->themeHasIcon(theme_name))
         return theme_name;
 
     return QString();

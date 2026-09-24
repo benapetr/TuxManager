@@ -45,7 +45,6 @@ namespace OS
                 bool  CollectIOMetrics    { false };
                 bool  IsSuperuser         { false };
                 uid_t EffectiveUID        { 0 };
-                bool  CollectAppInfo      { false }; ///< Read /proc/pid/cgroup and /proc/pid/exe for icon resolution
             };
 
             pid_t   PID           { 0 };
@@ -74,8 +73,6 @@ namespace OS
             bool    IOTotalsAvailable { false }; ///< True when /proc/pid/io totals were read.
             bool    IORatesAvailable { false };  ///< True when a previous I/O sample exists.
             bool    IOPermissionDenied { false }; ///< True when I/O metrics were skipped due to permissions.
-            QString CGroup;                   ///< Unified cgroup path (/proc/pid/cgroup line "0::"), empty when unavailable
-            QString ExePath;                  ///< Canonical executable path (/proc/pid/exe), empty when unreadable
             QString IconName;                 ///< Theme icon name or absolute icon path resolved by AppRegistry, empty for generic
 
             /// Load a snapshot of every running process from /proc.
@@ -92,7 +89,6 @@ namespace OS
             static void loadStatm(Process &proc);
             static bool loadIO(Process &proc);
             static void loadUserAndCmdline(Process &proc);
-            static void loadAppInfo(Process &proc);
     };
 
     bool operator<(const Process::Identity &lhs, const Process::Identity &rhs);

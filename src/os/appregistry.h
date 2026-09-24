@@ -28,6 +28,8 @@
 #include <QString>
 #include <QStringList>
 
+#include <vector>
+
 class QFileSystemWatcher;
 class QTimer;
 
@@ -81,6 +83,8 @@ namespace OS
             QHash<QString, QString>               m_bySnap;    ///< Snap package name to desktop id
             QHash<Process::Identity, QString>     m_resolved;  ///< Own-match result per process, empty string when nothing matched
             QHash<QString, QIcon>                 m_icons;
+            std::vector<decltype(qHash(QString()))> m_themeIconNames; ///< Sorted hashes of every icon name reachable in the current icon theme chain
+            bool                                  m_themeIndexComplete { false }; ///< False when a theme exists only as a Qt resource and was not indexed
             QFileSystemWatcher                   *m_watcher { nullptr };
             QTimer                               *m_rescanTimer { nullptr };
 
@@ -88,6 +92,8 @@ namespace OS
             void buildIndex();
             QStringList applicationDirs() const;
             void indexDirectory(const QString &dir);
+            void indexIconTheme();
+            bool themeHasIcon(const QString &name) const;
             bool parseDesktopFile(const QString &path, DesktopEntry &out) const;
             QString resolveExec(const QString &exec) const;
             QString resolveOwn(const Process &proc) const;

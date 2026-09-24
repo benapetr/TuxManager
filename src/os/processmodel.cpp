@@ -63,7 +63,8 @@ namespace
                && lhs.IOWriteBps == rhs.IOWriteBps
                && lhs.IOTotalsAvailable == rhs.IOTotalsAvailable
                && lhs.IORatesAvailable == rhs.IORatesAvailable
-               && lhs.IOPermissionDenied == rhs.IOPermissionDenied;
+               && lhs.IOPermissionDenied == rhs.IOPermissionDenied
+               && lhs.IconName == rhs.IconName;
     }
 }
 
@@ -273,7 +274,7 @@ void ProcessModel::SetProcesses(const QList<Process> &processes)
                 this->m_processes[row] = sortedProcesses.at(row);
                 emit dataChanged(this->index(row, 0),
                                  this->index(row, ColCount - 1),
-                                 { Qt::DisplayRole, Qt::UserRole, Qt::TextAlignmentRole });
+                                 { Qt::DisplayRole, Qt::DecorationRole, Qt::UserRole, Qt::TextAlignmentRole });
             }
             ++row;
             continue;

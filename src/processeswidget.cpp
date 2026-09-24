@@ -413,7 +413,6 @@ void ProcessesWidget::startRefresh()
     options.CollectIOMetrics = CFG->IOMetricsEnabled;
     options.IsSuperuser = CFG->IsSuperuser;
     options.EffectiveUID = CFG->EUID;
-    options.CollectAppInfo = CFG->ShowProcessIcons;
 
     this->m_processRefreshService->RequestSnapshot(OS::ProcessRefreshService::Consumer::Processes,
                                                    this->m_refreshToken,
@@ -957,6 +956,9 @@ void ProcessesWidget::applyIconSetting()
     }
     this->m_model->SetAppRegistry(this->m_appRegistry);
     this->m_treeModel->SetAppRegistry(this->m_appRegistry);
+    // Rows whose data did not change emit no dataChanged, so repaint to add or drop their icons.
+    this->ui->tableView->viewport()->update();
+    this->m_treeView->viewport()->update();
 }
 
 void ProcessesWidget::captureExpandedTreePids(const QModelIndex &parentProxy, QSet<pid_t> &expandedPids) const

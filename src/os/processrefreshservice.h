@@ -46,8 +46,7 @@ namespace OS
                        bool collectIOMetrics,
                        bool isSuperuser,
                        uint effectiveUid,
-                       uint myUid,
-                       bool collectAppInfo);
+                       uint myUid);
 
         signals:
             void fetched(int consumer, quint64 token, const QList<Process> &processes);
@@ -87,8 +86,7 @@ namespace OS
                                 bool collectIOMetrics,
                                 bool isSuperuser,
                                 uint effectiveUid,
-                                uint myUid,
-                                bool collectAppInfo);
+                                uint myUid);
             void snapshotReady(int consumer, quint64 token, const QList<Process> &processes);
 
         private:
