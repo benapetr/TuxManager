@@ -146,7 +146,8 @@ RESOURCES += \
 # the translations working no matter where the application is installed from.
 TRANSLATIONS += \
     translations/tux-manager_zh_CN.ts \
-    translations/tux-manager_cs_CZ.ts
+    translations/tux-manager_cs_CZ.ts \
+    translations/tux-manager_pt_BR.ts
 
 CONFIG += lrelease embed_translations
 
