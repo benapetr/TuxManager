@@ -64,6 +64,7 @@ the process locale when launching the application:
 ```bash
 LC_ALL=zh_CN.UTF-8 ./tux-manager  # Simplified Chinese
 LC_ALL=cs_CZ.UTF-8 ./tux-manager  # Czech
+LC_ALL=pt_BR.UTF-8 ./tux-manager  # Brazilian Portuguese
 LC_ALL=C ./tux-manager            # Built-in English
 ```
 
