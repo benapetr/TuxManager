@@ -1464,6 +1464,12 @@ Zápis do swapu: RAM -&gt; disk (stránky zapsané do odkládacího prostoru)</t
         <translation>Procesy ostatních uživatelů</translation>
     </message>
     <message>
+        <location filename="../processeswidget.cpp" line="654"/>
+        <location filename="../processeswidget.cpp" line="744"/>
+        <source>Show icons</source>
+        <translation>Zobrazit ikony</translation>
+    </message>
+    <message>
         <location filename="../processeswidget.cpp" line="649"/>
         <location filename="../processeswidget.cpp" line="734"/>
         <source>Table view</source>
