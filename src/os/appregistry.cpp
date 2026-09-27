@@ -273,6 +273,7 @@ AppRegistry::AppRegistry(QObject *parent) : QObject(parent)
 void AppRegistry::Annotate(QList<Process> &processes)
 {
     this->ensureIndexed();
+    this->refreshIconThemeIfChanged();
 
     QHash<pid_t, int> index_by_pid;
     QSet<Process::Identity> live;
@@ -400,6 +401,21 @@ void AppRegistry::ensureIndexed()
 {
     if (!this->m_indexed)
         this->buildIndex();
+}
+
+void AppRegistry::refreshIconThemeIfChanged()
+{
+    if (this->m_indexedThemeName == QIcon::themeName()
+        && this->m_indexedFallbackThemeName == QIcon::fallbackThemeName()
+        && this->m_indexedThemeSearchPaths == QIcon::themeSearchPaths()
+        && this->m_indexedFallbackSearchPaths == QIcon::fallbackSearchPaths())
+    {
+        return;
+    }
+
+    this->m_icons.clear();
+    this->m_resolved.clear();
+    this->indexIconTheme();
 }
 
 void AppRegistry::buildIndex()
@@ -586,6 +602,11 @@ void AppRegistry::indexIconTheme()
     std::sort(this->m_themeIconNames.begin(), this->m_themeIconNames.end());
     this->m_themeIconNames.erase(std::unique(this->m_themeIconNames.begin(), this->m_themeIconNames.end()), this->m_themeIconNames.end());
     this->m_themeIconNames.shrink_to_fit();
+
+    this->m_indexedThemeName = QIcon::themeName();
+    this->m_indexedFallbackThemeName = QIcon::fallbackThemeName();
+    this->m_indexedThemeSearchPaths = QIcon::themeSearchPaths();
+    this->m_indexedFallbackSearchPaths = QIcon::fallbackSearchPaths();
 }
 
 // The index is a superset of what Qt resolves (it ignores Directories= and may include the

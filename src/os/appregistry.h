@@ -85,10 +85,15 @@ namespace OS
             QHash<QString, QIcon>                 m_icons;
             std::vector<decltype(qHash(QString()))> m_themeIconNames; ///< Sorted hashes of every icon name reachable in the current icon theme chain
             bool                                  m_themeIndexComplete { false }; ///< False when a theme exists only as a Qt resource and was not indexed
+            QString                               m_indexedThemeName;
+            QString                               m_indexedFallbackThemeName;
+            QStringList                           m_indexedThemeSearchPaths;
+            QStringList                           m_indexedFallbackSearchPaths;
             QFileSystemWatcher                   *m_watcher { nullptr };
             QTimer                               *m_rescanTimer { nullptr };
 
             void ensureIndexed();
+            void refreshIconThemeIfChanged();
             void buildIndex();
             QStringList applicationDirs() const;
             void indexDirectory(const QString &dir);
