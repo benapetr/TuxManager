@@ -526,6 +526,7 @@ void AppRegistry::indexIconTheme()
     this->m_themeIndexComplete = true;
 
     QStringList themes = {QIcon::themeName(), QIcon::fallbackThemeName(), QStringLiteral("hicolor")};
+    themes.removeDuplicates();
     const QStringList search_paths = QIcon::themeSearchPaths();
     const QSet<QString> extensions = {"png", "svg", "svgz", "xpm"};
 
