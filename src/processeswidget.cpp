@@ -255,7 +255,11 @@ void ProcessesWidget::setupTable()
     {
         hv->restoreState(CFG->ProcessListHeaderState);
     }
+    // PID was historically the first table column. Keep the flat and tree layouts
+    // consistent by showing process names and their icons first.
+    hv->moveSection(hv->visualIndex(OS::ProcessModel::ColName), 0);
     this->m_tableHeaderPersistenceEnabled = true;
+    this->saveTableHeaderState();
 
     this->m_treeView->setModel(this->m_treeProxy);
     this->m_treeView->setSortingEnabled(true);
