@@ -158,8 +158,10 @@ bool ProcessesWidget::selectProcessInTree(pid_t pid)
 
 void ProcessesWidget::setupTable()
 {
-    static constexpr int PROCESS_COLUMN_SCHEMA_VERSION = 1;
-    const bool resetProcessHeaderState = CFG->ProcessColumnSchemaVersion < PROCESS_COLUMN_SCHEMA_VERSION;
+    static constexpr int PROCESS_COLUMN_SCHEMA_VERSION = 2;
+    const int savedProcessColumnSchemaVersion = CFG->ProcessColumnSchemaVersion;
+    const bool resetProcessHeaderState = savedProcessColumnSchemaVersion < 1;
+    const bool migrateProcessNameFirstLayout = savedProcessColumnSchemaVersion < 2;
     if (resetProcessHeaderState && CFG->ProcessListSortColumn > OS::ProcessModel::ColMemVirt)
         CFG->ProcessListSortColumn += 3;
 
@@ -255,11 +257,13 @@ void ProcessesWidget::setupTable()
     {
         hv->restoreState(CFG->ProcessListHeaderState);
     }
-    // PID was historically the first table column. Keep the flat and tree layouts
-    // consistent by showing process names and their icons first.
-    hv->moveSection(hv->visualIndex(OS::ProcessModel::ColName), 0);
+    if (migrateProcessNameFirstLayout)
+    {
+        // Through 1.0.8, PID was the first column. Migrate it once so names and icons
+        // lead both process views, then preserve any column order chosen by the user.
+        hv->moveSection(hv->visualIndex(OS::ProcessModel::ColName), 0);
+    }
     this->m_tableHeaderPersistenceEnabled = true;
-    this->saveTableHeaderState();
 
     this->m_treeView->setModel(this->m_treeProxy);
     this->m_treeView->setSortingEnabled(true);
@@ -322,13 +326,12 @@ void ProcessesWidget::setupTable()
     {
         treeHeader->restoreState(CFG->ProcessTreeHeaderState);
     }
-    // Older saved headers put PID first, since we moved name to the front we need to ensure the new tree layout.
-    treeHeader->moveSection(treeHeader->visualIndex(OS::ProcessTreeModel::ColName), 0);
+    if (migrateProcessNameFirstLayout)
+        treeHeader->moveSection(treeHeader->visualIndex(OS::ProcessTreeModel::ColName), 0);
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColPid, 65);
     this->syncAllProcessColumnVisibility();
     this->m_treeHeaderPersistenceEnabled = true;
-    this->saveTreeHeaderState();
-    if (resetProcessHeaderState)
+    if (savedProcessColumnSchemaVersion < PROCESS_COLUMN_SCHEMA_VERSION)
     {
         CFG->ProcessColumnSchemaVersion = PROCESS_COLUMN_SCHEMA_VERSION;
         this->saveTableHeaderState();
