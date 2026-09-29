@@ -39,6 +39,7 @@ SOURCES += \
     userswidget.cpp \
     serviceswidget.cpp \
     os/proc.cpp \
+    os/appregistry.cpp \
     os/process.cpp \
     os/processrefreshservice.cpp \
     os/processtreemodel.cpp \
@@ -95,6 +96,7 @@ HEADERS += \
     userswidget.h \
     serviceswidget.h \
     os/proc.h \
+    os/appregistry.h \
     os/process.h \
     os/processrefreshservice.h \
     os/processtreemodel.h \
@@ -146,7 +148,8 @@ RESOURCES += \
 # the translations working no matter where the application is installed from.
 TRANSLATIONS += \
     translations/tux-manager_zh_CN.ts \
-    translations/tux-manager_cs_CZ.ts
+    translations/tux-manager_cs_CZ.ts \
+    translations/tux-manager_pt_BR.ts
 
 CONFIG += lrelease embed_translations
 

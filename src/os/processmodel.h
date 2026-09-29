@@ -27,6 +27,8 @@
 
 namespace OS
 {
+    class AppRegistry;
+
     class ProcessModel : public QAbstractTableModel
     {
         Q_OBJECT
@@ -72,6 +74,8 @@ namespace OS
             /// Useful for alternate views (e.g. tree) to avoid unnecessary table updates.
             QList<Process> RefreshSnapshot();
             void SetProcesses(const QList<Process> &processes);
+            /// Registry used to provide icons for the name column; nullptr disables icons.
+            void SetAppRegistry(AppRegistry *registry) { this->m_appRegistry = registry; }
             void SetShowKernelTasks(bool show) { this->m_showKernelTasks = show; }
             void SetShowOtherUsersProcs(bool show) { this->m_showOtherUsersProcs = show; }
             void SetIOMetricsEnabled(bool enabled);
@@ -82,6 +86,7 @@ namespace OS
 
         private:
             QList<Process>          m_processes;
+            AppRegistry            *m_appRegistry { nullptr };
             QHash<pid_t, quint64>   m_prevTicks;               ///< cpuTicks from previous sample
             QHash<pid_t, quint64>   m_prevIoReadBytes;
             QHash<pid_t, quint64>   m_prevIoWriteBytes;

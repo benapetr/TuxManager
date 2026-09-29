@@ -17,6 +17,8 @@
  */
 
 #include "processmodel.h"
+
+#include "appregistry.h"
 #include "proc.h"
 #include "../configuration.h"
 #include "../misc.h"
@@ -61,7 +63,8 @@ namespace
                && lhs.IOWriteBps == rhs.IOWriteBps
                && lhs.IOTotalsAvailable == rhs.IOTotalsAvailable
                && lhs.IORatesAvailable == rhs.IORatesAvailable
-               && lhs.IOPermissionDenied == rhs.IOPermissionDenied;
+               && lhs.IOPermissionDenied == rhs.IOPermissionDenied
+               && lhs.IconName == rhs.IconName;
     }
 }
 
@@ -101,6 +104,13 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
         return {};
 
     const Process &proc = this->m_processes.at(index.row());
+
+    if (role == Qt::DecorationRole)
+    {
+        if (index.column() == ColName && this->m_appRegistry)
+            return this->m_appRegistry->IconFor(proc.IconName);
+        return {};
+    }
 
     if (role == Qt::DisplayRole)
     {
@@ -264,7 +274,7 @@ void ProcessModel::SetProcesses(const QList<Process> &processes)
                 this->m_processes[row] = sortedProcesses.at(row);
                 emit dataChanged(this->index(row, 0),
                                  this->index(row, ColCount - 1),
-                                 { Qt::DisplayRole, Qt::UserRole, Qt::TextAlignmentRole });
+                                 { Qt::DisplayRole, Qt::DecorationRole, Qt::UserRole, Qt::TextAlignmentRole });
             }
             ++row;
             continue;

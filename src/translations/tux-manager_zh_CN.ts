@@ -1463,6 +1463,12 @@ Swap out: RAM -&gt; disk (pages written to swap storage)</source>
         <translation type="finished">其他用户的进程</translation>
     </message>
     <message>
+        <location filename="../processeswidget.cpp" line="654"/>
+        <location filename="../processeswidget.cpp" line="744"/>
+        <source>Show icons</source>
+        <translation type="finished">显示图标</translation>
+    </message>
+    <message>
         <location filename="../processeswidget.cpp" line="649" />
         <location filename="../processeswidget.cpp" line="734" />
         <source>Table view</source>

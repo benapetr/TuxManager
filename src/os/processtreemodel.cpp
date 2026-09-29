@@ -17,6 +17,8 @@
  */
 
 #include "processtreemodel.h"
+
+#include "appregistry.h"
 #include "../misc.h"
 using namespace OS;
 
@@ -83,6 +85,13 @@ QVariant ProcessTreeModel::data(const QModelIndex &index, int role) const
     if (!node)
         return {};
     const Process &proc = node->process;
+
+    if (role == Qt::DecorationRole)
+    {
+        if (index.column() == ColName && this->m_appRegistry)
+            return this->m_appRegistry->IconFor(proc.IconName);
+        return {};
+    }
 
     if (role == Qt::DisplayRole)
     {

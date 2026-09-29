@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="cs_CZ">
+<TS version="2.1" language="pt_BR">
 <context>
     <name>AboutDialog</name>
     <message>
         <location filename="../aboutdialog.ui" line="14"/>
         <source>About TuxManager</source>
-        <translation>O aplikaci TuxManager</translation>
+        <translation>Sobre o TuxManager</translation>
     </message>
     <message>
         <location filename="../aboutdialog.ui" line="26"/>
         <source>Close</source>
-        <translation>Zavřít</translation>
+        <translation>Fechar</translation>
     </message>
     <message>
         <location filename="../aboutdialog.ui" line="66"/>
@@ -21,22 +21,22 @@
     <message>
         <location filename="../aboutdialog.ui" line="108"/>
         <source>Version</source>
-        <translation>Verze</translation>
+        <translation>Versão</translation>
     </message>
     <message>
         <location filename="../aboutdialog.ui" line="127"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Created by Petr Bena and &lt;a href=&quot;https://github.com/benapetr/TuxManager/graphs/contributors&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#8ab4f8;&quot;&gt;many other contributors&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Vytvořili Petr Bena a &lt;a href=&quot;https://github.com/benapetr/TuxManager/graphs/contributors&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#8ab4f8;&quot;&gt;mnoho dalších přispěvatelů&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Criado por Petr Bena e &lt;a href="https://github.com/benapetr/TuxManager/graphs/contributors"&gt;&lt;span style=" text-decoration: underline; color:#8ab4f8;"&gt;muitos outros colaboradores&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../aboutdialog.ui" line="165"/>
         <source>A Linux Task Manager alternative built with Qt6, inspired by the Windows Task Manager but designed to go further - providing deep visibility into system processes, performance metrics, users, and services.&lt;br&gt;&lt;br&gt;&lt;a href=&quot;https://github.com/benapetr/TuxManager&quot;&gt;https://github.com/benapetr/TuxManager&lt;/a&gt;&lt;br&gt;&lt;br&gt;License - GPL-3.0-or-later</source>
-        <translation>Správce úloh pro Linux vytvořený vytvořený v Qt6, inspirovaný Správcem úloh systému Windows, ale navržený tak, aby šel ještě dál - poskytuje podrobný přehled o systémových procesech, výkonu, uživatelích a službách.&lt;br&gt;&lt;br&gt;&lt;a href=&quot;https://github.com/benapetr/TuxManager&quot;&gt;https://github.com/benapetr/TuxManager&lt;/a&gt;&lt;br&gt;&lt;br&gt;Licence – GPL-3.0-or-later</translation>
+        <translation>Uma alternativa ao Gerenciador de Tarefas para Linux feita com Qt6, inspirada no Gerenciador de Tarefas do Windows, mas pensada para ir além - oferecendo visibilidade profunda sobre processos do sistema, métricas de desempenho, usuários e serviços.&lt;br&gt;&lt;br&gt;&lt;a href="https://github.com/benapetr/TuxManager"&gt;https://github.com/benapetr/TuxManager&lt;/a&gt;&lt;br&gt;&lt;br&gt;Licença - GPL-3.0-or-later</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="27"/>
         <source>Version %1</source>
-        <translation>Verze %1</translation>
+        <translation>Versão %1</translation>
     </message>
 </context>
 <context>
@@ -44,27 +44,27 @@
     <message>
         <location filename="../colorschemedialog.ui" line="14"/>
         <source>Customize Colors</source>
-        <translation>Přizpůsobit barvy</translation>
+        <translation>Personalizar cores</translation>
     </message>
     <message>
         <location filename="../colorschemedialog.ui" line="32"/>
         <source>Use custom colors</source>
-        <translation>Použít vlastní barvy</translation>
+        <translation>Usar cores personalizadas</translation>
     </message>
     <message>
         <location filename="../colorschemedialog.ui" line="39"/>
         <source>When disabled, the default light or dark palette is used automatically.</source>
-        <translation>Pokud je tato volba vypnutá, automaticky se použije výchozí světlá nebo tmavá paleta.</translation>
+        <translation>Quando desativado, a paleta clara ou escura padrão é usada automaticamente.</translation>
     </message>
     <message>
         <location filename="../colorschemedialog.cpp" line="55"/>
         <source>Choose</source>
-        <translation>Vybrat</translation>
+        <translation>Escolher</translation>
     </message>
     <message>
         <location filename="../colorschemedialog.cpp" line="56"/>
         <source>Reset</source>
-        <translation>Obnovit</translation>
+        <translation>Redefinir</translation>
     </message>
 </context>
 <context>
@@ -100,7 +100,7 @@
     <message>
         <location filename="../perf/cpudetailwidget.ui" line="64"/>
         <source>60 seconds</source>
-        <translation>60 sekund</translation>
+        <translation>60 segundos</translation>
     </message>
     <message>
         <location filename="../perf/cpudetailwidget.ui" line="76"/>
@@ -110,12 +110,12 @@
     <message>
         <location filename="../perf/cpudetailwidget.ui" line="91"/>
         <source>Utilization</source>
-        <translation>Využití</translation>
+        <translation>Utilização</translation>
     </message>
     <message>
         <location filename="../perf/cpudetailwidget.ui" line="93"/>
         <source>Speed</source>
-        <translation>Frekvence</translation>
+        <translation>Velocidade</translation>
     </message>
     <message>
         <location filename="../perf/cpudetailwidget.ui" line="94"/>
@@ -131,32 +131,32 @@
     <message>
         <location filename="../perf/cpudetailwidget.ui" line="97"/>
         <source>Processes</source>
-        <translation>Procesy</translation>
+        <translation>Processos</translation>
     </message>
     <message>
         <location filename="../perf/cpudetailwidget.ui" line="99"/>
         <source>Threads</source>
-        <translation>Vlákna</translation>
+        <translation>Threads</translation>
     </message>
     <message>
         <location filename="../perf/cpudetailwidget.ui" line="103"/>
         <source>Uptime</source>
-        <translation>Doba provozu</translation>
+        <translation>Tempo ativo</translation>
     </message>
     <message>
         <location filename="../perf/cpudetailwidget.ui" line="105"/>
         <source>Logical processors</source>
-        <translation>Logické procesory</translation>
+        <translation>Processadores lógicos</translation>
     </message>
     <message>
         <location filename="../perf/cpudetailwidget.ui" line="109"/>
         <source>Virtual machine</source>
-        <translation>Virtualizace</translation>
+        <translation>Máquina virtual</translation>
     </message>
     <message>
         <location filename="../perf/cpudetailwidget.ui" line="111"/>
         <source>Temperature</source>
-        <translation>Teplota</translation>
+        <translation>Temperatura</translation>
     </message>
 </context>
 <context>
@@ -164,7 +164,7 @@
     <message>
         <location filename="../perf/diskdetailwidget.ui" line="19"/>
         <source>Disk</source>
-        <translation>Disk</translation>
+        <translation>Disco</translation>
     </message>
     <message>
         <location filename="../perf/diskdetailwidget.ui" line="20"/>
@@ -180,7 +180,7 @@
         <location filename="../perf/diskdetailwidget.ui" line="43"/>
         <location filename="../perf/diskdetailwidget.ui" line="158"/>
         <source>Active time</source>
-        <translation>Aktivita</translation>
+        <translation>Tempo ativo</translation>
     </message>
     <message>
         <location filename="../perf/diskdetailwidget.ui" line="44"/>
@@ -203,7 +203,7 @@
         <location filename="../perf/diskdetailwidget.ui" line="79"/>
         <location filename="../perf/diskdetailwidget.ui" line="133"/>
         <source>60 seconds</source>
-        <translation>60 sekund</translation>
+        <translation>60 segundos</translation>
     </message>
     <message>
         <location filename="../perf/diskdetailwidget.ui" line="91"/>
@@ -214,7 +214,7 @@
     <message>
         <location filename="../perf/diskdetailwidget.ui" line="103"/>
         <source>Disk transfer rate</source>
-        <translation>Přenosová rychlost disku</translation>
+        <translation>Taxa de transferência do disco</translation>
     </message>
     <message>
         <location filename="../perf/diskdetailwidget.ui" line="115"/>
@@ -231,7 +231,7 @@
     <message>
         <location filename="../perf/diskdetailwidget.ui" line="160"/>
         <source>Capacity</source>
-        <translation>Kapacita</translation>
+        <translation>Capacidade</translation>
     </message>
     <message>
         <location filename="../perf/diskdetailwidget.ui" line="161"/>
@@ -246,37 +246,37 @@
     <message>
         <location filename="../perf/diskdetailwidget.ui" line="163"/>
         <source>Read speed</source>
-        <translation>Rychlost čtení</translation>
+        <translation>Velocidade de leitura</translation>
     </message>
     <message>
         <location filename="../perf/diskdetailwidget.ui" line="165"/>
         <source>Formatted</source>
-        <translation>Formátovaná kapacita</translation>
+        <translation>Formatado</translation>
     </message>
     <message>
         <location filename="../perf/diskdetailwidget.ui" line="168"/>
         <source>Write speed</source>
-        <translation>Rychlost zápisu</translation>
+        <translation>Velocidade de gravação</translation>
     </message>
     <message>
         <location filename="../perf/diskdetailwidget.ui" line="170"/>
         <source>System disk</source>
-        <translation>Systémový disk</translation>
+        <translation>Disco do sistema</translation>
     </message>
     <message>
         <location filename="../perf/diskdetailwidget.ui" line="173"/>
         <source>Device</source>
-        <translation>Zařízení</translation>
+        <translation>Dispositivo</translation>
     </message>
     <message>
         <location filename="../perf/diskdetailwidget.ui" line="175"/>
         <source>Swap device</source>
-        <translation>Swap</translation>
+        <translation>Dispositivo de swap</translation>
     </message>
     <message>
         <location filename="../perf/diskdetailwidget.ui" line="178"/>
         <source>Type</source>
-        <translation>Typ</translation>
+        <translation>Tipo</translation>
     </message>
 </context>
 <context>
@@ -299,7 +299,7 @@
     <message>
         <location filename="../perf/gpudetailwidget.ui" line="71"/>
         <source>Dedicated GPU memory usage</source>
-        <translation>Využití vyhrazené paměti GPU</translation>
+        <translation>Uso de memória dedicada da GPU</translation>
     </message>
     <message>
         <location filename="../perf/gpudetailwidget.ui" line="91"/>
@@ -312,7 +312,7 @@
         <location filename="../perf/gpudetailwidget.ui" line="187"/>
         <location filename="../perf/gpudetailwidget.ui" line="269"/>
         <source>60 seconds</source>
-        <translation>60 sekund</translation>
+        <translation>60 segundos</translation>
     </message>
     <message>
         <location filename="../perf/gpudetailwidget.ui" line="132"/>
@@ -324,17 +324,17 @@
     <message>
         <location filename="../perf/gpudetailwidget.ui" line="146"/>
         <source>Shared GPU memory usage</source>
-        <translation>Využití sdílené paměti GPU</translation>
+        <translation>Uso de memória compartilhada da GPU</translation>
     </message>
     <message>
         <location filename="../perf/gpudetailwidget.ui" line="221"/>
         <source>Copy bandwidth</source>
-        <translation>Vytížení kopírovaním</translation>
+        <translation>Largura de banda de cópia</translation>
     </message>
     <message>
         <location filename="../perf/gpudetailwidget.ui" line="228"/>
         <source>Light: TX  Dark: RX</source>
-        <translation>Světlá: TX  Tmavá: RX</translation>
+        <translation>Claro: TX  Escuro: RX</translation>
     </message>
     <message>
         <location filename="../perf/gpudetailwidget.ui" line="248"/>
@@ -344,7 +344,7 @@
     <message>
         <location filename="../perf/gpudetailwidget.ui" line="309"/>
         <source>Utilization</source>
-        <translation>Vytížení</translation>
+        <translation>Utilização</translation>
     </message>
     <message>
         <location filename="../perf/gpudetailwidget.ui" line="316"/>
@@ -354,7 +354,7 @@
     <message>
         <location filename="../perf/gpudetailwidget.ui" line="323"/>
         <source>Dedicated GPU memory</source>
-        <translation>Vyhrazená paměť GPU</translation>
+        <translation>Memória dedicada da GPU</translation>
     </message>
     <message>
         <location filename="../perf/gpudetailwidget.ui" line="330"/>
@@ -366,17 +366,17 @@
     <message>
         <location filename="../perf/gpudetailwidget.ui" line="337"/>
         <source>GPU Memory</source>
-        <translation>Paměť GPU</translation>
+        <translation>Memória da GPU</translation>
     </message>
     <message>
         <location filename="../perf/gpudetailwidget.ui" line="351"/>
         <source>Shared GPU memory</source>
-        <translation>Sdílená paměť GPU</translation>
+        <translation>Memória compartilhada da GPU</translation>
     </message>
     <message>
         <location filename="../perf/gpudetailwidget.ui" line="365"/>
         <source>Temperature</source>
-        <translation>Teplota</translation>
+        <translation>Temperatura</translation>
     </message>
     <message>
         <location filename="../perf/gpudetailwidget.ui" line="372"/>
@@ -390,7 +390,7 @@
     <message>
         <location filename="../perf/gpudetailwidget.ui" line="379"/>
         <source>Driver version</source>
-        <translation>Verze ovladače</translation>
+        <translation>Versão do driver</translation>
     </message>
     <message>
         <location filename="../perf/gpudetailwidget.ui" line="393"/>
@@ -400,12 +400,12 @@
     <message>
         <location filename="../perf/gpudetailwidget.ui" line="407"/>
         <source>Core clock</source>
-        <translation>Takt jádra</translation>
+        <translation>Clock do núcleo</translation>
     </message>
     <message>
         <location filename="../perf/gpudetailwidget.ui" line="421"/>
         <source>Power usage</source>
-        <translation>Příkon</translation>
+        <translation>Consumo de energia</translation>
     </message>
 </context>
 <context>
@@ -418,27 +418,27 @@
     <message>
         <location filename="../mainwindow.ui" line="37"/>
         <source>Processes</source>
-        <translation>Procesy</translation>
+        <translation>Processos</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="56"/>
         <source>Performance</source>
-        <translation>Výkon</translation>
+        <translation>Desempenho</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="75"/>
         <source>Users</source>
-        <translation>Uživatelé</translation>
+        <translation>Usuários</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="94"/>
         <source>Services</source>
-        <translation>Služby</translation>
+        <translation>Serviços</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="36"/>
         <source> (superuser)</source>
-        <translation> (superuživatel)</translation>
+        <translation> (superusuário)</translation>
     </message>
 </context>
 <context>
@@ -451,7 +451,7 @@
     <message>
         <location filename="../perf/memorydetailwidget.ui" line="37"/>
         <source>Memory</source>
-        <translation>Paměť</translation>
+        <translation>Memória</translation>
     </message>
     <message>
         <location filename="../perf/memorydetailwidget.ui" line="57"/>
@@ -483,7 +483,7 @@
     <message>
         <location filename="../perf/memorydetailwidget.ui" line="87"/>
         <source>60 seconds</source>
-        <translation>60 sekund</translation>
+        <translation>60 segundos</translation>
     </message>
     <message>
         <location filename="../perf/memorydetailwidget.ui" line="110"/>
@@ -493,7 +493,7 @@
     <message>
         <location filename="../perf/memorydetailwidget.ui" line="127"/>
         <source>Memory composition</source>
-        <translation>Složení paměti</translation>
+        <translation>Composição da memória</translation>
     </message>
     <message>
         <location filename="../perf/memorydetailwidget.ui" line="150"/>
@@ -508,30 +508,30 @@
         <location filename="../perf/memorydetailwidget.ui" line="160"/>
         <location filename="../perf/memorydetailwidget.ui" line="276"/>
         <source>In use</source>
-        <translation>Použito</translation>
+        <translation>Em uso</translation>
     </message>
     <message>
         <location filename="../perf/memorydetailwidget.ui" line="180"/>
         <location filename="../perf/memorydetailwidget.ui" line="378"/>
         <source>Compressed</source>
-        <translation>Komprimováno</translation>
+        <translation>Comprimida</translation>
     </message>
     <message>
         <location filename="../perf/memorydetailwidget.ui" line="200"/>
         <location filename="../perf/memorydetailwidget.ui" line="310"/>
         <source>Dirty</source>
-        <translation>Změněno</translation>
+        <translation>Modificada</translation>
     </message>
     <message>
         <location filename="../perf/memorydetailwidget.ui" line="220"/>
         <source>Free (Cached)</source>
-        <translation>Volná (v mezipaměti)</translation>
+        <translation>Livre (em cache)</translation>
     </message>
     <message>
         <location filename="../perf/memorydetailwidget.ui" line="240"/>
         <location filename="../perf/memorydetailwidget.ui" line="327"/>
         <source>Free</source>
-        <translation>Volná</translation>
+        <translation>Livre</translation>
     </message>
     <message>
         <location filename="../perf/memorydetailwidget.ui" line="283"/>
@@ -549,27 +549,27 @@
     <message>
         <location filename="../perf/memorydetailwidget.ui" line="293"/>
         <source>Available</source>
-        <translation>Dostupná</translation>
+        <translation>Disponível</translation>
     </message>
     <message>
         <location filename="../perf/memorydetailwidget.ui" line="344"/>
         <source>Cached</source>
-        <translation>V mezipaměti</translation>
+        <translation>Em cache</translation>
     </message>
     <message>
         <location filename="../perf/memorydetailwidget.ui" line="361"/>
         <source>Buffers</source>
-        <translation>Vyrovnávací paměť</translation>
+        <translation>Buffers</translation>
     </message>
     <message>
         <location filename="../perf/memorydetailwidget.ui" line="395"/>
         <source>DIMM slots used</source>
-        <translation>Použité sloty DIMM</translation>
+        <translation>Slots DIMM usados</translation>
     </message>
     <message>
         <location filename="../perf/memorydetailwidget.ui" line="412"/>
         <source>Speed</source>
-        <translation>Rychlost</translation>
+        <translation>Velocidade</translation>
     </message>
 </context>
 <context>
@@ -595,7 +595,7 @@
     <message>
         <location filename="../perf/networkdetailwidget.ui" line="64"/>
         <source>Throughput</source>
-        <translation>Propustnost</translation>
+        <translation>Taxa de transferência</translation>
     </message>
     <message>
         <location filename="../perf/networkdetailwidget.ui" line="87"/>
@@ -607,7 +607,7 @@
     <message>
         <location filename="../perf/networkdetailwidget.ui" line="114"/>
         <source>60 seconds</source>
-        <translation>60 sekund</translation>
+        <translation>60 segundos</translation>
     </message>
     <message>
         <location filename="../perf/networkdetailwidget.ui" line="137"/>
@@ -617,12 +617,12 @@
     <message>
         <location filename="../perf/networkdetailwidget.ui" line="160"/>
         <source>Send</source>
-        <translation>Odesílání</translation>
+        <translation>Envio</translation>
     </message>
     <message>
         <location filename="../perf/networkdetailwidget.ui" line="177"/>
         <source>Adapter</source>
-        <translation>Adaptér</translation>
+        <translation>Adaptador</translation>
     </message>
     <message>
         <location filename="../perf/networkdetailwidget.ui" line="184"/>
@@ -636,27 +636,27 @@
     <message>
         <location filename="../perf/networkdetailwidget.ui" line="194"/>
         <source>Receive</source>
-        <translation>Příjem</translation>
+        <translation>Recebimento</translation>
     </message>
     <message>
         <location filename="../perf/networkdetailwidget.ui" line="211"/>
         <source>Connection type</source>
-        <translation>Typ připojení</translation>
+        <translation>Tipo de conexão</translation>
     </message>
     <message>
         <location filename="../perf/networkdetailwidget.ui" line="228"/>
         <source>Link speed</source>
-        <translation>Rychlost spojení</translation>
+        <translation>Velocidade do link</translation>
     </message>
     <message>
         <location filename="../perf/networkdetailwidget.ui" line="245"/>
         <source>IPv4 address</source>
-        <translation>Adresa IPv4</translation>
+        <translation>Endereço IPv4</translation>
     </message>
     <message>
         <location filename="../perf/networkdetailwidget.ui" line="262"/>
         <source>IPv6 addresses</source>
-        <translation>Adresy IPv6</translation>
+        <translation>Endereços IPv6</translation>
     </message>
 </context>
 <context>
@@ -665,7 +665,7 @@
         <location filename="../os/processmodel.cpp" line="124"/>
         <location filename="../os/processmodel.cpp" line="128"/>
         <source>measuring...</source>
-        <translation>měření…</translation>
+        <translation>medindo...</translation>
     </message>
     <message>
         <location filename="../os/processmodel.cpp" line="417"/>
@@ -675,17 +675,17 @@
     <message>
         <location filename="../os/processmodel.cpp" line="418"/>
         <source>Name</source>
-        <translation>Název</translation>
+        <translation>Nome</translation>
     </message>
     <message>
         <location filename="../os/processmodel.cpp" line="419"/>
         <source>User</source>
-        <translation>Uživatel</translation>
+        <translation>Usuário</translation>
     </message>
     <message>
         <location filename="../os/processmodel.cpp" line="420"/>
         <source>State</source>
-        <translation>Stav</translation>
+        <translation>Estado</translation>
     </message>
     <message>
         <location filename="../os/processmodel.cpp" line="421"/>
@@ -695,67 +695,67 @@
     <message>
         <location filename="../os/processmodel.cpp" line="422"/>
         <source>MEM RES</source>
-        <translation>Rezidentní paměť</translation>
+        <translation>MEM RES</translation>
     </message>
     <message>
         <location filename="../os/processmodel.cpp" line="423"/>
         <source>MEM VIRT</source>
-        <translation>Virtuální paměť</translation>
+        <translation>MEM VIRT</translation>
     </message>
     <message>
         <location filename="../os/processmodel.cpp" line="424"/>
         <source>MEM SHR</source>
-        <translation>Sdílená paměť</translation>
+        <translation>MEM COMP</translation>
     </message>
     <message>
         <location filename="../os/processmodel.cpp" line="425"/>
         <source>MEM TEXT</source>
-        <translation>Paměť kódu</translation>
+        <translation>MEM TEXTO</translation>
     </message>
     <message>
         <location filename="../os/processmodel.cpp" line="426"/>
         <source>MEM DATA</source>
-        <translation>Datová paměť</translation>
+        <translation>MEM DADOS</translation>
     </message>
     <message>
         <location filename="../os/processmodel.cpp" line="427"/>
         <source>IO Reads</source>
-        <translation>Čtení I/O</translation>
+        <translation>Leituras E/S</translation>
     </message>
     <message>
         <location filename="../os/processmodel.cpp" line="428"/>
         <source>IO Writes</source>
-        <translation>Zápisy I/O</translation>
+        <translation>Gravações E/S</translation>
     </message>
     <message>
         <location filename="../os/processmodel.cpp" line="429"/>
         <source>IO Read/s</source>
-        <translation>Čtení I/O/s</translation>
+        <translation>Leitura E/S/s</translation>
     </message>
     <message>
         <location filename="../os/processmodel.cpp" line="430"/>
         <source>IO Write/s</source>
-        <translation>Zápis I/O/s</translation>
+        <translation>Gravação E/S/s</translation>
     </message>
     <message>
         <location filename="../os/processmodel.cpp" line="431"/>
         <source>Threads</source>
-        <translation>Vlákna</translation>
+        <translation>Threads</translation>
     </message>
     <message>
         <location filename="../os/processmodel.cpp" line="432"/>
         <source>Priority</source>
-        <translation>Priorita</translation>
+        <translation>Prioridade</translation>
     </message>
     <message>
         <location filename="../os/processmodel.cpp" line="433"/>
         <source>Nice</source>
-        <translation>Nice hodnota</translation>
+        <translation>Nice</translation>
     </message>
     <message>
         <location filename="../os/processmodel.cpp" line="434"/>
         <source>Command</source>
-        <translation>Příkaz</translation>
+        <translation>Comando</translation>
     </message>
 </context>
 <context>
@@ -764,7 +764,7 @@
         <location filename="../os/processtreemodel.cpp" line="106"/>
         <location filename="../os/processtreemodel.cpp" line="110"/>
         <source>measuring...</source>
-        <translation>měření…</translation>
+        <translation>medindo...</translation>
     </message>
     <message>
         <location filename="../os/processtreemodel.cpp" line="241"/>
@@ -774,17 +774,17 @@
     <message>
         <location filename="../os/processtreemodel.cpp" line="242"/>
         <source>Name</source>
-        <translation>Název</translation>
+        <translation>Nome</translation>
     </message>
     <message>
         <location filename="../os/processtreemodel.cpp" line="243"/>
         <source>User</source>
-        <translation>Uživatel</translation>
+        <translation>Usuário</translation>
     </message>
     <message>
         <location filename="../os/processtreemodel.cpp" line="244"/>
         <source>State</source>
-        <translation>Stav</translation>
+        <translation>Estado</translation>
     </message>
     <message>
         <location filename="../os/processtreemodel.cpp" line="245"/>
@@ -794,67 +794,67 @@
     <message>
         <location filename="../os/processtreemodel.cpp" line="246"/>
         <source>MEM RES</source>
-        <translation>Rezidentní paměť</translation>
+        <translation>MEM RES</translation>
     </message>
     <message>
         <location filename="../os/processtreemodel.cpp" line="247"/>
         <source>MEM VIRT</source>
-        <translation>Virtuální paměť</translation>
+        <translation>MEM VIRT</translation>
     </message>
     <message>
         <location filename="../os/processtreemodel.cpp" line="248"/>
         <source>MEM SHR</source>
-        <translation>Sdílená paměť</translation>
+        <translation>MEM COMP</translation>
     </message>
     <message>
         <location filename="../os/processtreemodel.cpp" line="249"/>
         <source>MEM TEXT</source>
-        <translation>Paměť kódu</translation>
+        <translation>MEM TEXTO</translation>
     </message>
     <message>
         <location filename="../os/processtreemodel.cpp" line="250"/>
         <source>MEM DATA</source>
-        <translation>Datová paměť</translation>
+        <translation>MEM DADOS</translation>
     </message>
     <message>
         <location filename="../os/processtreemodel.cpp" line="251"/>
         <source>IO Reads</source>
-        <translation>Čtení I/O</translation>
+        <translation>Leituras E/S</translation>
     </message>
     <message>
         <location filename="../os/processtreemodel.cpp" line="252"/>
         <source>IO Writes</source>
-        <translation>Zápisy I/O</translation>
+        <translation>Gravações E/S</translation>
     </message>
     <message>
         <location filename="../os/processtreemodel.cpp" line="253"/>
         <source>IO Read/s</source>
-        <translation>Čtení I/O/s</translation>
+        <translation>Leitura E/S/s</translation>
     </message>
     <message>
         <location filename="../os/processtreemodel.cpp" line="254"/>
         <source>IO Write/s</source>
-        <translation>Zápis I/O/s</translation>
+        <translation>Gravação E/S/s</translation>
     </message>
     <message>
         <location filename="../os/processtreemodel.cpp" line="255"/>
         <source>Threads</source>
-        <translation>Vlákna</translation>
+        <translation>Threads</translation>
     </message>
     <message>
         <location filename="../os/processtreemodel.cpp" line="256"/>
         <source>Priority</source>
-        <translation>Priorita</translation>
+        <translation>Prioridade</translation>
     </message>
     <message>
         <location filename="../os/processtreemodel.cpp" line="257"/>
         <source>Nice</source>
-        <translation>Nice hodnota</translation>
+        <translation>Nice</translation>
     </message>
     <message>
         <location filename="../os/processtreemodel.cpp" line="258"/>
         <source>Command</source>
-        <translation>Příkaz</translation>
+        <translation>Comando</translation>
     </message>
 </context>
 <context>
@@ -862,27 +862,27 @@
     <message>
         <location filename="../os/servicemodel.cpp" line="102"/>
         <source>Service</source>
-        <translation>Služba</translation>
+        <translation>Serviço</translation>
     </message>
     <message>
         <location filename="../os/servicemodel.cpp" line="103"/>
         <source>Load</source>
-        <translation>Vytížení</translation>
+        <translation>Carga</translation>
     </message>
     <message>
         <location filename="../os/servicemodel.cpp" line="104"/>
         <source>Active</source>
-        <translation>Aktivní</translation>
+        <translation>Ativo</translation>
     </message>
     <message>
         <location filename="../os/servicemodel.cpp" line="105"/>
         <source>SubState</source>
-        <translation>Podstav</translation>
+        <translation>Subestado</translation>
     </message>
     <message>
         <location filename="../os/servicemodel.cpp" line="106"/>
         <source>Description</source>
-        <translation>Popis</translation>
+        <translation>Descrição</translation>
     </message>
 </context>
 <context>
@@ -916,42 +916,42 @@
     <message>
         <location filename="../perf/cpudetailwidget.cpp" line="187"/>
         <source>Yes</source>
-        <translation>Ano</translation>
+        <translation>Sim</translation>
     </message>
     <message>
         <location filename="../perf/cpudetailwidget.cpp" line="189"/>
         <source>Yes (%1)</source>
-        <translation>Ano (%1)</translation>
+        <translation>Sim (%1)</translation>
     </message>
     <message>
         <location filename="../perf/cpudetailwidget.cpp" line="192"/>
         <source>No</source>
-        <translation>Ne</translation>
+        <translation>Não</translation>
     </message>
     <message>
         <location filename="../perf/cpudetailwidget.cpp" line="199"/>
         <source>CPU graph options</source>
-        <translation>Možnosti grafu CPU</translation>
+        <translation>Opções do gráfico da CPU</translation>
     </message>
     <message>
         <location filename="../perf/cpudetailwidget.cpp" line="202"/>
         <source>Change graph to</source>
-        <translation>Změnit graf na</translation>
+        <translation>Alterar gráfico para</translation>
     </message>
     <message>
         <location filename="../perf/cpudetailwidget.cpp" line="204"/>
         <source>Overall utilization</source>
-        <translation>Celkové využití</translation>
+        <translation>Utilização geral</translation>
     </message>
     <message>
         <location filename="../perf/cpudetailwidget.cpp" line="205"/>
         <source>Logical processors</source>
-        <translation>Logické procesory</translation>
+        <translation>Processadores lógicos</translation>
     </message>
     <message>
         <location filename="../perf/cpudetailwidget.cpp" line="227"/>
         <source>Show kernel times</source>
-        <translation>Zobrazit časy jádra</translation>
+        <translation>Mostrar tempos de kernel</translation>
     </message>
 </context>
 <context>
@@ -965,7 +965,7 @@
         <location filename="../perf/cpugrapharea.cpp" line="38"/>
         <location filename="../perf/cpugrapharea.cpp" line="180"/>
         <source>Kernel</source>
-        <translation>Jádro</translation>
+        <translation>Kernel</translation>
     </message>
     <message>
         <location filename="../perf/cpugrapharea.cpp" line="126"/>
@@ -984,17 +984,17 @@
     <message>
         <location filename="../perf/diskdetailwidget.cpp" line="69"/>
         <source>Active time</source>
-        <translation>Doba aktivity</translation>
+        <translation>Tempo ativo</translation>
     </message>
     <message>
         <location filename="../perf/diskdetailwidget.cpp" line="77"/>
         <source>Read</source>
-        <translation>Čtení</translation>
+        <translation>Leitura</translation>
     </message>
     <message>
         <location filename="../perf/diskdetailwidget.cpp" line="77"/>
         <source>Write</source>
-        <translation>Zápis</translation>
+        <translation>Gravação</translation>
     </message>
     <message>
         <location filename="../perf/diskdetailwidget.cpp" line="81"/>
@@ -1004,7 +1004,7 @@
     <message>
         <location filename="../perf/diskdetailwidget.cpp" line="140"/>
         <source>Disk (%1)</source>
-        <translation>Disk (%1)</translation>
+        <translation>Disco (%1)</translation>
     </message>
     <message>
         <location filename="../perf/diskdetailwidget.cpp" line="165"/>
@@ -1015,13 +1015,13 @@
         <location filename="../perf/diskdetailwidget.cpp" line="166"/>
         <location filename="../perf/diskdetailwidget.cpp" line="167"/>
         <source>Yes</source>
-        <translation>Ano</translation>
+        <translation>Sim</translation>
     </message>
     <message>
         <location filename="../perf/diskdetailwidget.cpp" line="166"/>
         <location filename="../perf/diskdetailwidget.cpp" line="167"/>
         <source>No</source>
-        <translation>Ne</translation>
+        <translation>Não</translation>
     </message>
 </context>
 <context>
@@ -1029,12 +1029,12 @@
     <message>
         <location filename="../perf/gpudetailwidget.cpp" line="105"/>
         <source>Dedicated memory usage</source>
-        <translation>Využití vyhrazené paměti</translation>
+        <translation>Uso de memória dedicada</translation>
     </message>
     <message>
         <location filename="../perf/gpudetailwidget.cpp" line="109"/>
         <source>Shared memory usage</source>
-        <translation>Využití sdílené paměti</translation>
+        <translation>Uso de memória compartilhada</translation>
     </message>
     <message>
         <location filename="../perf/gpudetailwidget.cpp" line="113"/>
@@ -1049,7 +1049,7 @@
     <message>
         <location filename="../perf/gpudetailwidget.cpp" line="115"/>
         <source>Copy bandwidth: light trace = TX, dark trace = RX</source>
-        <translation>Vytížení kopírováním: světlá křivka = TX, tmavá křivka = RX</translation>
+        <translation>Largura de banda de cópia: traço claro = TX, traço escuro = RX</translation>
     </message>
     <message>
         <location filename="../perf/gpudetailwidget.cpp" line="243"/>
@@ -1092,7 +1092,7 @@
     <message>
         <location filename="../perf/gpudetailwidget.cpp" line="327"/>
         <source>Value</source>
-        <translation>Hodnota</translation>
+        <translation>Valor</translation>
     </message>
 </context>
 <context>
@@ -1108,7 +1108,7 @@
         <source>
 %1 s ago</source>
         <translation>
-před %1 s</translation>
+há %1 s</translation>
     </message>
     <message>
         <location filename="../perf/graphwidget.cpp" line="374"/>
@@ -1125,12 +1125,12 @@ před %1 s</translation>
     <message>
         <location filename="../perf/graphwidget.h" line="122"/>
         <source>Value</source>
-        <translation>Hodnota</translation>
+        <translation>Valor</translation>
     </message>
     <message>
         <location filename="../perf/graphwidget.h" line="123"/>
         <source>Secondary</source>
-        <translation>Sekundární</translation>
+        <translation>Secundário</translation>
     </message>
 </context>
 <context>
@@ -1138,27 +1138,27 @@ před %1 s</translation>
     <message>
         <location filename="../perf/memorybar.cpp" line="147"/>
         <source>Used</source>
-        <translation>Použito</translation>
+        <translation>Usada</translation>
     </message>
     <message>
         <location filename="../perf/memorybar.cpp" line="151"/>
         <source>Used (compressed)</source>
-        <translation>Použito (komprimováno)</translation>
+        <translation>Usada (comprimida)</translation>
     </message>
     <message>
         <location filename="../perf/memorybar.cpp" line="155"/>
         <source>Dirty</source>
-        <translation>Změněno</translation>
+        <translation>Modificada</translation>
     </message>
     <message>
         <location filename="../perf/memorybar.cpp" line="159"/>
         <source>Free (cached)</source>
-        <translation>Volná (v mezipaměti)</translation>
+        <translation>Livre (em cache)</translation>
     </message>
     <message>
         <location filename="../perf/memorybar.cpp" line="163"/>
         <source>Free</source>
-        <translation>Volná</translation>
+        <translation>Livre</translation>
     </message>
     <message>
         <location filename="../perf/memorybar.cpp" line="170"/>
@@ -1171,7 +1171,7 @@ před %1 s</translation>
     <message>
         <location filename="../perf/memorydetailwidget.cpp" line="74"/>
         <source>Used memory</source>
-        <translation>Použitá paměť</translation>
+        <translation>Memória usada</translation>
     </message>
     <message>
         <location filename="../perf/memorydetailwidget.cpp" line="142"/>
@@ -1198,7 +1198,7 @@ před %1 s</translation>
     <message>
         <location filename="../perf/memorydetailwidget.cpp" line="183"/>
         <source>%1 (using %2 RAM)</source>
-        <translation>%1 (využívá %2 RAM)</translation>
+        <translation>%1 (usando %2 de RAM)</translation>
     </message>
 </context>
 <context>
@@ -1206,17 +1206,17 @@ před %1 s</translation>
     <message>
         <location filename="../perf/networkdetailwidget.cpp" line="66"/>
         <source>Receive</source>
-        <translation>Příjem</translation>
+        <translation>Recebimento</translation>
     </message>
     <message>
         <location filename="../perf/networkdetailwidget.cpp" line="66"/>
         <source>Send</source>
-        <translation>Odesílání</translation>
+        <translation>Envio</translation>
     </message>
     <message>
         <location filename="../perf/networkdetailwidget.cpp" line="134"/>
         <source>NIC (%1)</source>
-        <translation>NIC (%1)</translation>
+        <translation>Rede (%1)</translation>
     </message>
     <message>
         <location filename="../perf/networkdetailwidget.cpp" line="137"/>
@@ -1226,7 +1226,7 @@ před %1 s</translation>
     <message>
         <location filename="../perf/networkdetailwidget.cpp" line="137"/>
         <source>Unknown</source>
-        <translation>Neznámý</translation>
+        <translation>Desconhecido</translation>
     </message>
     <message>
         <location filename="../perf/networkdetailwidget.cpp" line="138"/>
@@ -1237,17 +1237,17 @@ před %1 s</translation>
     <message>
         <location filename="../perf/networkdetailwidget.cpp" line="165"/>
         <source>Network graph options</source>
-        <translation>Možnosti síťového grafu</translation>
+        <translation>Opções do gráfico de rede</translation>
     </message>
     <message>
         <location filename="../perf/networkdetailwidget.cpp" line="167"/>
         <source>Show speeds in bits</source>
-        <translation>Zobrazit rychlosti v bitech</translation>
+        <translation>Mostrar velocidades em bits</translation>
     </message>
     <message>
         <location filename="../perf/networkdetailwidget.cpp" line="171"/>
         <source>Show speeds in bytes</source>
-        <translation>Zobrazit rychlosti v bajtech</translation>
+        <translation>Mostrar velocidades em bytes</translation>
     </message>
 </context>
 <context>
@@ -1255,39 +1255,39 @@ před %1 s</translation>
     <message>
         <location filename="../perf/swapdetailwidget.cpp" line="87"/>
         <source>Swap in</source>
-        <translation>Načítání ze swapu</translation>
+        <translation>Swap in</translation>
     </message>
     <message>
         <location filename="../perf/swapdetailwidget.cpp" line="87"/>
         <source>Swap out</source>
-        <translation>Zápis do swapu</translation>
+        <translation>Swap out</translation>
     </message>
     <message>
         <location filename="../perf/swapdetailwidget.cpp" line="90"/>
         <source>Swap in: disk -&gt; RAM (pages read back into memory)
 Swap out: RAM -&gt; disk (pages written to swap storage)</source>
-        <translation>Načítání ze swapu: disk -&gt; RAM (stránky načtené zpět do paměti)
-Zápis do swapu: RAM -&gt; disk (stránky zapsané do odkládacího prostoru)</translation>
+        <translation>Swap in: disco -&gt; RAM (páginas lidas de volta para a memória)
+Swap out: RAM -&gt; disco (páginas gravadas no armazenamento de swap)</translation>
     </message>
     <message>
         <location filename="../perf/swapdetailwidget.cpp" line="198"/>
         <source>Swap graph options</source>
-        <translation>Možnosti grafu odkládacího prostoru</translation>
+        <translation>Opções do gráfico de swap</translation>
     </message>
     <message>
         <location filename="../perf/swapdetailwidget.cpp" line="200"/>
         <source>Change graph to</source>
-        <translation>Změnit graf na</translation>
+        <translation>Alterar gráfico para</translation>
     </message>
     <message>
         <location filename="../perf/swapdetailwidget.cpp" line="202"/>
         <source>Overall usage</source>
-        <translation>Celkové využití</translation>
+        <translation>Uso geral</translation>
     </message>
     <message>
         <location filename="../perf/swapdetailwidget.cpp" line="203"/>
         <source>Swap devices</source>
-        <translation>Odkládací zařízení</translation>
+        <translation>Dispositivos de swap</translation>
     </message>
 </context>
 <context>
@@ -1295,7 +1295,7 @@ Zápis do swapu: RAM -&gt; disk (stránky zapsané do odkládacího prostoru)</t
     <message>
         <location filename="../perf/swapgrapharea.cpp" line="42"/>
         <source>Swap usage</source>
-        <translation>Využití odkládacího prostoru</translation>
+        <translation>Uso de swap</translation>
     </message>
     <message>
         <location filename="../perf/swapgrapharea.cpp" line="91"/>
@@ -1315,17 +1315,17 @@ Zápis do swapu: RAM -&gt; disk (stránky zapsané do odkládacího prostoru)</t
     <message>
         <location filename="../performancewidget.cpp" line="225"/>
         <source>Memory</source>
-        <translation>Paměť</translation>
+        <translation>Memória</translation>
     </message>
     <message>
         <location filename="../performancewidget.cpp" line="235"/>
         <source>Swap</source>
-        <translation>Odkládací prostor</translation>
+        <translation>Swap</translation>
     </message>
     <message>
         <location filename="../performancewidget.cpp" line="256"/>
         <source>Disk (%1)</source>
-        <translation>Disk (%1)</translation>
+        <translation>Disco (%1)</translation>
     </message>
     <message>
         <location filename="../performancewidget.cpp" line="279"/>
@@ -1335,7 +1335,7 @@ Zápis do swapu: RAM -&gt; disk (stránky zapsané do odkládacího prostoru)</t
     <message>
         <location filename="../performancewidget.cpp" line="302"/>
         <source>NIC (%1)</source>
-        <translation>NIC (%1)</translation>
+        <translation>Rede (%1)</translation>
     </message>
     <message>
         <location filename="../performancewidget.cpp" line="326"/>
@@ -1346,7 +1346,7 @@ Zápis do swapu: RAM -&gt; disk (stránky zapsané do odkládacího prostoru)</t
     <message>
         <location filename="../performancewidget.cpp" line="360"/>
         <source>Off</source>
-        <translation>Vypnuto</translation>
+        <translation>Desligado</translation>
     </message>
     <message>
         <location filename="../performancewidget.cpp" line="377"/>
@@ -1370,27 +1370,27 @@ Zápis do swapu: RAM -&gt; disk (stránky zapsané do odkládacího prostoru)</t
         <location filename="../performancewidget.cpp" line="420"/>
         <source>U:%1 D:%2</source>
         <comment>%1=upload rate %2=download rate</comment>
-        <translation>U:%1 D:%2</translation>
+        <translation>E:%1 R:%2</translation>
     </message>
     <message>
         <location filename="../performancewidget.cpp" line="484"/>
         <source>Settings</source>
-        <translation>Nastavení</translation>
+        <translation>Configurações</translation>
     </message>
     <message>
         <location filename="../performancewidget.cpp" line="485"/>
         <source>Customize order...</source>
-        <translation>Přizpůsobit pořadí...</translation>
+        <translation>Personalizar ordem...</translation>
     </message>
     <message>
         <location filename="../performancewidget.cpp" line="486"/>
         <source>Customize colors...</source>
-        <translation>Přizpůsobit barvy...</translation>
+        <translation>Personalizar cores...</translation>
     </message>
     <message>
         <location filename="../performancewidget.cpp" line="487"/>
         <source>Show grid in side panel</source>
-        <translation>Zobrazit mřížku i v postranním panelu</translation>
+        <translation>Mostrar grade no painel lateral</translation>
     </message>
 </context>
 <context>
@@ -1398,47 +1398,47 @@ Zápis do swapu: RAM -&gt; disk (stránky zapsané do odkládacího prostoru)</t
     <message>
         <location filename="../processeswidget.ui" line="23"/>
         <source>Search:</source>
-        <translation>Hledat:</translation>
+        <translation>Pesquisar:</translation>
     </message>
     <message>
         <location filename="../processeswidget.ui" line="28"/>
         <source>Filter processes…</source>
-        <translation>Filtrovat procesy…</translation>
+        <translation>Filtrar processos…</translation>
     </message>
     <message>
         <location filename="../processeswidget.ui" line="35"/>
         <source>Run new task</source>
-        <translation>Spustit novou úlohu</translation>
+        <translation>Executar nova tarefa</translation>
     </message>
     <message>
         <location filename="../processeswidget.ui" line="40"/>
         <source>Open terminal</source>
-        <translation>Otevřít terminál</translation>
+        <translation>Abrir terminal</translation>
     </message>
     <message>
         <location filename="../processeswidget.ui" line="65"/>
         <source>Tasks: 0</source>
-        <translation>Úlohy: 0</translation>
+        <translation>Tarefas: 0</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="613"/>
         <source>Copy</source>
-        <translation>Kopírovat</translation>
+        <translation>Copiar</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="615"/>
         <source>Entire row</source>
-        <translation>Celý řádek</translation>
+        <translation>Linha inteira</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="619"/>
         <source>Selected cell</source>
-        <translation>Vybraná buňka</translation>
+        <translation>Célula selecionada</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="625"/>
         <source>PIDs</source>
-        <translation>PID</translation>
+        <translation>PIDs</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="627"/>
@@ -1449,105 +1449,99 @@ Zápis do swapu: RAM -&gt; disk (stránky zapsané do odkládacího prostoru)</t
         <location filename="../processeswidget.cpp" line="636"/>
         <location filename="../processeswidget.cpp" line="722"/>
         <source>View</source>
-        <translation>Zobrazení</translation>
+        <translation>Exibir</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="638"/>
         <location filename="../processeswidget.cpp" line="723"/>
         <source>Kernel tasks</source>
-        <translation>Úlohy jádra</translation>
+        <translation>Tarefas do kernel</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="643"/>
         <location filename="../processeswidget.cpp" line="728"/>
         <source>Processes of other users</source>
-        <translation>Procesy ostatních uživatelů</translation>
-    </message>
-    <message>
-        <location filename="../processeswidget.cpp" line="654"/>
-        <location filename="../processeswidget.cpp" line="744"/>
-        <source>Show icons</source>
-        <translation>Zobrazit ikony</translation>
+        <translation>Processos de outros usuários</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="649"/>
         <location filename="../processeswidget.cpp" line="734"/>
         <source>Table view</source>
-        <translation>Tabulkové zobrazení</translation>
+        <translation>Visualização em tabela</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="654"/>
         <location filename="../processeswidget.cpp" line="739"/>
         <source>Tree view</source>
-        <translation>Stromové zobrazení</translation>
+        <translation>Visualização em árvore</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="660"/>
         <source>Send signal</source>
-        <translation>Odeslat signál</translation>
+        <translation>Enviar sinal</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="685"/>
         <source>Custom signal...</source>
-        <translation>Vlastní signál...</translation>
+        <translation>Sinal personalizado...</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="690"/>
         <location filename="../processeswidget.cpp" line="747"/>
         <source>Terminate  (SIGTERM)</source>
-        <translation>Ukončit  (SIGTERM)</translation>
+        <translation>Encerrar  (SIGTERM)</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="694"/>
         <location filename="../processeswidget.cpp" line="751"/>
         <source>Kill  (SIGKILL)</source>
-        <translation>Vynutit ukončení  (SIGKILL)</translation>
+        <translation>Matar  (SIGKILL)</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="701"/>
         <location filename="../processeswidget.cpp" line="756"/>
         <source>Change priority (renice)...</source>
-        <translation>Změnit prioritu (renice)…</translation>
+        <translation>Alterar prioridade (renice)...</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="783"/>
         <source>Tasks: %1  Threads: %2</source>
-        <translation>Úlohy: %1  Vlákna: %2</translation>
+        <translation>Tarefas: %1  Threads: %2</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="867"/>
         <source>Send custom signal</source>
-        <translation>Odeslat vlastní signál</translation>
+        <translation>Enviar sinal personalizado</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="868"/>
         <source>Signal number:</source>
-        <translation>Číslo signálu:</translation>
+        <translation>Número do sinal:</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="884"/>
         <location filename="../processeswidget.cpp" line="890"/>
         <source>Open terminal failed</source>
-        <translation>Otevření terminálu se nezdařilo</translation>
+        <translation>Falha ao abrir o terminal</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="884"/>
         <source>No supported terminal emulator was found on this system.</source>
-        <translation>V systému nebyl nalezen žádný podporovaný emulátor terminálu.</translation>
+        <translation>Nenhum emulador de terminal compatível foi encontrado neste sistema.</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="890"/>
         <source>Failed to start terminal: %1</source>
-        <translation>Terminál se nepodařilo spustit: %1</translation>
+        <translation>Falha ao iniciar o terminal: %1</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="1057"/>
         <source>You are about to send signal %1 to process PID %2.
 
 Do you want to continue?</source>
-        <translation>Chystáte se odeslat signál %1 procesu s PID %2.
+        <translation>Você está prestes a enviar o sinal %1 para o processo PID %2.
 
-Chcete pokračovat?</translation>
+Deseja continuar?</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="1062"/>
@@ -1557,19 +1551,19 @@ This will affect all selected processes.
 PIDs: %3
 
 Do you want to continue?</source>
-        <translation>Chystáte se odeslat signál %1 celkem %2 vybraným procesům.
-Tato akce ovlivní všechny vybrané procesy.
+        <translation>Você está prestes a enviar o sinal %1 para %2 processos selecionados.
+Isso afetará todos os processos selecionados.
 
-PID: %3
+PIDs: %3
 
-Chcete pokračovat?</translation>
+Deseja continuar?</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="1086"/>
         <source>
 Target owners: %1</source>
         <translation>
-Vlastníci cílových procesů: %1</translation>
+Donos dos processos: %1</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="1087"/>
@@ -1578,32 +1572,32 @@ Vlastníci cílových procesů: %1</translation>
 Warning: one or more selected processes are owned by another user. This application is running without superuser privileges, so this signal will most likely be rejected and nothing will happen.</source>
         <translation>
 
-Varování: jeden nebo více vybraných procesů patří jinému uživateli. Aplikace běží bez oprávnění superuživatele, takže signál bude s největší pravděpodobností odmítnut a nic se nestane.</translation>
+Aviso: um ou mais processos selecionados pertencem a outro usuário. Este aplicativo está sendo executado sem privilégios de superusuário, então este sinal provavelmente será rejeitado e nada acontecerá.</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="1093"/>
         <source>Confirm Signal</source>
-        <translation>Potvrdit signál</translation>
+        <translation>Confirmar sinal</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="1113"/>
         <source>Signal failed</source>
-        <translation>Odeslání signálu se nezdařilo</translation>
+        <translation>Falha ao enviar sinal</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="1124"/>
         <source>Change priority</source>
-        <translation>Změnit prioritu</translation>
+        <translation>Alterar prioridade</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="1124"/>
         <source>Nice value (-20 = highest priority, 19 = lowest):</source>
-        <translation>Hodnota nice (-20 = nejvyšší priorita, 19 = nejnižší):</translation>
+        <translation>Valor nice (-20 = prioridade mais alta, 19 = mais baixa):</translation>
     </message>
     <message>
         <location filename="../processeswidget.cpp" line="1144"/>
         <source>Renice failed</source>
-        <translation>Změna priority se nezdařila</translation>
+        <translation>Falha no renice</translation>
     </message>
 </context>
 <context>
@@ -1649,126 +1643,126 @@ Varování: jeden nebo více vybraných procesů patří jinému uživateli. Apl
         <translation> b/s</translation>
     </message>
     <message>
-        <location filename="../os/process.cpp" line="65"/>
+        <location filename="../os/process.cpp" line="83"/>
         <source>Running</source>
-        <translation>Běží</translation>
+        <translation>Em execução</translation>
     </message>
     <message>
-        <location filename="../os/process.cpp" line="66"/>
+        <location filename="../os/process.cpp" line="84"/>
         <source>Sleeping</source>
-        <translation>Spí</translation>
+        <translation>Dormindo</translation>
     </message>
     <message>
-        <location filename="../os/process.cpp" line="67"/>
+        <location filename="../os/process.cpp" line="85"/>
         <source>Disk sleep</source>
-        <translation>Čeká na disk</translation>
+        <translation>Dormindo (disco)</translation>
     </message>
     <message>
-        <location filename="../os/process.cpp" line="68"/>
+        <location filename="../os/process.cpp" line="86"/>
         <source>Zombie</source>
-        <translation>Zombie</translation>
+        <translation>Zumbi</translation>
     </message>
     <message>
-        <location filename="../os/process.cpp" line="69"/>
+        <location filename="../os/process.cpp" line="87"/>
         <source>Stopped</source>
-        <translation>Zastaven</translation>
+        <translation>Parado</translation>
     </message>
     <message>
-        <location filename="../os/process.cpp" line="70"/>
+        <location filename="../os/process.cpp" line="88"/>
         <source>Tracing stop</source>
-        <translation>Zastaven trasováním</translation>
+        <translation>Parado (rastreamento)</translation>
     </message>
     <message>
-        <location filename="../os/process.cpp" line="71"/>
+        <location filename="../os/process.cpp" line="89"/>
         <source>Idle</source>
-        <translation>Nečinný</translation>
+        <translation>Ocioso</translation>
     </message>
     <message>
-        <location filename="../os/process.cpp" line="72"/>
+        <location filename="../os/process.cpp" line="90"/>
         <source>Dead</source>
-        <translation>Ukončen</translation>
+        <translation>Morto</translation>
     </message>
     <message>
         <location filename="../os/service.cpp" line="74"/>
         <source>Unable to query services via sd-bus or systemctl</source>
-        <translation>Služby nelze načíst pomocí sd-bus ani systemctl</translation>
+        <translation>Não foi possível consultar os serviços via sd-bus ou systemctl</translation>
     </message>
     <message>
         <location filename="../os/servicehelper.cpp" line="76"/>
         <source>libsystemd not found</source>
-        <translation>Knihovna libsystemd nebyla nalezena</translation>
+        <translation>libsystemd não encontrada</translation>
     </message>
     <message>
         <location filename="../os/servicehelper.cpp" line="98"/>
         <source>libsystemd missing sd-bus symbols</source>
-        <translation>V knihovně libsystemd chybějí symboly sd-bus</translation>
+        <translation>libsystemd sem os símbolos do sd-bus</translation>
     </message>
     <message>
         <location filename="../os/servicehelper.cpp" line="141"/>
         <location filename="../os/servicehelper.cpp" line="170"/>
         <source>systemctl not found</source>
-        <translation>Systemctl nebyl nalezen</translation>
+        <translation>systemctl não encontrado</translation>
     </message>
     <message>
         <location filename="../os/servicehelper.cpp" line="148"/>
         <source>systemd runtime directory not present</source>
-        <translation>Běhový adresář systemd není přítomen</translation>
+        <translation>Diretório de runtime do systemd ausente</translation>
     </message>
     <message>
         <location filename="../os/servicehelper.cpp" line="178"/>
         <source>Failed to start systemctl</source>
-        <translation>Systemctl se nepodařilo spustit</translation>
+        <translation>Falha ao iniciar o systemctl</translation>
     </message>
     <message>
         <location filename="../os/servicehelper.cpp" line="186"/>
         <source>systemctl timed out</source>
-        <translation>Vypršel časový limit systemctl</translation>
+        <translation>Tempo limite do systemctl esgotado</translation>
     </message>
     <message>
         <location filename="../os/servicehelper.cpp" line="215"/>
         <location filename="../os/servicehelper.cpp" line="396"/>
         <source>sd-bus open system failed (%1)</source>
-        <translation>Otevření systémové sběrnice sd-bus selhalo (%1)</translation>
+        <translation>Falha ao abrir o barramento do sistema via sd-bus (%1)</translation>
     </message>
     <message>
         <location filename="../os/servicehelper.cpp" line="230"/>
         <source>sd-bus ListUnits call failed (%1)</source>
-        <translation>Volání sd-bus ListUnits selhalo (%1)</translation>
+        <translation>Falha na chamada ListUnits do sd-bus (%1)</translation>
     </message>
     <message>
         <location filename="../os/servicehelper.cpp" line="241"/>
         <source>sd-bus decode failed (%1)</source>
-        <translation>Dekódování sd-bus selhalo (%1)</translation>
+        <translation>Falha na decodificação do sd-bus (%1)</translation>
     </message>
     <message>
         <location filename="../os/servicehelper.cpp" line="281"/>
         <source>sd-bus read row failed (%1/%2)</source>
-        <translation>Čtení řádku sd-bus selhalo (%1/%2)</translation>
+        <translation>Falha ao ler linha do sd-bus (%1/%2)</translation>
     </message>
     <message>
         <location filename="../os/servicehelper.cpp" line="308"/>
         <source>sd-bus iteration failed (%1)</source>
-        <translation>Iterace sd-bus selhala (%1)</translation>
+        <translation>Falha na iteração do sd-bus (%1)</translation>
     </message>
     <message>
         <location filename="../os/servicehelper.cpp" line="334"/>
         <source>Invalid service action</source>
-        <translation>Neplatná akce služby</translation>
+        <translation>Ação de serviço inválida</translation>
     </message>
     <message>
         <location filename="../os/servicehelper.cpp" line="375"/>
         <source>libsystemd missing interactive sd-bus symbols</source>
-        <translation>V knihovně libsystemd chybějí interaktivní symboly sd-bus</translation>
+        <translation>libsystemd sem os símbolos interativos do sd-bus</translation>
     </message>
     <message>
         <location filename="../os/servicehelper.cpp" line="392"/>
         <source>systemd D-Bus call %1 for %2 failed (%3)</source>
-        <translation>Volání systemd D-Bus %1 pro %2 selhalo (%3)</translation>
+        <translation>Falha na chamada D-Bus %1 do systemd para %2 (%3)</translation>
     </message>
     <message>
         <location filename="../os/servicehelper.cpp" line="416"/>
         <source>systemctl %1 %2 failed</source>
-        <translation>Příkaz systemctl %1 %2 selhal</translation>
+        <translation>Falha em systemctl %1 %2</translation>
     </message>
     <message>
         <location filename="../perf/sidepanelgroup.cpp" line="44"/>
@@ -1778,73 +1772,73 @@ Varování: jeden nebo více vybraných procesů patří jinému uživateli. Apl
     <message>
         <location filename="../perf/sidepanelgroup.cpp" line="45"/>
         <source>Memory</source>
-        <translation>Paměť</translation>
+        <translation>Memória</translation>
     </message>
     <message>
         <location filename="../perf/sidepanelgroup.cpp" line="46"/>
         <source>Swap</source>
-        <translation>Odkládací prostor</translation>
+        <translation>Swap</translation>
     </message>
     <message>
         <location filename="../perf/sidepanelgroup.cpp" line="47"/>
         <source>Disks</source>
-        <translation>Disky</translation>
+        <translation>Discos</translation>
     </message>
     <message>
         <location filename="../perf/sidepanelgroup.cpp" line="48"/>
         <source>NICs</source>
-        <translation>Síťová rozhraní</translation>
+        <translation>Placas de rede</translation>
     </message>
     <message>
         <location filename="../perf/sidepanelgroup.cpp" line="49"/>
         <source>GPUs</source>
-        <translation>GPU</translation>
+        <translation>GPUs</translation>
     </message>
     <message>
         <location filename="../system/network.cpp" line="66"/>
         <source>Network</source>
-        <translation>Síť</translation>
+        <translation>Rede</translation>
     </message>
     <message>
         <location filename="../system/storage.cpp" line="244"/>
         <source>Unknown device</source>
-        <translation>Neznámé zařízení</translation>
+        <translation>Dispositivo desconhecido</translation>
     </message>
     <message>
         <location filename="../system/storage.cpp" line="252"/>
         <source>Unknown</source>
-        <translation>Neznámý</translation>
+        <translation>Desconhecido</translation>
     </message>
     <message>
         <location filename="../ui/uihelper.cpp" line="156"/>
         <source>About TuxManager</source>
-        <translation>O aplikaci TuxManager</translation>
+        <translation>Sobre o TuxManager</translation>
     </message>
     <message>
         <location filename="../ui/uihelper.cpp" line="177"/>
         <source>Copy</source>
-        <translation>Kopírovat</translation>
+        <translation>Copiar</translation>
     </message>
     <message>
         <location filename="../ui/uihelper.cpp" line="193"/>
         <location filename="../ui/uihelper.cpp" line="284"/>
         <source>Copy graph</source>
-        <translation>Kopírovat graf</translation>
+        <translation>Copiar gráfico</translation>
     </message>
     <message>
         <location filename="../ui/uihelper.cpp" line="203"/>
         <source>Refresh interval</source>
-        <translation>Interval aktualizace</translation>
+        <translation>Intervalo de atualização</translation>
     </message>
     <message>
         <location filename="../ui/uihelper.cpp" line="232"/>
         <source>Paused</source>
-        <translation>Pozastaveno</translation>
+        <translation>Pausado</translation>
     </message>
     <message>
         <location filename="../ui/uihelper.cpp" line="250"/>
         <source>Graph time</source>
-        <translation>Časový rozsah grafu</translation>
+        <translation>Tempo do gráfico</translation>
     </message>
     <message>
         <location filename="../userswidget.cpp" line="57"/>
@@ -1854,7 +1848,7 @@ Varování: jeden nebo více vybraných procesů patří jinému uživateli. Apl
     <message>
         <location filename="../userswidget.cpp" line="67"/>
         <source>%1 (pid %2)</source>
-        <translation>%1 (PID %2)</translation>
+        <translation>%1 (pid %2)</translation>
     </message>
 </context>
 <context>
@@ -1862,12 +1856,12 @@ Varování: jeden nebo více vybraných procesů patří jinému uživateli. Apl
     <message>
         <location filename="../runtaskdialog.ui" line="14"/>
         <source>Run new task</source>
-        <translation>Spustit novou úlohu</translation>
+        <translation>Executar nova tarefa</translation>
     </message>
     <message>
         <location filename="../runtaskdialog.ui" line="22"/>
         <source>Open:</source>
-        <translation>Otevřít:</translation>
+        <translation>Abrir:</translation>
     </message>
     <message>
         <location filename="../runtaskdialog.ui" line="62"/>
@@ -1877,57 +1871,57 @@ Varování: jeden nebo více vybraných procesů patří jinému uživateli. Apl
     <message>
         <location filename="../runtaskdialog.ui" line="73"/>
         <source>Enter an executable name or path, with optional arguments</source>
-        <translation>Zadejte název nebo cestu ke spustitelnému souboru a volitelné argumenty</translation>
+        <translation>Digite o nome ou caminho de um executável, com argumentos opcionais</translation>
     </message>
     <message>
         <location filename="../runtaskdialog.cpp" line="95"/>
         <source>Run new task failed</source>
-        <translation>Spuštění nové úlohy se nezdařilo</translation>
+        <translation>Falha ao executar nova tarefa</translation>
     </message>
     <message>
         <location filename="../runtaskdialog.cpp" line="95"/>
         <source>Failed to start command.
 
 %1</source>
-        <translation>Příkaz se nepodařilo spustit.
+        <translation>Falha ao iniciar o comando.
 
 %1</translation>
     </message>
     <message>
         <location filename="../runtaskdialog.cpp" line="115"/>
         <source>Select executable</source>
-        <translation>Vybrat spustitelný soubor</translation>
+        <translation>Selecionar executável</translation>
     </message>
     <message>
         <location filename="../runtaskdialog.cpp" line="115"/>
         <source>All files (*)</source>
-        <translation>Všechny soubory (*)</translation>
+        <translation>Todos os arquivos (*)</translation>
     </message>
     <message>
         <location filename="../runtaskdialog.cpp" line="139"/>
         <location filename="../runtaskdialog.cpp" line="147"/>
         <source>Command is empty</source>
-        <translation>Příkaz je prázdný</translation>
+        <translation>O comando está vazio</translation>
     </message>
     <message>
         <location filename="../runtaskdialog.cpp" line="156"/>
         <source>Executable was not found: %1</source>
-        <translation>Spustitelný soubor nebyl nalezen: %1</translation>
+        <translation>Executável não encontrado: %1</translation>
     </message>
     <message>
         <location filename="../runtaskdialog.cpp" line="164"/>
         <source>Executable does not exist: %1</source>
-        <translation>Spustitelný soubor neexistuje: %1</translation>
+        <translation>O executável não existe: %1</translation>
     </message>
     <message>
         <location filename="../runtaskdialog.cpp" line="171"/>
         <source>File is not executable: %1</source>
-        <translation>Soubor není spustitelný: %1</translation>
+        <translation>O arquivo não é executável: %1</translation>
     </message>
     <message>
         <location filename="../runtaskdialog.cpp" line="181"/>
         <source>Failed to start executable: %1</source>
-        <translation>Spustitelný soubor se nepodařilo spustit: %1</translation>
+        <translation>Falha ao iniciar o executável: %1</translation>
     </message>
 </context>
 <context>
@@ -1935,130 +1929,130 @@ Varování: jeden nebo více vybraných procesů patří jinému uživateli. Apl
     <message>
         <location filename="../serviceswidget.ui" line="34"/>
         <source>Search:</source>
-        <translation>Hledat:</translation>
+        <translation>Pesquisar:</translation>
     </message>
     <message>
         <location filename="../serviceswidget.ui" line="41"/>
         <source>Filter services…</source>
-        <translation>Filtrovat služby…</translation>
+        <translation>Filtrar serviços…</translation>
     </message>
     <message>
         <location filename="../serviceswidget.ui" line="72"/>
         <source>systemd required</source>
-        <translation>Je vyžadován systemd</translation>
+        <translation>systemd necessário</translation>
     </message>
     <message>
         <location filename="../serviceswidget.ui" line="95"/>
         <source>Services: 0</source>
-        <translation>Služby: 0</translation>
+        <translation>Serviços: 0</translation>
     </message>
     <message>
         <location filename="../serviceswidget.cpp" line="181"/>
         <source>systemd required (%1)</source>
-        <translation>Je vyžadován systemd (%1)</translation>
+        <translation>systemd necessário (%1)</translation>
     </message>
     <message>
         <location filename="../serviceswidget.cpp" line="182"/>
         <location filename="../serviceswidget.cpp" line="188"/>
         <source>Services unavailable</source>
-        <translation>Služby nejsou dostupné</translation>
+        <translation>Serviços indisponíveis</translation>
     </message>
     <message>
         <location filename="../serviceswidget.cpp" line="187"/>
         <source>Failed to query services: %1</source>
-        <translation>Služby se nepodařilo načíst: %1</translation>
+        <translation>Falha ao consultar os serviços: %1</translation>
     </message>
     <message>
         <location filename="../serviceswidget.cpp" line="205"/>
         <source>Services: %1</source>
-        <translation>Služby: %1</translation>
+        <translation>Serviços: %1</translation>
     </message>
     <message>
         <location filename="../serviceswidget.cpp" line="253"/>
         <source>Copy</source>
-        <translation>Kopírovat</translation>
+        <translation>Copiar</translation>
     </message>
     <message>
         <location filename="../serviceswidget.cpp" line="255"/>
         <source>Entire row</source>
-        <translation>Celý řádek</translation>
+        <translation>Linha inteira</translation>
     </message>
     <message>
         <location filename="../serviceswidget.cpp" line="269"/>
         <source>Selected cell</source>
-        <translation>Vybraná buňka</translation>
+        <translation>Célula selecionada</translation>
     </message>
     <message>
         <location filename="../serviceswidget.cpp" line="278"/>
         <source>Start</source>
-        <translation>Spustit</translation>
+        <translation>Iniciar</translation>
     </message>
     <message>
         <location filename="../serviceswidget.cpp" line="282"/>
         <source>start</source>
-        <translation>spustit</translation>
+        <translation>iniciar</translation>
     </message>
     <message>
         <location filename="../serviceswidget.cpp" line="285"/>
         <source>Stop</source>
-        <translation>Zastavit</translation>
+        <translation>Parar</translation>
     </message>
     <message>
         <location filename="../serviceswidget.cpp" line="289"/>
         <source>stop</source>
-        <translation>zastavit</translation>
+        <translation>parar</translation>
     </message>
     <message>
         <location filename="../serviceswidget.cpp" line="292"/>
         <source>Restart</source>
-        <translation>Restartovat</translation>
+        <translation>Reiniciar</translation>
     </message>
     <message>
         <location filename="../serviceswidget.cpp" line="296"/>
         <source>restart</source>
-        <translation>restartovat</translation>
+        <translation>reiniciar</translation>
     </message>
     <message>
         <location filename="../serviceswidget.cpp" line="299"/>
         <source>Reload</source>
-        <translation>Znovu načíst</translation>
+        <translation>Recarregar</translation>
     </message>
     <message>
         <location filename="../serviceswidget.cpp" line="303"/>
         <source>reload</source>
-        <translation>znovu načíst</translation>
+        <translation>recarregar</translation>
     </message>
     <message>
         <location filename="../serviceswidget.cpp" line="306"/>
         <source>Try Restart</source>
-        <translation>Pokusit se restartovat</translation>
+        <translation>Tentar reiniciar</translation>
     </message>
     <message>
         <location filename="../serviceswidget.cpp" line="310"/>
         <source>try restart</source>
-        <translation>pokusit se restartovat</translation>
+        <translation>tentar reiniciar</translation>
     </message>
     <message>
         <location filename="../serviceswidget.cpp" line="313"/>
         <source>Reload Or Restart</source>
-        <translation>Znovu načíst nebo restartovat</translation>
+        <translation>Recarregar ou reiniciar</translation>
     </message>
     <message>
         <location filename="../serviceswidget.cpp" line="317"/>
         <source>reload or restart</source>
-        <translation>znovu načíst nebo restartovat</translation>
+        <translation>recarregar ou reiniciar</translation>
     </message>
     <message>
         <location filename="../serviceswidget.cpp" line="354"/>
         <source>Service action failed</source>
-        <translation>Akce služby se nezdařila</translation>
+        <translation>Falha na ação do serviço</translation>
     </message>
     <message>
         <location filename="../serviceswidget.cpp" line="354"/>
         <source>Failed to %1 service %2.
 
 %3</source>
-        <translation>Akce „%1“ se u služby %2 nezdařila.
+        <translation>Falha ao %1 o serviço %2.
 
 %3</translation>
     </message>
@@ -2068,22 +2062,22 @@ Varování: jeden nebo více vybraných procesů patří jinému uživateli. Apl
     <message>
         <location filename="../perf/sidepanelorderdialog.ui" line="14"/>
         <source>Side Panel Order</source>
-        <translation>Pořadí postranního panelu</translation>
+        <translation>Ordem do painel lateral</translation>
     </message>
     <message>
         <location filename="../perf/sidepanelorderdialog.ui" line="20"/>
         <source>Change the order of item groups in the Performance side panel.</source>
-        <translation>Změňte pořadí skupin položek v postranním panelu Výkon.</translation>
+        <translation>Altere a ordem dos grupos de itens no painel lateral de Desempenho.</translation>
     </message>
     <message>
         <location filename="../perf/sidepanelorderdialog.ui" line="41"/>
         <source>Move Up</source>
-        <translation>Posunout nahoru</translation>
+        <translation>Mover para cima</translation>
     </message>
     <message>
         <location filename="../perf/sidepanelorderdialog.ui" line="48"/>
         <source>Move Down</source>
-        <translation>Posunout dolů</translation>
+        <translation>Mover para baixo</translation>
     </message>
 </context>
 <context>
@@ -2096,7 +2090,7 @@ Varování: jeden nebo více vybraných procesů patří jinému uživateli. Apl
     <message>
         <location filename="../perf/swapdetailwidget.ui" line="37"/>
         <source>Swap</source>
-        <translation>Odkládací prostor</translation>
+        <translation>Swap</translation>
     </message>
     <message>
         <location filename="../perf/swapdetailwidget.ui" line="44"/>
@@ -2113,7 +2107,7 @@ Varování: jeden nebo více vybraných procesů patří jinému uživateli. Apl
     <message>
         <location filename="../perf/swapdetailwidget.ui" line="61"/>
         <source>Swap usage</source>
-        <translation>Využití odkládacího prostoru</translation>
+        <translation>Uso de swap</translation>
     </message>
     <message>
         <location filename="../perf/swapdetailwidget.ui" line="81"/>
@@ -2124,7 +2118,7 @@ Varování: jeden nebo více vybraných procesů patří jinému uživateli. Apl
         <location filename="../perf/swapdetailwidget.ui" line="108"/>
         <location filename="../perf/swapdetailwidget.ui" line="180"/>
         <source>60 seconds</source>
-        <translation>60 sekund</translation>
+        <translation>60 segundos</translation>
     </message>
     <message>
         <location filename="../perf/swapdetailwidget.ui" line="128"/>
@@ -2135,7 +2129,7 @@ Varování: jeden nebo více vybraných procesů patří jinému uživateli. Apl
     <message>
         <location filename="../perf/swapdetailwidget.ui" line="139"/>
         <source>Swap activity</source>
-        <translation>Aktivita odkládacího prostoru</translation>
+        <translation>Atividade de swap</translation>
     </message>
     <message>
         <location filename="../perf/swapdetailwidget.ui" line="159"/>
@@ -2147,34 +2141,34 @@ Varování: jeden nebo více vybraných procesů patří jinému uživateli. Apl
     <message>
         <location filename="../perf/swapdetailwidget.ui" line="217"/>
         <source>In use</source>
-        <translation>Použito</translation>
+        <translation>Em uso</translation>
     </message>
     <message>
         <location filename="../perf/swapdetailwidget.ui" line="231"/>
         <source>Free</source>
-        <translation>Volná</translation>
+        <translation>Livre</translation>
     </message>
     <message>
         <location filename="../perf/swapdetailwidget.ui" line="245"/>
         <location filename="../perf/swapdetailwidget.ui" line="255"/>
         <source>Swap in direction: disk -&gt; RAM</source>
-        <translation>Směr načítání ze swapu: disk -&gt; RAM</translation>
+        <translation>Direção do swap in: disco -&gt; RAM</translation>
     </message>
     <message>
         <location filename="../perf/swapdetailwidget.ui" line="248"/>
         <source>Swap in</source>
-        <translation>Načítání ze swapu</translation>
+        <translation>Swap in</translation>
     </message>
     <message>
         <location filename="../perf/swapdetailwidget.ui" line="265"/>
         <location filename="../perf/swapdetailwidget.ui" line="275"/>
         <source>Swap out direction: RAM -&gt; disk</source>
-        <translation>Směr zápisu do swapu: RAM -&gt; disk</translation>
+        <translation>Direção do swap out: RAM -&gt; disco</translation>
     </message>
     <message>
         <location filename="../perf/swapdetailwidget.ui" line="268"/>
         <source>Swap out</source>
-        <translation>Zápis do swapu</translation>
+        <translation>Swap out</translation>
     </message>
 </context>
 <context>
@@ -2183,7 +2177,7 @@ Varování: jeden nebo více vybraných procesů patří jinému uživateli. Apl
         <location filename="../userswidget.ui" line="42"/>
         <location filename="../userswidget.cpp" line="85"/>
         <source>User / Process</source>
-        <translation>Uživatel / proces</translation>
+        <translation>Usuário / Processo</translation>
     </message>
     <message>
         <location filename="../userswidget.ui" line="47"/>
@@ -2195,22 +2189,22 @@ Varování: jeden nebo více vybraných procesů patří jinému uživateli. Apl
         <location filename="../userswidget.ui" line="52"/>
         <location filename="../userswidget.cpp" line="85"/>
         <source>Memory</source>
-        <translation>Paměť</translation>
+        <translation>Memória</translation>
     </message>
     <message>
         <location filename="../userswidget.ui" line="60"/>
         <source>Logged in users: 0</source>
-        <translation>Přihlášení uživatelé: 0</translation>
+        <translation>Usuários conectados: 0</translation>
     </message>
     <message>
         <location filename="../userswidget.cpp" line="205"/>
         <source>Go to process</source>
-        <translation>Přejít na proces</translation>
+        <translation>Ir para o processo</translation>
     </message>
     <message>
         <location filename="../userswidget.cpp" line="395"/>
         <source>Logged in users: %1</source>
-        <translation>Přihlášení uživatelé: %1</translation>
+        <translation>Usuários conectados: %1</translation>
     </message>
 </context>
 </TS>

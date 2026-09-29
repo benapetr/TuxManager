@@ -20,6 +20,7 @@
 #define OS_PROCESS_H
 
 #include <QList>
+#include <QHash>
 #include <QMetaType>
 #include <QString>
 #include <sys/types.h>
@@ -72,6 +73,7 @@ namespace OS
             bool    IOTotalsAvailable { false }; ///< True when /proc/pid/io totals were read.
             bool    IORatesAvailable { false };  ///< True when a previous I/O sample exists.
             bool    IOPermissionDenied { false }; ///< True when I/O metrics were skipped due to permissions.
+            QString IconName;                 ///< Theme icon name or absolute icon path resolved by AppRegistry, empty for generic
 
             /// Load a snapshot of every running process from /proc.
             static QList<Process> LoadAll();
@@ -91,6 +93,11 @@ namespace OS
 
     bool operator<(const Process::Identity &lhs, const Process::Identity &rhs);
     bool operator==(const Process::Identity &lhs, const Process::Identity &rhs);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    size_t qHash(const Process::Identity &key, size_t seed = 0);
+#else
+    uint qHash(const Process::Identity &key, uint seed = 0);
+#endif
 } // namespace Os
 
 Q_DECLARE_METATYPE(OS::Process)

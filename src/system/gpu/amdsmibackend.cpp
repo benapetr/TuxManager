@@ -316,9 +316,9 @@ bool GpuAmdSmiBackend::Sample(std::vector<std::unique_ptr<GPU::GPUInfo>> &gpus)
             AmdSmiEngineUsage activity{};
             const bool hasActivity = pAmdSmiGetGpuActivity(processor, &activity) == AMDSMI_STATUS_SUCCESS;
 
-            int64_t temperatureMilliC = 0;
+            int64_t temperatureC = 0;
             const bool hasTemp = pAmdSmiGetTempMetric
-                                 && pAmdSmiGetTempMetric(processor, AMDSMI_TEMPERATURE_TYPE_EDGE, AMDSMI_TEMP_CURRENT, &temperatureMilliC) == AMDSMI_STATUS_SUCCESS;
+                                 && pAmdSmiGetTempMetric(processor, AMDSMI_TEMPERATURE_TYPE_EDGE, AMDSMI_TEMP_CURRENT, &temperatureC) == AMDSMI_STATUS_SUCCESS;
 
             AmdSmiPowerInfo powerInfo{};
             const bool hasPower = pAmdSmiGetPowerInfo(processor, &powerInfo) == AMDSMI_STATUS_SUCCESS;
@@ -335,7 +335,7 @@ bool GpuAmdSmiBackend::Sample(std::vector<std::unique_ptr<GPU::GPUInfo>> &gpus)
             gpu.DriverVersion = detectDriverVersionFromBdf(bdfString);
             gpu.Backend = QStringLiteral("AMD SMI");
             gpu.UtilPct = hasActivity ? qBound(0.0, static_cast<double>(activity.gfx_activity), 100.0) : 0.0;
-            gpu.TemperatureC = hasTemp ? static_cast<int>(temperatureMilliC / 1000) : -1;
+            gpu.TemperatureC = hasTemp ? static_cast<int>(temperatureC) : -1;
             gpu.CoreClockMHz = hasClock ? static_cast<int>(clkInfo.clk) : -1;
             gpu.PowerUsageW = hasPower ? static_cast<double>(powerInfo.average_socket_power) : -1.0;
             gpu.MemUsedMiB = hasVram ? static_cast<qint64>(vram.vram_used) : 0;

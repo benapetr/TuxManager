@@ -65,6 +65,7 @@ class Configuration : public QObject
         // ── Processes tab ─────────────────────────────────────────────────────────
         bool ShowKernelTasks     { true };  ///< Show kernel threads in the process list
         bool ShowOtherUsersProcs { true };  ///< Show processes of other users
+        bool ShowProcessIcons    { true };  ///< Show application icons in the process name column
         bool ProcessTreeView     { false }; ///< Processes tab: false=table, true=tree
         int  ProcessListSortColumn { 4 };   ///< ColCpu — column index to sort by
         int  ProcessListSortOrder  { 1 };   ///< Qt::DescendingOrder
