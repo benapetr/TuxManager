@@ -586,7 +586,7 @@ void AppRegistry::indexIconTheme()
                 if (!themes.contains(parent.trimmed()))
                     themes.append(parent.trimmed());
             }
-            add_names(theme_dir, QDirIterator::Subdirectories);
+            add_names(theme_dir, QDirIterator::Subdirectories | QDirIterator::FollowSymlinks);
         }
         if (in_resource && !on_disk)
             this->m_themeIndexComplete = false;
