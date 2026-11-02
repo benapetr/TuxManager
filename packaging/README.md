@@ -5,7 +5,7 @@ This directory contains Linux packaging scripts for Tux Manager.
 ## Supported targets
 
 - Debian/Ubuntu (`.deb`) via `package-deb.sh`
-- Fedora/RHEL/Alma/Rocky (`.rpm` + `.src.rpm`) via `package-rpm.sh`
+- Fedora/RHEL/Alma/Rocky/openSUSE (`.rpm` + `.src.rpm`) via `package-rpm.sh`
 - AppImage (`.AppImage`) via `package-appimage.sh`
 - Arch Linux (`.pkg.tar.*`) via `package-arch.sh`
 - Arch Linux / AUR metadata via `arch/PKGBUILD`, `.SRCINFO`, and `.github/workflows/build-arch-aur.yml`
@@ -20,24 +20,37 @@ This directory contains Linux packaging scripts for Tux Manager.
 Required build tools/packages:
 
 ```bash
-sudo apt-get install build-essential debhelper dpkg-dev pkg-config qt6-base-dev
+sudo apt-get install build-essential debhelper dpkg-dev pkg-config qt6-base-dev qt6-l10n-tools
 ```
 
 Notes:
-- The script accepts either `qmake6` or `qmake`.
-- Qt5 can also work if your distro provides it (`qtbase5-dev`).
+- On distributions without Qt6, install `qtbase5-dev qttools5-dev-tools` instead.
+- The script prefers `qmake6` when both Qt versions are installed.
 
 ### Fedora/RHEL family
 
 Required build tools/packages:
 
 ```bash
-sudo dnf install rpm-build rsync git pkgconf-pkg-config qt6-qtbase-devel
+sudo dnf install rpm-build rsync git pkgconf-pkg-config qt6-qtbase-devel qt6-linguist
 ```
 
 Notes:
-- The script can also build with Qt5 if only that is available (`qt5-qtbase-devel`).
+- The script can also build with Qt5 if `qt5-qtbase-devel` and `qt5-linguist` are installed.
 - The script uses `rpmbuild` and creates both binary RPM and source RPM.
+
+### openSUSE
+
+Required build tools/packages:
+
+```bash
+sudo zypper install rpm-build git gzip pkgconf-pkg-config \
+  qt6-base-common-devel qt6-core-devel qt6-gui-devel qt6-widgets-devel
+```
+
+Notes:
+- The same `package-rpm.sh` script detects openSUSE and uses its Qt 6 package names.
+- The script creates both a binary RPM and a source RPM.
 
 ### Flatpak
 
@@ -66,7 +79,7 @@ Required tools/packages:
 Download released appimages from all 3, put them into some directory and create symlinks with bare names, then add this folder to PATH variable
 
 ```bash
-sudo apt-get install build-essential pkg-config qt6-base-dev
+sudo apt-get install build-essential pkg-config qt6-base-dev qt6-l10n-tools
 linuxdeploy --version
 linuxdeploy-plugin-qt --help
 linuxdeploy-plugin-appimage --help
@@ -82,7 +95,7 @@ Notes:
 Required build tools/packages:
 
 ```bash
-sudo pacman -S --needed base-devel git qt6-base
+sudo pacman -S --needed base-devel git qt6-base qt6-tools
 ```
 
 Notes:
@@ -223,10 +236,12 @@ sudo dpkg -i packaging/output/tux-manager_*.deb
 sudo apt-get install -f
 ```
 
-### Fedora/RHEL family
+### Fedora/RHEL family and openSUSE
 
 ```bash
 sudo dnf install packaging/output/tux-manager-*.rpm
+# or, on openSUSE:
+sudo zypper install packaging/output/tux-manager-*.rpm
 ```
 
 ### Flatpak

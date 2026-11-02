@@ -45,7 +45,7 @@ class Storage
             qint64         CapacityBytes { 0 };
             qint64         FormattedBytes { 0 };
             bool           IsSystemDisk { false };
-            bool           HasPageFile { false };
+            bool           HasSwapDevice { false };
             HistoryBuffer ActiveHistory { TUX_MANAGER_HISTORY_SIZE };
             HistoryBuffer ReadHistory { TUX_MANAGER_HISTORY_SIZE };
             HistoryBuffer WriteHistory { TUX_MANAGER_HISTORY_SIZE };

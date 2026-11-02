@@ -13,6 +13,7 @@ SOURCES += \
     aboutdialog.cpp \
     colorschemedialog.cpp \
     colorscheme.cpp \
+    i18n.cpp \
     main.cpp \
     mainwindow.cpp \
     metrics.cpp \
@@ -38,6 +39,7 @@ SOURCES += \
     userswidget.cpp \
     serviceswidget.cpp \
     os/proc.cpp \
+    os/appregistry.cpp \
     os/process.cpp \
     os/processrefreshservice.cpp \
     os/processtreemodel.cpp \
@@ -68,6 +70,7 @@ HEADERS += \
     colorschemedialog.h \
     colorscheme.h \
     globals.h \
+    i18n.h \
     mainwindow.h \
     metrics.h \
     misc.h \
@@ -93,6 +96,7 @@ HEADERS += \
     userswidget.h \
     serviceswidget.h \
     os/proc.h \
+    os/appregistry.h \
     os/process.h \
     os/processrefreshservice.h \
     os/processtreemodel.h \
@@ -137,6 +141,17 @@ FORMS += \
 
 RESOURCES += \
     resources.qrc
+
+# ── Translations ──────────────────────────────────────────────────────────────
+# Qt Linguist machinery: the .ts files in TRANSLATIONS are compiled into .qm at
+# build time (lrelease) and embedded into the binary under :/i18n/. That keeps
+# the translations working no matter where the application is installed from.
+TRANSLATIONS += \
+    translations/tux-manager_zh_CN.ts \
+    translations/tux-manager_cs_CZ.ts \
+    translations/tux-manager_pt_BR.ts
+
+CONFIG += lrelease embed_translations
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

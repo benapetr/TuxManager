@@ -20,6 +20,7 @@
 #define PROCESSESWIDGET_H
 
 #include "os/processmodel.h"
+#include "os/appregistry.h"
 #include "os/processtreemodel.h"
 #include "os/processfilterproxy.h"
 #include "os/processrefreshservice.h"
@@ -69,6 +70,7 @@ class ProcessesWidget : public QWidget
         Ui::ProcessesWidget      *ui;
         OS::ProcessModel         *m_model;
         OS::ProcessTreeModel     *m_treeModel;
+        OS::AppRegistry          *m_appRegistry { nullptr };
         OS::ProcessFilterProxy   *m_proxy;
         QSortFilterProxyModel    *m_treeProxy;
         QTimer                   *m_refreshTimer;
@@ -108,6 +110,8 @@ class ProcessesWidget : public QWidget
         void openTerminal();
         void setShowKernelTasks(bool checked);
         void setShowOtherUsersProcesses(bool checked);
+        void setShowIcons(bool checked);
+        void applyIconSetting();
         void captureExpandedTreePids(const QModelIndex &parentProxy, QSet<pid_t> &expandedPids) const;
         void restoreExpandedTreePids(const QModelIndex &sourceParent, const QSet<pid_t> &expandedPids);
         void restoreTreeStateDeferred(const QSet<pid_t> &expandedPids, const QList<pid_t> &treeSelection, pid_t treeCurrentPid, int treeScroll);

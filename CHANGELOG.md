@@ -1,3 +1,17 @@
+# Next
+  * Added application icons to the process table and tree
+
+# 1.0.8
+  * Added localization support based on the system locale for:
+    * Simplified Chinese
+    * Czech
+  * Added shared, text/code and data/stack memory columns to the process table and tree
+    * Existing saved column layouts are migrated safely to the new column schema
+  * Improved consistency when switching between flat and tree process views
+  * Performance side panel context menu now follows the configured group order
+  * Added detection for guests running under Apple Virtualization
+  * Packaging support for openSUSE distro
+
 # 1.0.7
   * Performance side panel is now resizable
   * Implemented compressed memory support

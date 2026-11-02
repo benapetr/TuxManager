@@ -76,7 +76,8 @@ if command -v dpkg-query >/dev/null 2>&1; then
     require_pkg debhelper
     require_pkg dpkg-dev
     require_pkg pkg-config
-    require_one_of qtbase5-dev qt6-base-dev
+    require_one_of qt6-base-dev qtbase5-dev
+    require_one_of qt6-l10n-tools qttools5-dev-tools
 
     if [ ${#missing[@]} -gt 0 ] || [ ${#missing_groups[@]} -gt 0 ]; then
         echo "Missing build dependencies detected."
@@ -160,21 +161,26 @@ else
     DEB_VERSION="${APP_VERSION}"
 fi
 
-BACKUP_CHANGELOG=""
-if [ -f "$CHANGELOG_PATH" ]; then
-    BACKUP_CHANGELOG=$(mktemp)
-    cp "$CHANGELOG_PATH" "$BACKUP_CHANGELOG"
+if [ ! -f "$CHANGELOG_PATH" ]; then
+    echo "Error: Debian changelog not found at $CHANGELOG_PATH" >&2
+    exit 1
 fi
+BACKUP_CHANGELOG=$(mktemp)
+cp "$CHANGELOG_PATH" "$BACKUP_CHANGELOG"
 
 trap 'if [ -n "$BACKUP_CHANGELOG" ] && [ -f "$BACKUP_CHANGELOG" ]; then cp "$BACKUP_CHANGELOG" "$CHANGELOG_PATH"; rm -f "$BACKUP_CHANGELOG"; fi' EXIT
 
-cat > "$CHANGELOG_PATH" <<EOF
+{
+cat <<EOF
 ${APP_NAME} (${DEB_VERSION}) unstable; urgency=medium
 
   * Automated build.
 
  -- ${MAINTAINER}  $(date -R)
+
 EOF
+cat "$BACKUP_CHANGELOG"
+} > "$CHANGELOG_PATH"
 
 echo ""
 echo "Step 1: Building package with debhelper..."

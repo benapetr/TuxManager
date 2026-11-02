@@ -86,7 +86,7 @@ DiskDetailWidget::DiskDetailWidget(QWidget *parent) : QWidget(parent), ui(new Ui
     UIHelper::EnableCopyLabelContextMenu(this->ui->writeValueLabel);
     UIHelper::EnableCopyLabelContextMenu(this->ui->systemDiskValueLabel);
     UIHelper::EnableCopyLabelContextMenu(this->ui->deviceValueLabel);
-    UIHelper::EnableCopyLabelContextMenu(this->ui->pageFileValueLabel);
+    UIHelper::EnableCopyLabelContextMenu(this->ui->swapDeviceValueLabel);
     UIHelper::EnableCopyLabelContextMenu(this->ui->typeValueLabel);
 }
 
@@ -164,7 +164,7 @@ void DiskDetailWidget::onUpdated()
                                            ? Misc::FormatBytes(static_cast<quint64>(qMax<qint64>(0, disk.FormattedBytes)), 1)
                                            : tr("-"));
     this->ui->systemDiskValueLabel->setText(disk.IsSystemDisk ? tr("Yes") : tr("No"));
-    this->ui->pageFileValueLabel->setText(disk.HasPageFile ? tr("Yes") : tr("No"));
+    this->ui->swapDeviceValueLabel->setText(disk.HasSwapDevice ? tr("Yes") : tr("No"));
 
     this->ui->transferGraphWidget->SetMax(disk.MaxTransferBps);
     this->ui->activeGraphWidget->Tick();

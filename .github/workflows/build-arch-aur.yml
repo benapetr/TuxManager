@@ -27,7 +27,8 @@ jobs:
         run: |
           pacman -Syu --noconfirm --needed \
             git \
-            qt6-base
+            qt6-base \
+            qt6-tools
 
       - name: Checkout
         uses: actions/checkout@v4

@@ -13,6 +13,10 @@ Makefile
 .qmake.stash
 .qmake.cache
 
+# lrelease-generated compiled translations (embedded into the binary at build)
+src/.qm/
+*.qm
+
 # Build directories
 build/
 debug/

@@ -25,6 +25,7 @@
 #include "ui_processeswidget.h"
 #include "ui/uihelper.h"
 
+#include <QAction>
 #include <QClipboard>
 #include <QGuiApplication>
 #include <QHeaderView>
@@ -158,6 +159,13 @@ bool ProcessesWidget::selectProcessInTree(pid_t pid)
 
 void ProcessesWidget::setupTable()
 {
+    static constexpr int PROCESS_COLUMN_SCHEMA_VERSION = 2;
+    const int savedProcessColumnSchemaVersion = CFG->ProcessColumnSchemaVersion;
+    const bool resetProcessHeaderState = savedProcessColumnSchemaVersion < 1;
+    const bool migrateProcessNameFirstLayout = savedProcessColumnSchemaVersion < 2;
+    if (resetProcessHeaderState && CFG->ProcessListSortColumn > OS::ProcessModel::ColMemVirt)
+        CFG->ProcessListSortColumn += 3;
+
     this->m_proxy->setSourceModel(this->m_model);
     this->m_treeProxy->setSourceModel(this->m_treeModel);
     this->m_treeProxy->setSortRole(Qt::UserRole);
@@ -174,6 +182,9 @@ void ProcessesWidget::setupTable()
 
     QTableView *tv = this->ui->tableView;
     this->m_treeView = new QTreeView(this);
+    tv->setIconSize(QSize(16, 16));
+    this->m_treeView->setIconSize(QSize(16, 16));
+    this->applyIconSetting();
 
     if (QVBoxLayout *vl = qobject_cast<QVBoxLayout *>(this->layout()))
     {
@@ -222,6 +233,9 @@ void ProcessesWidget::setupTable()
     tv->setColumnWidth(OS::ProcessModel::ColCpu,      65);
     tv->setColumnWidth(OS::ProcessModel::ColMemRss,   80);
     tv->setColumnWidth(OS::ProcessModel::ColMemVirt,  80);
+    tv->setColumnWidth(OS::ProcessModel::ColMemShared, 80);
+    tv->setColumnWidth(OS::ProcessModel::ColMemText,  80);
+    tv->setColumnWidth(OS::ProcessModel::ColMemData,  80);
     tv->setColumnWidth(OS::ProcessModel::ColIoReads,  90);
     tv->setColumnWidth(OS::ProcessModel::ColIoWrites, 90);
     tv->setColumnWidth(OS::ProcessModel::ColIoReadsPerSec, 100);
@@ -229,18 +243,26 @@ void ProcessesWidget::setupTable()
     tv->setColumnWidth(OS::ProcessModel::ColThreads,  65);
     tv->setColumnWidth(OS::ProcessModel::ColPriority, 65);
     tv->setColumnWidth(OS::ProcessModel::ColNice,     50);
-
     // Hide less-common columns by default
     hv->hideSection(OS::ProcessModel::ColMemVirt);
+    hv->hideSection(OS::ProcessModel::ColMemShared);
+    hv->hideSection(OS::ProcessModel::ColMemText);
+    hv->hideSection(OS::ProcessModel::ColMemData);
     hv->hideSection(OS::ProcessModel::ColPriority);
     hv->hideSection(OS::ProcessModel::ColNice);
     hv->hideSection(OS::ProcessModel::ColIoReads);
     hv->hideSection(OS::ProcessModel::ColIoWrites);
     hv->hideSection(OS::ProcessModel::ColIoReadsPerSec);
     hv->hideSection(OS::ProcessModel::ColIoWritesPerSec);
-    if (!CFG->ProcessListHeaderState.isEmpty())
+    if (!resetProcessHeaderState && !CFG->ProcessListHeaderState.isEmpty())
     {
         hv->restoreState(CFG->ProcessListHeaderState);
+    }
+    if (migrateProcessNameFirstLayout)
+    {
+        // Through 1.0.8, PID was the first column. Migrate it once so names and icons
+        // lead both process views, then preserve any column order chosen by the user.
+        hv->moveSection(hv->visualIndex(OS::ProcessModel::ColName), 0);
     }
     this->m_tableHeaderPersistenceEnabled = true;
 
@@ -253,6 +275,8 @@ void ProcessesWidget::setupTable()
     this->m_treeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     this->m_treeView->setContextMenuPolicy(Qt::CustomContextMenu);
     this->m_treeView->setRootIsDecorated(true);
+    // In the past we had PID for the original tree column, it looked odd since icons were added so now we show the hierarchy beside names and icons instead.
+    this->m_treeView->setTreePosition(OS::ProcessTreeModel::ColName);
     this->m_treeView->setItemsExpandable(true);
     this->m_treeView->setAnimated(false);
     this->m_treeView->setUniformRowHeights(true);
@@ -271,12 +295,15 @@ void ProcessesWidget::setupTable()
     });
     connect(treeHeader, &QHeaderView::sectionMoved, this, [this]() { this->saveTreeHeaderState(); });
     connect(treeHeader, &QHeaderView::sectionResized, this, [this]() { this->saveTreeHeaderState(); });
-    this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColName, 160);
+    this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColName, 220);
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColUser, 90);
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColState, 90);
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColCpu, 65);
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColMemRss, 80);
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColMemVirt, 80);
+    this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColMemShared, 80);
+    this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColMemText, 80);
+    this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColMemData, 80);
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColIoReads, 90);
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColIoWrites, 90);
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColIoReadsPerSec, 100);
@@ -285,22 +312,42 @@ void ProcessesWidget::setupTable()
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColPriority, 65);
     this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColNice, 50);
     this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColMemVirt, true);
+    this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColMemShared, true);
+    this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColMemText, true);
+    this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColMemData, true);
     this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColPriority, true);
     this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColNice, true);
     this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColIoReads, true);
     this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColIoWrites, true);
     this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColIoReadsPerSec, true);
     this->m_treeView->setColumnHidden(OS::ProcessTreeModel::ColIoWritesPerSec, true);
-    connect(this->m_treeView, &QTreeView::expanded, this, [this]() { this->m_treeView->resizeColumnToContents(OS::ProcessTreeModel::ColPid); });
-    connect(this->m_treeView, &QTreeView::collapsed, this, [this]() { this->m_treeView->resizeColumnToContents(OS::ProcessTreeModel::ColPid); });
-    if (!CFG->ProcessTreeHeaderState.isEmpty())
+    connect(this->m_treeView, &QTreeView::expanded, this, [this]() { this->m_treeView->resizeColumnToContents(OS::ProcessTreeModel::ColName); });
+    connect(this->m_treeView, &QTreeView::collapsed, this, [this]() { this->m_treeView->resizeColumnToContents(OS::ProcessTreeModel::ColName); });
+    if (!resetProcessHeaderState && !CFG->ProcessTreeHeaderState.isEmpty())
     {
         treeHeader->restoreState(CFG->ProcessTreeHeaderState);
     }
-    treeHeader->setSectionResizeMode(OS::ProcessTreeModel::ColPid, QHeaderView::Fixed);
+    if (migrateProcessNameFirstLayout)
+        treeHeader->moveSection(treeHeader->visualIndex(OS::ProcessTreeModel::ColName), 0);
+    this->m_treeView->setColumnWidth(OS::ProcessTreeModel::ColPid, 65);
     this->syncAllProcessColumnVisibility();
     this->m_treeHeaderPersistenceEnabled = true;
+    if (savedProcessColumnSchemaVersion < PROCESS_COLUMN_SCHEMA_VERSION)
+    {
+        CFG->ProcessColumnSchemaVersion = PROCESS_COLUMN_SCHEMA_VERSION;
+        this->saveTableHeaderState();
+        this->saveTreeHeaderState();
+    }
     connect(this->m_treeView, &QTreeView::customContextMenuRequested, this, &ProcessesWidget::onTreeContextMenu);
+
+    // Del keyboard shortcut to terminate process
+    QAction *terminate_action = new QAction(tr("Terminate  (SIGTERM)"), this);
+    terminate_action->setShortcut(QKeySequence::Delete);
+    terminate_action->setShortcutContext(Qt::WidgetShortcut);
+    connect(terminate_action, &QAction::triggered, this, &ProcessesWidget::terminateSelectedProcesses);
+    tv->addAction(terminate_action);
+    this->m_treeView->addAction(terminate_action);
+
     this->updateIOMetricsEnabledState(false);
 
     this->setTreeViewMode(CFG->ProcessTreeView);
@@ -314,7 +361,8 @@ void ProcessesWidget::setTreeViewMode(bool enabled)
     if (enabled)
     {
         this->m_treeModel->SetProcesses(this->m_lastProcessSnapshot.isEmpty() ? this->m_model->GetProcesses() : this->m_lastProcessSnapshot);
-        this->m_treeView->resizeColumnToContents(OS::ProcessTreeModel::ColPid);
+        if (this->m_treeModel->rowCount() > 0)
+            this->m_treeView->resizeColumnToContents(OS::ProcessTreeModel::ColName);
     }
 
     if (!this->m_treeView || !this->ui->tableView)
@@ -432,6 +480,8 @@ void ProcessesWidget::onRefreshFinished(int consumer, quint64 token, const QList
             treeScroll = sb->value();
     }
     this->m_lastProcessSnapshot = processes;
+    if (this->m_appRegistry)
+        this->m_appRegistry->Annotate(this->m_lastProcessSnapshot);
     this->m_model->SetProcesses(this->m_lastProcessSnapshot);
 
     if (this->m_treeViewMode)
@@ -623,6 +673,11 @@ void ProcessesWidget::onTableContextMenu(const QPoint &pos)
     otherUsersAct->setChecked(this->m_proxy->ShowOtherUsersProcs);
     connect(otherUsersAct, &QAction::toggled, this, &ProcessesWidget::setShowOtherUsersProcesses);
 
+    QAction *iconsAct = viewMenu->addAction(tr("Show icons"));
+    iconsAct->setCheckable(true);
+    iconsAct->setChecked(CFG->ShowProcessIcons);
+    connect(iconsAct, &QAction::toggled, this, &ProcessesWidget::setShowIcons);
+
     viewMenu->addSeparator();
     QAction *tableModeAct = viewMenu->addAction(tr("Table view"));
     tableModeAct->setCheckable(true);
@@ -667,6 +722,8 @@ void ProcessesWidget::onTableContextMenu(const QPoint &pos)
     menu.addSeparator();
     QAction *termAction = menu.addAction(tr("Terminate  (SIGTERM)"));
     termAction->setEnabled(hasSelection);
+    termAction->setShortcut(QKeySequence::Delete);
+    termAction->setShortcutVisibleInContextMenu(true);
     connect(termAction, &QAction::triggered, this, &ProcessesWidget::terminateSelectedProcesses);
 
     QAction *killAction = menu.addAction(tr("Kill  (SIGKILL)"));
@@ -708,6 +765,11 @@ void ProcessesWidget::onTreeContextMenu(const QPoint &pos)
     otherUsersAct->setChecked(this->m_proxy->ShowOtherUsersProcs);
     connect(otherUsersAct, &QAction::toggled, this, &ProcessesWidget::setShowOtherUsersProcesses);
 
+    QAction *iconsAct = viewMenu->addAction(tr("Show icons"));
+    iconsAct->setCheckable(true);
+    iconsAct->setChecked(CFG->ShowProcessIcons);
+    connect(iconsAct, &QAction::toggled, this, &ProcessesWidget::setShowIcons);
+
     viewMenu->addSeparator();
     QAction *tableModeAct = viewMenu->addAction(tr("Table view"));
     tableModeAct->setCheckable(true);
@@ -724,6 +786,8 @@ void ProcessesWidget::onTreeContextMenu(const QPoint &pos)
     menu.addSeparator();
     QAction *termAction = menu.addAction(tr("Terminate  (SIGTERM)"));
     termAction->setEnabled(hasSelection);
+    termAction->setShortcut(QKeySequence::Delete);
+    termAction->setShortcutVisibleInContextMenu(true);
     connect(termAction, &QAction::triggered, this, &ProcessesWidget::terminateSelectedProcesses);
 
     QAction *killAction = menu.addAction(tr("Kill  (SIGKILL)"));
@@ -890,6 +954,32 @@ void ProcessesWidget::setShowOtherUsersProcesses(bool checked)
     this->m_proxy->ApplyFilters();
     this->onTimerTick();
     LOG_DEBUG(QString("ShowOtherUsersProcs = %1").arg(checked));
+}
+
+void ProcessesWidget::setShowIcons(bool checked)
+{
+    CFG->ShowProcessIcons = checked;
+    this->applyIconSetting();
+    this->onTimerTick();
+    LOG_DEBUG(QString("ShowProcessIcons = %1").arg(checked));
+}
+
+// Creates or drops the registry according to the setting and points both models at it.
+void ProcessesWidget::applyIconSetting()
+{
+    if (CFG->ShowProcessIcons && !this->m_appRegistry)
+    {
+        this->m_appRegistry = new OS::AppRegistry(this);
+    } else if (!CFG->ShowProcessIcons && this->m_appRegistry)
+    {
+        delete this->m_appRegistry;
+        this->m_appRegistry = nullptr;
+    }
+    this->m_model->SetAppRegistry(this->m_appRegistry);
+    this->m_treeModel->SetAppRegistry(this->m_appRegistry);
+    // Rows whose data did not change emit no dataChanged, so repaint to add or drop their icons.
+    this->ui->tableView->viewport()->update();
+    this->m_treeView->viewport()->update();
 }
 
 void ProcessesWidget::captureExpandedTreePids(const QModelIndex &parentProxy, QSet<pid_t> &expandedPids) const

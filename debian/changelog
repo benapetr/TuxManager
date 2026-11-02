@@ -1,3 +1,11 @@
+tux-manager (1.0.8) unstable; urgency=medium
+
+  * Add multilingual UI support and Simplified Chinese translations
+  * Improve process view and performance tab
+  * Add Intel GPU telemetry fallbacks and openSUSE RPM packaging support
+
+ -- Petr Bena <petr@bena.rocks>  Sun, 20 Sep 2026 12:00:00 +0200
+
 tux-manager (1.0.7) unstable; urgency=medium
 
   * Performance side panel is now resizable

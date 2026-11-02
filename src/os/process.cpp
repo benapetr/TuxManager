@@ -21,6 +21,7 @@
 #include <QDir>
 #include <QFile>
 #include <QHash>
+#include <QObject>
 
 #include <pwd.h>
 #include <sys/stat.h>
@@ -61,14 +62,14 @@ QString Process::GetStateString(char state)
 {
     switch (state)
     {
-        case 'R': return "Running";
-        case 'S': return "Sleeping";
-        case 'D': return "Disk sleep";
-        case 'Z': return "Zombie";
-        case 'T': return "Stopped";
-        case 't': return "Tracing stop";
-        case 'I': return "Idle";
-        case 'X': return "Dead";
+        case 'R': return QObject::tr("Running");
+        case 'S': return QObject::tr("Sleeping");
+        case 'D': return QObject::tr("Disk sleep");
+        case 'Z': return QObject::tr("Zombie");
+        case 'T': return QObject::tr("Stopped");
+        case 't': return QObject::tr("Tracing stop");
+        case 'I': return QObject::tr("Idle");
+        case 'X': return QObject::tr("Dead");
         default:  return QString(state);
     }
 }
@@ -88,6 +89,15 @@ bool OS::operator<(const Process::Identity &lhs, const Process::Identity &rhs)
 bool OS::operator==(const Process::Identity &lhs, const Process::Identity &rhs)
 {
     return lhs.PID == rhs.PID && lhs.StartTimeTicks == rhs.StartTimeTicks;
+}
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+size_t OS::qHash(const Process::Identity &key, size_t seed)
+#else
+uint OS::qHash(const Process::Identity &key, uint seed)
+#endif
+{
+    return ::qHash(key.StartTimeTicks, ::qHash(static_cast<quint32>(key.PID), seed));
 }
 
 // ── Private: load a single process ───────────────────────────────────────────
@@ -154,6 +164,26 @@ bool Process::loadOneStatAndUid(pid_t pid, Process &out)
     }
 
     return true;
+}
+
+void Process::loadStatm(Process &proc)
+{
+    QFile statmFile(QString("/proc/%1/statm").arg(proc.PID));
+    if (!statmFile.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    const QList<QByteArray> fields = statmFile.readAll().trimmed().split(' ');
+    statmFile.close();
+
+    if (fields.size() < 6)
+        return;
+
+    const quint64 pageKb = static_cast<quint64>(cachedPageSize()) / 1024ULL;
+    proc.vmSizeKb = fields.at(0).toULongLong() * pageKb;
+    proc.VMRssKb  = fields.at(1).toULongLong() * pageKb;
+    proc.SharedKb = fields.at(2).toULongLong() * pageKb;
+    proc.TextKb   = fields.at(3).toULongLong() * pageKb;
+    proc.DataKb   = fields.at(5).toULongLong() * pageKb;
 }
 
 bool Process::loadIO(Process &proc)
@@ -259,6 +289,8 @@ QList<Process> Process::LoadAll(const LoadOptions &options)
             continue;
         if (!options.IncludeOtherUsers && proc.UID != options.MyUID)
             continue;
+
+        loadStatm(proc);
 
         if (options.CollectIOMetrics)
         {

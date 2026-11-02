@@ -27,11 +27,14 @@ A Linux Task Manager alternative built with Qt6, inspired by the Windows Task Ma
 ### Debian / Ubuntu / Fedora / EL derivatives (Rocky/Alma/OL)
 Use prebuilt packages that can be downloaded from [releases](https://github.com/benapetr/TuxManager/releases)
 
-### AUR
-Use an AUR helper like paru or yay:
+### Arch Linux
+Install from the official repositories:
 ```bash
-yay -S tuxmanager
+sudo pacman -S tuxmanager
 ```
+
+### Nixpkgs
+The package is available as `tux-manager` in the unstable channels and will be available in the `nixos-26.11` stable channel and later.
 
 ### Nix flake
 Add the following to your `flake.nix`:
@@ -42,7 +45,7 @@ inputs.tuxManager.inputs.nixpkgs.follows = "nixpkgs"; # optional, deduplicates d
 You can then access the package at: `inputs.tuxManager.packages.${pkgs.stdenv.hostPlatform.system}.default`
 
 ### Others
-You can use an AppImage that can be downloaded from releases or just [build it](#building) yourself.
+You can use an AppImage that can be downloaded from [releases](https://github.com/benapetr/TuxManager/releases) or just [build it](#building) yourself.
 
 ## Building
 
@@ -55,6 +58,22 @@ qmake6 ../src
 make -j$(nproc)
 ./tux-manager
 ```
+
+## Translating
+
+To test a different UI locale without changing the system settings, override
+the process locale when launching the application:
+
+```bash
+LC_ALL=zh_CN.UTF-8 ./tux-manager  # Simplified Chinese
+LC_ALL=cs_CZ.UTF-8 ./tux-manager  # Czech
+LC_ALL=pt_BR.UTF-8 ./tux-manager  # Brazilian Portuguese
+LC_ALL=C ./tux-manager            # Built-in English
+```
+
+The requested locale may need to be generated or installed on the host system.
+
+**Important note regarding AI-assisted translations:** Please do NOT submit translations generated "blindly" by AI without review by a native speaker of the language.
 
 ## Core philosophy and goals of this project
 

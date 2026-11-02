@@ -17,6 +17,8 @@
  */
 
 #include "processtreemodel.h"
+
+#include "appregistry.h"
 #include "../misc.h"
 using namespace OS;
 
@@ -84,6 +86,13 @@ QVariant ProcessTreeModel::data(const QModelIndex &index, int role) const
         return {};
     const Process &proc = node->process;
 
+    if (role == Qt::DecorationRole)
+    {
+        if (index.column() == ColName && this->m_appRegistry)
+            return this->m_appRegistry->IconFor(proc.IconName);
+        return {};
+    }
+
     if (role == Qt::DisplayRole)
     {
         switch (static_cast<Column>(index.column()))
@@ -95,6 +104,9 @@ QVariant ProcessTreeModel::data(const QModelIndex &index, int role) const
             case ColCpu:      return QString::number(proc.CPUPercent, 'f', 1) + " %";
             case ColMemRss:   return Misc::FormatKiB(proc.VMRssKb, 0);
             case ColMemVirt:  return Misc::FormatKiB(proc.vmSizeKb, 0);
+            case ColMemShared:return Misc::FormatKiB(proc.SharedKb, 0);
+            case ColMemText:  return Misc::FormatKiB(proc.TextKb, 0);
+            case ColMemData:  return Misc::FormatKiB(proc.DataKb, 0);
             case ColIoReads:  return proc.IOTotalsAvailable ? Misc::FormatBytes(proc.IOReadBytes, 0) : QString("?");
             case ColIoWrites: return proc.IOTotalsAvailable ? Misc::FormatBytes(proc.IOWriteBytes, 0) : QString("?");
             case ColIoReadsPerSec:
@@ -121,6 +133,9 @@ QVariant ProcessTreeModel::data(const QModelIndex &index, int role) const
             case ColCpu:      return proc.CPUPercent;
             case ColMemRss:   return static_cast<qulonglong>(proc.VMRssKb);
             case ColMemVirt:  return static_cast<qulonglong>(proc.vmSizeKb);
+            case ColMemShared:return static_cast<qulonglong>(proc.SharedKb);
+            case ColMemText:  return static_cast<qulonglong>(proc.TextKb);
+            case ColMemData:  return static_cast<qulonglong>(proc.DataKb);
             case ColIoReads:
                 return proc.IOTotalsAvailable
                        ? QVariant::fromValue(static_cast<qlonglong>(proc.IOReadBytes))
@@ -151,6 +166,9 @@ QVariant ProcessTreeModel::data(const QModelIndex &index, int role) const
             case ColCpu:
             case ColMemRss:
             case ColMemVirt:
+            case ColMemShared:
+            case ColMemText:
+            case ColMemData:
             case ColIoReads:
             case ColIoWrites:
             case ColIoReadsPerSec:
@@ -229,21 +247,24 @@ QString ProcessTreeModel::columnHeader(Column col)
 {
     switch (col)
     {
-        case ColPid:      return "PID";
-        case ColName:     return "Name";
-        case ColUser:     return "User";
-        case ColState:    return "State";
-        case ColCpu:      return "CPU %";
-        case ColMemRss:   return "MEM RES";
-        case ColMemVirt:  return "MEM VIRT";
-        case ColIoReads:  return "IO Reads";
-        case ColIoWrites: return "IO Writes";
-        case ColIoReadsPerSec: return "IO Read/s";
-        case ColIoWritesPerSec:return "IO Write/s";
-        case ColThreads:  return "Threads";
-        case ColPriority: return "Priority";
-        case ColNice:     return "Nice";
-        case ColCmdline:  return "Command";
+        case ColPid:      return tr("PID");
+        case ColName:     return tr("Name");
+        case ColUser:     return tr("User");
+        case ColState:    return tr("State");
+        case ColCpu:      return tr("CPU %");
+        case ColMemRss:   return tr("MEM RES");
+        case ColMemVirt:  return tr("MEM VIRT");
+        case ColMemShared:return tr("MEM SHR");
+        case ColMemText:  return tr("MEM TEXT");
+        case ColMemData:  return tr("MEM DATA");
+        case ColIoReads:  return tr("IO Reads");
+        case ColIoWrites: return tr("IO Writes");
+        case ColIoReadsPerSec: return tr("IO Read/s");
+        case ColIoWritesPerSec:return tr("IO Write/s");
+        case ColThreads:  return tr("Threads");
+        case ColPriority: return tr("Priority");
+        case ColNice:     return tr("Nice");
+        case ColCmdline:  return tr("Command");
         default:          return {};
     }
 }

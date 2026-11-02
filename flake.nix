@@ -22,13 +22,18 @@
 
         packages.default = pkgs.stdenv.mkDerivation {
             pname = "tux-manager";
-            version = "1.0.7";
+            version = "1.0.8";
             src = ./.;
             
-            nativeBuildInputs = with pkgs.kdePackages; [ qmake wrapQtAppsHook ];
+            nativeBuildInputs = with pkgs.kdePackages; [ qmake qttools wrapQtAppsHook ];
             buildInputs = with pkgs.kdePackages; [ qtbase ];
 
-            configurePhase = "qmake6 $src/src";
+            # qmake's qtPrepareTool() hardcodes tool lookups to qtbase's own store
+            # path at mkspecs-generation time, but nixpkgs ships lrelease in
+            # kdePackages.qttools instead. Point it at the real binary explicitly.
+            configurePhase = ''
+              qmake6 $src/src "QT_TOOL.lrelease.binary=${pkgs.kdePackages.qttools}/bin/lrelease"
+            '';
             buildPhase = "make -j$NIX_BUILD_CORES";
 
             installPhase = ''
