@@ -30,6 +30,8 @@
 #include <QEnterEvent>
 #endif
 
+#include <functional>
+
 using namespace Perf;
 
 SidePanelItem::SidePanelItem(const QString &title, QWidget *parent) : QWidget(parent), m_title(title), m_graph(new GraphWidget(this))
@@ -83,6 +85,58 @@ void SidePanelItem::SetGraphGridEnabled(bool enabled)
 
 // ── Paint ─────────────────────────────────────────────────────────────────────
 
+/// Runs the painting code in the passed closure and returns whether something actually got painted or not
+bool didPaint(
+    QPainter *target,
+    const QRect &rect,
+    const std::function<void(QPainter *)> &fn)
+{
+    if (!target || !target->isActive() || rect.isEmpty() || !fn)
+        return false;
+
+    // Match the device pixel ratio so the result is crisp on HiDPI screens.
+    const QPaintDevice *dev = target->device();
+    const qreal dpr = dev ? dev->devicePixelRatioF() : 1.0;
+
+    QImage buf(rect.size() * dpr, QImage::Format_ARGB32_Premultiplied);
+    if (buf.isNull())
+        return false;
+    buf.setDevicePixelRatio(dpr);
+    buf.fill(Qt::transparent);
+
+    {
+        QPainter bp(&buf);
+        bp.setRenderHints(target->renderHints());
+        bp.setFont(target->font());
+        bp.setPen(target->pen());
+        bp.setBrush(target->brush());
+        bp.setBackground(target->background());
+        bp.setBackgroundMode(target->backgroundMode());
+        bp.setLayoutDirection(target->layoutDirection());
+        bp.translate(-rect.topLeft());
+        fn(&bp);
+    } // painter ends here; all drawing is flushed into buf
+
+    // Premultiplied ARGB: a fully transparent pixel is exactly 0.
+    const int w = buf.width();
+    const int h = buf.height();
+    bool visible = false;
+    for (int y = 0; y < h && !visible; ++y) {
+        const auto *line = reinterpret_cast<const quint32 *>(buf.constScanLine(y));
+        for (int x = 0; x < w; ++x) {
+            if (line[x] != 0) {
+                visible = true;
+                break;
+            }
+        }
+    }
+
+    if (visible)
+        target->drawImage(rect.topLeft(), buf);
+
+    return visible;
+}
+
 void SidePanelItem::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);   // draw children (the graph widget)
@@ -92,30 +146,57 @@ void SidePanelItem::paintEvent(QPaintEvent *event)
 
     const QRect r = this->rect();
 
-    // Selection bg
+    // Background
+    QColor bg;      // This only gets used if the theme doesn't paint anything
+
+    bool needToPaint = false, themeDidPaint = false;
 
     QStyleOptionViewItem option;
     option.initFrom(this);
 
     if (this->m_selected) {
+        needToPaint = true;
+
         option.state |= QStyle::State_Selected;
 
         // If window loses focus, drop State_Active to trigger the GRAY look
         if (this->isActiveWindow() && this->hasFocus()) {
             option.state |= QStyle::State_Active;
         }
-    } else {
+
+        bg = scheme->SidePanelItemSelectedBackgroundColor;
+    } else if (this->m_hovered)
+    {
+        needToPaint = true;
+        option.state |= QStyle::State_MouseOver;
+
+        bg = scheme->SidePanelItemHoverBackgroundColor;
+    } else
+    {
         // Not selected, but window must be active to show the BLUE hover look
         if (this->isActiveWindow()) {
             option.state |= QStyle::State_Active;
         }
+
+        bg = scheme->SidePanelItemBackgroundColor;
     }
 
-    if (this->m_hovered) {
-        option.state |= QStyle::State_MouseOver;
-    }
+    themeDidPaint = didPaint(&p, r, [&](QPainter *p) {       // Some themes don't actually implement painting an item in the hovered state, so we paint the hover manually if we detect that nothing was drawn.
+        style()->drawControl(QStyle::CE_ItemViewItem, &option, p, this);
+    });
 
-    style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, &p, nullptr);
+    if (needToPaint && !themeDidPaint) {
+        // Fallback
+
+        p.fillRect(r, bg);
+
+        if (this->m_selected)
+        {
+            p.setPen(QPen(scheme->SidePanelItemSelectedBorderColor, 2));
+            p.setBrush(Qt::NoBrush);
+            p.drawRect(r.adjusted(1, 1, -1, -1));
+        }
+    }
 
     // Title/subtitle (single row): elide both sides to prevent overlap.
     QFont titleFont = this->font();
