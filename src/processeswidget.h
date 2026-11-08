@@ -60,7 +60,7 @@ class ProcessesWidget : public QWidget
 
     private slots:
         void onTimerTick();
-        void onRefreshFinished(int consumer, quint64 token, const QList<OS::Process> &processes);
+        void onRefreshFinished(int consumer, quint64 token, const QList<OS::Process> &processes, int totalTasks, qlonglong totalThreads);
         void onHeaderContextMenu(const QPoint &pos);
         void onTableContextMenu(const QPoint &pos);
         void onTreeContextMenu(const QPoint &pos);
@@ -85,6 +85,8 @@ class ProcessesWidget : public QWidget
         bool                      m_treeHeaderPersistenceEnabled { false };
         quint64                   m_refreshToken { 0 };
         QList<OS::Process>        m_lastProcessSnapshot;
+        int                       m_totalTasks { 0 };
+        qlonglong                 m_totalThreads { 0 };
         QModelIndex               m_contextMenuTargetIndex;
 
         void setupTable();

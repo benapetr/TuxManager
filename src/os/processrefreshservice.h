@@ -49,7 +49,7 @@ namespace OS
                        uint myUid);
 
         signals:
-            void fetched(int consumer, quint64 token, const QList<Process> &processes);
+            void fetched(int consumer, quint64 token, const QList<Process> &processes, int totalTasks, qlonglong totalThreads);
 
         private:
             QHash<pid_t, quint64> m_prevTicks;
@@ -87,7 +87,7 @@ namespace OS
                                 bool isSuperuser,
                                 uint effectiveUid,
                                 uint myUid);
-            void snapshotReady(int consumer, quint64 token, const QList<Process> &processes);
+            void snapshotReady(int consumer, quint64 token, const QList<Process> &processes, int totalTasks, qlonglong totalThreads);
 
         private:
             QThread              *m_workerThread { nullptr };

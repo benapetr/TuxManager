@@ -66,20 +66,12 @@ ProcessesWidget::ProcessesWidget(OS::ProcessRefreshService *processRefreshServic
     {
         this->m_proxy->setFilterFixedString(text);
         this->m_treeProxy->setFilterFixedString(text);
+        this->updateStatusBar();
     });
     connect(this->ui->runNewTaskButton, &QPushButton::clicked, this, &ProcessesWidget::runNewTask);
     connect(this->ui->openTerminalButton, &QPushButton::clicked, this, &ProcessesWidget::openTerminal);
     connect(this->m_refreshTimer, &QTimer::timeout, this, &ProcessesWidget::onTimerTick);
     connect(this->m_processRefreshService, &OS::ProcessRefreshService::snapshotReady, this, &ProcessesWidget::onRefreshFinished);
-
-    // Update status bar whenever the proxy's visible row count changes
-    // (model reset after refresh, or filter toggle)
-    connect(this->m_proxy, &QAbstractItemModel::modelReset, this, &ProcessesWidget::updateStatusBar);
-    connect(this->m_proxy, &QAbstractItemModel::rowsInserted, this, &ProcessesWidget::updateStatusBar);
-    connect(this->m_proxy, &QAbstractItemModel::rowsRemoved, this, &ProcessesWidget::updateStatusBar);
-    connect(this->m_treeProxy, &QAbstractItemModel::modelReset, this, &ProcessesWidget::updateStatusBar);
-    connect(this->m_treeProxy, &QAbstractItemModel::rowsInserted, this, &ProcessesWidget::updateStatusBar);
-    connect(this->m_treeProxy, &QAbstractItemModel::rowsRemoved, this, &ProcessesWidget::updateStatusBar);
 
     // MainWindow controls active/inactive state based on current top tab.
 }
@@ -370,6 +362,7 @@ void ProcessesWidget::setTreeViewMode(bool enabled)
 
     this->ui->tableView->setVisible(!enabled);
     this->m_treeView->setVisible(enabled);
+    this->updateStatusBar();
 }
 
 void ProcessesWidget::SetActive(bool active)
@@ -436,7 +429,7 @@ void ProcessesWidget::startRefresh()
                                                    options);
 }
 
-void ProcessesWidget::onRefreshFinished(int consumer, quint64 token, const QList<OS::Process> &processes)
+void ProcessesWidget::onRefreshFinished(int consumer, quint64 token, const QList<OS::Process> &processes, int totalTasks, qlonglong totalThreads)
 {
     if (consumer != static_cast<int>(OS::ProcessRefreshService::Consumer::Processes) || token != this->m_refreshToken)
         return;
@@ -480,6 +473,8 @@ void ProcessesWidget::onRefreshFinished(int consumer, quint64 token, const QList
             treeScroll = sb->value();
     }
     this->m_lastProcessSnapshot = processes;
+    this->m_totalTasks = totalTasks;
+    this->m_totalThreads = totalThreads;
     if (this->m_appRegistry)
         this->m_appRegistry->Annotate(this->m_lastProcessSnapshot);
     this->m_model->SetProcesses(this->m_lastProcessSnapshot);
@@ -499,6 +494,9 @@ void ProcessesWidget::onRefreshFinished(int consumer, quint64 token, const QList
             [this](const QModelIndex &sourceKeyIndex) -> QVariant { return this->m_model->data(sourceKeyIndex, Qt::UserRole); },
             tableSnapshot);
     }
+
+    // Update once after both models are ready, including thread-only changes.
+    this->updateStatusBar();
 
     if (this->m_active && this->m_refreshPending && !CFG->RefreshPaused)
     {
@@ -814,15 +812,28 @@ void ProcessesWidget::onTreeContextMenu(const QPoint &pos)
 
 void ProcessesWidget::updateStatusBar()
 {
-    const QList<OS::Process> &all = this->m_lastProcessSnapshot.isEmpty()
-                                    ? this->m_model->GetProcesses()
-                                    : this->m_lastProcessSnapshot;
-    const int totalTasks = all.size();
+    int visible_tasks = 0;
+    qlonglong visible_threads = 0;
+    const QSortFilterProxyModel *proxy = this->m_treeViewMode ? this->m_treeProxy : this->m_proxy;
+    const int thread_column = this->m_treeViewMode ? int(OS::ProcessTreeModel::ColThreads) : int(OS::ProcessModel::ColThreads);
+    // Walk accepted rows, including children in collapsed branches and ancestors
+    // retained by recursive tree filtering. Count once after each refresh/filter change.
+    const auto count_rows = [&](const auto &self, const QModelIndex &parent) -> void
+    {
+        const int rows = proxy->rowCount(parent);
+        visible_tasks += rows;
+        for (int row = 0; row < rows; ++row)
+        {
+            visible_threads += qMax(0, proxy->index(row, thread_column, parent).data(Qt::UserRole).toInt());
+            if (this->m_treeViewMode)
+                self(self, proxy->index(row, 0, parent));
+        }
+    };
+    count_rows(count_rows, QModelIndex());
 
-    qlonglong totalThreads = 0;
-    for (const OS::Process &p : all)
-        totalThreads += qMax(0, p.Threads);
-    const QString text = tr("Tasks: %1  Threads: %2").arg(totalTasks).arg(totalThreads);
+    QString text = tr("Tasks: %1  Threads: %2").arg(visible_tasks).arg(visible_threads);
+    if (visible_tasks < this->m_totalTasks)
+        text += tr(" (Total including filtered items: Tasks: %1  Threads: %2)").arg(this->m_totalTasks).arg(this->m_totalThreads);
 
     this->ui->statusLabel->setText(text);
 }
@@ -942,6 +953,7 @@ void ProcessesWidget::setShowKernelTasks(bool checked)
     this->m_model->SetShowKernelTasks(checked);
     CFG->ShowKernelTasks = checked;
     this->m_proxy->ApplyFilters();
+    this->updateStatusBar();
     this->onTimerTick();
     LOG_DEBUG(QString("ShowKernelTasks = %1").arg(checked));
 }
@@ -952,6 +964,7 @@ void ProcessesWidget::setShowOtherUsersProcesses(bool checked)
     this->m_model->SetShowOtherUsersProcs(checked);
     CFG->ShowOtherUsersProcs = checked;
     this->m_proxy->ApplyFilters();
+    this->updateStatusBar();
     this->onTimerTick();
     LOG_DEBUG(QString("ShowOtherUsersProcs = %1").arg(checked));
 }

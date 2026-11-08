@@ -48,6 +48,12 @@ namespace OS
                 uid_t EffectiveUID        { 0 };
             };
 
+            struct Counts
+            {
+                int Tasks { 0 };
+                qlonglong Threads { 0 };
+            };
+
             pid_t   PID           { 0 };
             pid_t   PPID          { 0 };
             QString Name;                     ///< Short name  (/proc/pid/comm)
@@ -78,7 +84,8 @@ namespace OS
 
             /// Load a snapshot of every running process from /proc.
             static QList<Process> LoadAll();
-            static QList<Process> LoadAll(const LoadOptions &options);
+            /// Optional totals include processes excluded by LoadOptions.
+            static QList<Process> LoadAll(const LoadOptions &options, Counts *totals = nullptr);
 
             /// Human-readable description of a raw state character.
             static QString GetStateString(char state);

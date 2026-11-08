@@ -1,4 +1,5 @@
 # Next
+  * Process task and thread counts now reflect filters, with overall totals shown when items are hidden
   * Added Brazilian Portuguese (pt_BR) localization
   * Added application icons to the process table and tree, with an option to hide them
   * Process names now appear before PIDs by default, with the tree hierarchy beside names and icons

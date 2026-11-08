@@ -279,8 +279,10 @@ QList<Process> Process::LoadAll()
     return Process::LoadAll(LoadOptions{});
 }
 
-QList<Process> Process::LoadAll(const LoadOptions &options)
+QList<Process> Process::LoadAll(const LoadOptions &options, Counts *totals)
 {
+    if (totals)
+        *totals = Counts{};
     QList<Process> list;
 
     const QDir procDir("/proc");
@@ -298,6 +300,12 @@ QList<Process> Process::LoadAll(const LoadOptions &options)
         QByteArray comm_name;
         if (!loadOneStatAndUid(pid, proc, comm_name))
             continue;
+
+        if (totals)
+        {
+            ++totals->Tasks;
+            totals->Threads += qMax(0, proc.Threads);
+        }
 
         // Fast prefilter on fields available from stat + proc dir ownership.
         if (!options.IncludeKernelTasks && proc.IsKernelThread)

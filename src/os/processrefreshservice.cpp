@@ -54,7 +54,8 @@ void ProcessRefreshWorker::fetch(int consumer,
     opts.IsSuperuser = isSuperuser;
     opts.EffectiveUID = static_cast<uid_t>(effectiveUid);
 
-    QList<Process> fresh = Process::LoadAll(opts);
+    Process::Counts totals;
+    QList<Process> fresh = Process::LoadAll(opts, &totals);
 
     if (periodJiffies > 0)
     {
@@ -122,7 +123,7 @@ void ProcessRefreshWorker::fetch(int consumer,
         this->flushIOMetrics();
     }
 
-    emit fetched(consumer, token, fresh);
+    emit fetched(consumer, token, fresh, totals.Tasks, totals.Threads);
 }
 
 void ProcessRefreshWorker::flushIOMetrics()
