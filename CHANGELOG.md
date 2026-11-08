@@ -1,5 +1,15 @@
 # Next
-  * Added application icons to the process table and tree
+  * Added Brazilian Portuguese (pt_BR) localization
+  * Added application icons to the process table and tree, with an option to hide them
+  * Process names now appear before PIDs by default, with the tree hierarchy beside names and icons
+  * Added the Delete keyboard shortcut to terminate selected processes in the table and tree
+  * Extended truncated process names using matching command-line names while preserving custom process names
+  * Fixed AMD SMI GPU temperatures incorrectly showing as 0 degrees Celsius
+  * Fixed Qt 5 build compatibility for process identity hashing
+  * Fixed Nix builds failing to find the translation compiler (lrelease)
+  * Debian/Ubuntu packaging now preserves the existing changelog history
+  * AppImages now bundle SVG icon support and avoid stripping failures with modern libraries
+  * Updated process screenshots and documented installation from Nixpkgs
 
 # 1.0.8
   * Added localization support based on the system locale for:
