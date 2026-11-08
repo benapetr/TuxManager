@@ -102,7 +102,7 @@ uint OS::qHash(const Process::Identity &key, uint seed)
 
 // ── Private: load a single process ───────────────────────────────────────────
 
-bool Process::loadOneStatAndUid(pid_t pid, Process &out)
+bool Process::loadOneStatAndUid(pid_t pid, Process &out, QByteArray &comm_name)
 {
     out.PID = pid;
 
@@ -125,7 +125,8 @@ bool Process::loadOneStatAndUid(pid_t pid, Process &out)
     if (commStart < 0 || commEnd < 0 || commEnd <= commStart)
         return false;
 
-    out.Name = QString::fromUtf8(statData.mid(commStart + 1, commEnd - commStart - 1));
+    comm_name = statData.mid(commStart + 1, commEnd - commStart - 1);
+    out.Name = QString::fromUtf8(comm_name);
 
     // Fields after ") " (0-indexed):
     //  0:state 1:ppid 2:pgrp 3:session 4:tty_nr 5:tpgid 6:flags
@@ -233,7 +234,7 @@ bool Process::loadIO(Process &proc)
     return true;
 }
 
-void Process::loadUserAndCmdline(Process &proc)
+void Process::loadUserAndCmdline(Process &proc, const QByteArray &comm_name)
 {
     // Cache UID -> username/fallback string to avoid repeated getpwuid() lookups.
     proc.User = cachedUserNameForUid(proc.UID);
@@ -251,6 +252,19 @@ void Process::loadUserAndCmdline(Process &proc)
     {
         QByteArray data = cmdFile.readAll();
         cmdFile.close();
+
+        // comm is limited to 15 bytes. Extend it only when argv[0]'s basename
+        // agrees with that prefix, preserving deliberately different task names.
+        // Compare raw bytes because comm may end partway through a UTF-8 character.
+        if (comm_name.size() == 15)
+        {
+            const int arg_end = data.indexOf('\0');
+            const QByteArray arg_zero = arg_end < 0 ? data : data.left(arg_end);
+            const QByteArray basename = arg_zero.mid(arg_zero.lastIndexOf('/') + 1);
+            if (basename.size() > comm_name.size() && basename.startsWith(comm_name))
+                proc.Name = QString::fromUtf8(basename);
+        }
+
         data.replace('\0', ' ');
         proc.CmdLine = QString::fromUtf8(data).trimmed();
     }
@@ -281,7 +295,8 @@ QList<Process> Process::LoadAll(const LoadOptions &options)
             continue;
 
         Process proc;
-        if (!loadOneStatAndUid(pid, proc))
+        QByteArray comm_name;
+        if (!loadOneStatAndUid(pid, proc, comm_name))
             continue;
 
         // Fast prefilter on fields available from stat + proc dir ownership.
@@ -304,7 +319,7 @@ QList<Process> Process::LoadAll(const LoadOptions &options)
             }
         }
 
-        loadUserAndCmdline(proc);
+        loadUserAndCmdline(proc, comm_name);
         list.append(proc);
     }
 

@@ -22,6 +22,7 @@
 #include <QList>
 #include <QHash>
 #include <QMetaType>
+#include <QByteArray>
 #include <QString>
 #include <sys/types.h>
 
@@ -85,10 +86,10 @@ namespace OS
             Identity GetIdentity() const;
 
         private:
-            static bool loadOneStatAndUid(pid_t pid, Process &out);
+            static bool loadOneStatAndUid(pid_t pid, Process &out, QByteArray &comm_name);
             static void loadStatm(Process &proc);
             static bool loadIO(Process &proc);
-            static void loadUserAndCmdline(Process &proc);
+            static void loadUserAndCmdline(Process &proc, const QByteArray &comm_name);
     };
 
     bool operator<(const Process::Identity &lhs, const Process::Identity &rhs);
