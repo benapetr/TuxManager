@@ -1,3 +1,12 @@
+tux-manager (1.1.0) unstable; urgency=medium
+
+  * Add application icons and improve process names, layout and filtering
+  * Add Brazilian Portuguese localization and Delete shortcut for processes
+  * Fix AMD SMI temperatures, Qt 5 compatibility and Nix translation builds
+  * Improve Debian/Ubuntu and AppImage packaging
+
+ -- Petr Bena <petr@bena.rocks>  Sat, 14 Nov 2026 12:00:00 +0100
+
 tux-manager (1.0.8) unstable; urgency=medium
 
   * Add multilingual UI support and Simplified Chinese translations

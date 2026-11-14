@@ -1,8 +1,8 @@
-# Next
-  * Process task and thread counts now reflect filters, with overall totals shown when items are hidden
-  * Added Brazilian Portuguese (pt_BR) localization
+# 1.1.0
   * Added application icons to the process table and tree, with an option to hide them
   * Process names now appear before PIDs by default, with the tree hierarchy beside names and icons
+  * Process task and thread counts now reflect filters, with overall totals shown when items are hidden
+  * Added Brazilian Portuguese (pt_BR) localization
   * Added the Delete keyboard shortcut to terminate selected processes in the table and tree
   * Extended truncated process names using matching command-line names while preserving custom process names
   * Fixed AMD SMI GPU temperatures incorrectly showing as 0 degrees Celsius
