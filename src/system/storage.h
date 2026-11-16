@@ -61,6 +61,7 @@ class Storage
 
 
     private:
+        static QString kernelDeviceName(const QString &devPath);
         static QStringList listTrackedBlockDevices(const QSet<QString> &measurableDevices);
         static QSet<QString> resolveBaseBlockDevices(const QString &devName);
         static bool shouldIgnoreBlockDevice(const QString &baseName);

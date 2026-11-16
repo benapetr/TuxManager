@@ -45,6 +45,27 @@ bool Storage::shouldIgnoreBlockDevice(const QString &baseName)
         || baseName.startsWith("zram");
 }
 
+QString Storage::kernelDeviceName(const QString &devPath)
+{
+    // /dev/mapper/<name> links to /dev/dm-N, the only name sysfs knows
+    const QString canonical = QFileInfo(devPath).canonicalFilePath();
+    if (!canonical.isEmpty())
+        return QFileInfo(canonical).fileName();
+
+    // No /dev in sandboxes such as Flatpak, match the name in sysfs
+    const QString name = QFileInfo(devPath).fileName();
+    if (devPath.startsWith("/dev/mapper/"))
+    {
+        const QDir sysBlockDir("/sys/class/block");
+        for (const QString &entry : sysBlockDir.entryList(QStringList() << "dm-*", QDir::Dirs | QDir::NoDotAndDotDot))
+        {
+            if (Misc::ReadFile(QString("/sys/class/block/%1/dm/name").arg(entry)) == name)
+                return entry;
+        }
+    }
+    return name;
+}
+
 QStringList Storage::listTrackedBlockDevices(const QSet<QString> &measurableDevices)
 {
     QStringList out;
@@ -135,7 +156,7 @@ void Storage::refreshDisks(const QSet<QString> &measurableDevices)
             const QString source = QString::fromUtf8(parts.at(sepIdx + 2));
             if (!source.startsWith("/dev/"))
                 continue;
-            const QString raw = QFileInfo(source).fileName();
+            const QString raw = Storage::kernelDeviceName(source);
 
             const QString mountPoint = (parts.size() > 4) ? QString::fromUtf8(parts.at(4)) : QString();
             if (!mountPoint.isEmpty())
@@ -175,7 +196,7 @@ void Storage::refreshDisks(const QSet<QString> &measurableDevices)
             const QString src = QString::fromUtf8(parts.at(0));
             if (!src.startsWith("/dev/"))
                 continue;
-            const QString raw = QFileInfo(src).fileName();
+            const QString raw = Storage::kernelDeviceName(src);
             rawHasSwap.insert(raw, true);
         }
         sf.close();
