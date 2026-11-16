@@ -20,6 +20,8 @@
 #include "../misc.h"
 #include <QDir>
 #include <QFile>
+#include <QHash>
+#include <QRegularExpression>
 
 namespace
 {
@@ -64,6 +66,63 @@ namespace
                 stats.CompressedKb += Misc::BytesToKiB(origBytes);
             if (memOk)
                 stats.MemUsedKb += Misc::BytesToKiB(memBytes);
+        }
+
+        return stats;
+    }
+
+    struct DimmStats
+    {
+        int SlotsTotal { 0 };
+        int SlotsUsed { 0 };
+        int SpeedMtps { 0 };
+    };
+
+    // SMBIOS entries are root-only, udev keeps a readable copy
+    DimmStats readUdevDimmStats()
+    {
+        DimmStats stats;
+        QFile dbFile("/run/udev/data/+dmi:id");
+        if (!dbFile.open(QIODevice::ReadOnly | QIODevice::Text))
+            return stats;
+
+        QHash<int, qint64> sizeByDevice;
+        QHash<int, int> speedByDevice;
+        QHash<int, int> configuredSpeedByDevice;
+        static const QRegularExpression deviceRe("^E:MEMORY_DEVICE_(\\d+)_([A-Z_]+)=(.*)$");
+        for (;;)
+        {
+            const QByteArray line = dbFile.readLine();
+            if (line.isNull())
+                break;
+
+            const QRegularExpressionMatch m = deviceRe.match(QString::fromUtf8(line).trimmed());
+            if (!m.hasMatch())
+                continue;
+
+            const int device = m.captured(1).toInt();
+            const QString key = m.captured(2);
+            const QString value = m.captured(3);
+            if (!sizeByDevice.contains(device))
+                sizeByDevice.insert(device, 0);
+            if (key == "SIZE")
+                sizeByDevice[device] = value.toLongLong();
+            else if (key == "SPEED_MTS")
+                speedByDevice.insert(device, value.toInt());
+            else if (key == "CONFIGURED_SPEED_MTS")
+                configuredSpeedByDevice.insert(device, value.toInt());
+        }
+        dbFile.close();
+
+        stats.SlotsTotal = static_cast<int>(sizeByDevice.size());
+        for (auto it = sizeByDevice.cbegin(); it != sizeByDevice.cend(); ++it)
+        {
+            if (it.value() <= 0)
+                continue;
+
+            ++stats.SlotsUsed;
+            const int configured = configuredSpeedByDevice.value(it.key(), 0);
+            stats.SpeedMtps = qMax(stats.SpeedMtps, configured > 0 ? configured : speedByDevice.value(it.key(), 0));
         }
 
         return stats;
@@ -212,6 +271,14 @@ void Memory::readHardwareMetadata()
                 configured = static_cast<int>(Misc::ReadLe16(raw, 32));
             speedMtps = qMax(speedMtps, configured > 0 ? configured : speed);
         }
+    }
+
+    if (slotsTotal == 0)
+    {
+        const DimmStats udev = readUdevDimmStats();
+        slotsTotal = udev.SlotsTotal;
+        slotsUsed  = udev.SlotsUsed;
+        speedMtps  = udev.SpeedMtps;
     }
 
     this->m_memDimmSlotsTotal = slotsTotal;
