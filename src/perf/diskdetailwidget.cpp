@@ -84,6 +84,7 @@ DiskDetailWidget::DiskDetailWidget(QWidget *parent) : QWidget(parent), ui(new Ui
     UIHelper::EnableCopyLabelContextMenu(this->ui->readValueLabel);
     UIHelper::EnableCopyLabelContextMenu(this->ui->formattedValueLabel);
     UIHelper::EnableCopyLabelContextMenu(this->ui->writeValueLabel);
+    UIHelper::EnableCopyLabelContextMenu(this->ui->responseTimeValueLabel);
     UIHelper::EnableCopyLabelContextMenu(this->ui->systemDiskValueLabel);
     UIHelper::EnableCopyLabelContextMenu(this->ui->deviceValueLabel);
     UIHelper::EnableCopyLabelContextMenu(this->ui->swapDeviceValueLabel);
@@ -159,6 +160,11 @@ void DiskDetailWidget::onUpdated()
     this->ui->activeValueLabel->setText(QString::number(disk.ActivePct, 'f', 0) + "%");
     this->ui->readValueLabel->setText(Misc::FormatBytesPerSecond(disk.ReadBps));
     this->ui->writeValueLabel->setText(Misc::FormatBytesPerSecond(disk.WriteBps));
+    const double responseMs = disk.AvgResponseMs;
+    const int responseDecimals = responseMs < 1.0 ? 2 : (responseMs < 100.0 ? 1 : 0);
+    this->ui->responseTimeValueLabel->setText(responseMs > 0.0
+                                              ? tr("%1 ms").arg(responseMs, 0, 'f', responseDecimals)
+                                              : tr("0 ms"));
     this->ui->capacityValueLabel->setText(Misc::FormatBytes(static_cast<quint64>(qMax<qint64>(0, disk.CapacityBytes)), 1));
     this->ui->formattedValueLabel->setText(disk.FormattedBytes > 0
                                            ? Misc::FormatBytes(static_cast<quint64>(qMax<qint64>(0, disk.FormattedBytes)), 1)
