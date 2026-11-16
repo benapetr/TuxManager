@@ -270,6 +270,8 @@ bool Storage::Sample()
         quint64 readSectors  { 0 };
         quint64 writeSectors { 0 };
         quint64 ioMs         { 0 };
+        quint64 completedIos { 0 };
+        quint64 ioWaitMs     { 0 };
     };
     QHash<QString, DiskCounters> countersByName;
     QSet<QString> measurableDevices;
@@ -287,6 +289,14 @@ bool Storage::Sample()
         c.readSectors  = parts.at(5).toULongLong();
         c.writeSectors = parts.at(9).toULongLong();
         c.ioMs         = parts.at(12).toULongLong();
+        // Same set as iostat's await, flushes excluded
+        c.completedIos = parts.at(3).toULongLong() + parts.at(7).toULongLong();
+        c.ioWaitMs     = parts.at(6).toULongLong() + parts.at(10).toULongLong();
+        if (parts.size() >= 18)
+        {
+            c.completedIos += parts.at(14).toULongLong();
+            c.ioWaitMs     += parts.at(17).toULongLong();
+        }
         const QString devName = QString::fromUtf8(parts.at(2));
         countersByName.insert(devName, c);
         measurableDevices.insert(devName);
@@ -312,6 +322,7 @@ bool Storage::Sample()
             d->ActivePct = 0.0;
             d->ReadBps = 0.0;
             d->WriteBps = 0.0;
+            d->AvgResponseMs = 0.0;
             d->ActiveHistory.Push(0.0);
             Misc::PushHistoryAndUpdateMax(d->ReadHistory, 0.0, d->MaxTransferBps);
             Misc::PushHistoryAndUpdateMax(d->WriteHistory, 0.0, d->MaxTransferBps);
@@ -324,6 +335,8 @@ bool Storage::Sample()
             d->PrevReadSecs  = c.readSectors;
             d->PrevWriteSecs = c.writeSectors;
             d->PrevIoMs      = c.ioMs;
+            d->PrevIos       = c.completedIos;
+            d->PrevIoWaitMs  = c.ioWaitMs;
             d->ActiveHistory.Push(0.0);
             Misc::PushHistoryAndUpdateMax(d->ReadHistory, 0.0, d->MaxTransferBps);
             Misc::PushHistoryAndUpdateMax(d->WriteHistory, 0.0, d->MaxTransferBps);
@@ -333,14 +346,19 @@ bool Storage::Sample()
         const quint64 dReadSecs  = (c.readSectors  >= d->PrevReadSecs ) ? (c.readSectors  - d->PrevReadSecs ) : 0;
         const quint64 dWriteSecs = (c.writeSectors >= d->PrevWriteSecs) ? (c.writeSectors - d->PrevWriteSecs) : 0;
         const quint64 dIoMs      = (c.ioMs         >= d->PrevIoMs     ) ? (c.ioMs         - d->PrevIoMs     ) : 0;
+        const quint64 dIos       = (c.completedIos >= d->PrevIos      ) ? (c.completedIos - d->PrevIos      ) : 0;
+        const quint64 dIoWaitMs  = (c.ioWaitMs     >= d->PrevIoWaitMs ) ? (c.ioWaitMs     - d->PrevIoWaitMs ) : 0;
 
         d->PrevReadSecs  = c.readSectors;
         d->PrevWriteSecs = c.writeSectors;
         d->PrevIoMs      = c.ioMs;
+        d->PrevIos       = c.completedIos;
+        d->PrevIoWaitMs  = c.ioWaitMs;
 
         d->ActivePct = qBound(0.0, static_cast<double>(dIoMs) * 100.0 / static_cast<double>(dtMs), 100.0);
         d->ReadBps  = static_cast<double>(dReadSecs)  * kSectorBytes * 1000.0 / static_cast<double>(dtMs);
         d->WriteBps = static_cast<double>(dWriteSecs) * kSectorBytes * 1000.0 / static_cast<double>(dtMs);
+        d->AvgResponseMs = (dIos > 0) ? static_cast<double>(dIoWaitMs) / static_cast<double>(dIos) : 0.0;
 
         d->ActiveHistory.Push(d->ActivePct);
         Misc::PushHistoryAndUpdateMax(d->ReadHistory, d->ReadBps, d->MaxTransferBps);
