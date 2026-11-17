@@ -1,3 +1,8 @@
+# 1.1.1
+
+- Tux Manager now fits smaller displays and scrolls through longer performance views.
+- Added settings for system, light, and dark appearance, refresh speed, graph history, and sidebar options.
+
 # 1.1.0
   * Added application icons to the process table and tree, with an option to hide them
   * Process names now appear before PIDs by default, with the tree hierarchy beside names and icons

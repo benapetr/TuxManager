@@ -64,7 +64,7 @@ namespace UIHelper
     //! Adds a "Graph time" contex menu to an existing menu that gives options to change the timespan of a graph.
     void AddGraphWindowContextMenu(QMenu *menu);
     //! Adds a "Refresh interval" contex menu to an existing menu that gives options to change the refresh rate.
-    void AddRefreshIntervalContextMenu(QMenu *menu, QTimer *timer = nullptr, bool timerOwnerActive = false);
+    void AddRefreshIntervalContextMenu(QMenu *menu);
     //! Adds a context menu with a Copy action that copies the label text to the clipboard.
     void EnableCopyLabelContextMenu(QLabel *label);
     //! Adds a Copy graph action to an existing menu that copies the widget snapshot to the clipboard.

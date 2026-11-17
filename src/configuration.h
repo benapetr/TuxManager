@@ -50,6 +50,7 @@ class Configuration : public QObject
         // ── General ──────────────────────────────────────────────────────────────
         int RefreshRateMs { 1000 };  ///< How often live data is refreshed (ms)
         bool RefreshPaused { false }; ///< True when periodic refresh is paused.
+        QString AppearanceMode { "system" }; ///< system, light, or dark.
         bool UseCustomColorScheme { false };
         QVariantMap CustomColorScheme;
         bool IsSuperuser { false };  ///< True when effective UID is 0 (runtime-only).
@@ -99,6 +100,9 @@ class Configuration : public QObject
         int PerfGraphWindowSec { 60 };
         QStringList PerfSidePanelGroupOrder;
         QByteArray PerformanceSplitterState;   ///< Saved via QSplitter::saveState()
+
+    signals:
+        void RefreshSettingsChanged();
 
     private:
         explicit Configuration(QObject *parent = nullptr);

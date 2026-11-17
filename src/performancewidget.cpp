@@ -29,20 +29,35 @@
 #include "perf/sidepanelgroup.h"
 #include "perf/sidepanelorderdialog.h"
 #include "ui/uihelper.h"
+#include "ui/thememanager.h"
 
 #include <QAction>
 #include <QApplication>
+#include <QFrame>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QMenu>
 #include <QPalette>
 #include <QPainter>
 #include <QRegularExpression>
+#include <QScrollArea>
 #include <QSplitter>
 #include <QSplitterHandle>
 
 namespace
 {
+    QScrollArea *createScrollableDetail(QWidget *detail, QWidget *parent)
+    {
+        auto *scrollArea = new QScrollArea(parent);
+        scrollArea->setFrameShape(QFrame::NoFrame);
+        scrollArea->setWidgetResizable(true);
+        scrollArea->viewport()->setBackgroundRole(QPalette::Window);
+        scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        scrollArea->setWidget(detail);
+        return scrollArea;
+    }
+
     class PerformanceSplitterHandle : public QSplitterHandle
     {
         public:
@@ -216,8 +231,9 @@ void PerformanceWidget::setupSidePanel()
     this->m_cpuItem->SetGraphColor(scheme->CpuGraphLineColor, scheme->CpuGraphFillColor);
     this->m_cpuItem->SetGraphSource(Metrics::GetCPU()->CpuHistory());
     this->m_sidePanel->AddItem(this->m_cpuItem);
-    this->m_stack->addWidget(this->m_cpuDetail);
-    this->m_detailByItem.insert(this->m_cpuItem, this->m_cpuDetail);
+    QWidget *cpuPage = createScrollableDetail(this->m_cpuDetail, this->m_stack);
+    this->m_stack->addWidget(cpuPage);
+    this->m_detailByItem.insert(this->m_cpuItem, cpuPage);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     // Memory item
@@ -226,8 +242,9 @@ void PerformanceWidget::setupSidePanel()
     this->m_memoryItem->SetGraphColor(scheme->MemoryGraphLineColor, scheme->MemoryGraphFillColor);
     this->m_memoryItem->SetGraphSource(Metrics::GetMemory()->MemHistory());
     this->m_sidePanel->AddItem(this->m_memoryItem);
-    this->m_stack->addWidget(this->m_memDetail);
-    this->m_detailByItem.insert(this->m_memoryItem, this->m_memDetail);
+    QWidget *memoryPage = createScrollableDetail(this->m_memDetail, this->m_stack);
+    this->m_stack->addWidget(memoryPage);
+    this->m_detailByItem.insert(this->m_memoryItem, memoryPage);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     // Swap item
@@ -236,8 +253,9 @@ void PerformanceWidget::setupSidePanel()
     this->m_swapItem->SetGraphColor(scheme->SwapUsageGraphLineColor, scheme->SwapUsageGraphFillColor);
     this->m_swapItem->SetGraphSource(Metrics::GetSwap()->SwapUsageHistory());
     this->m_sidePanel->AddItem(this->m_swapItem);
-    this->m_stack->addWidget(this->m_swapDetail);
-    this->m_detailByItem.insert(this->m_swapItem, this->m_swapDetail);
+    QWidget *swapPage = createScrollableDetail(this->m_swapDetail, this->m_stack);
+    this->m_stack->addWidget(swapPage);
+    this->m_detailByItem.insert(this->m_swapItem, swapPage);
 
     this->setupDiskPanels();
     this->setupNetworkPanels();
@@ -261,9 +279,10 @@ void PerformanceWidget::setupDiskPanels()
 
         auto *detail = new Perf::DiskDetailWidget(this);
         detail->SetDisk(i);
-        this->m_stack->addWidget(detail);
+        QWidget *page = createScrollableDetail(detail, this->m_stack);
+        this->m_stack->addWidget(page);
         this->m_diskDetails.append(detail);
-        this->m_detailByItem.insert(item, detail);
+        this->m_detailByItem.insert(item, page);
     }
 }
 
@@ -284,9 +303,10 @@ void PerformanceWidget::setupGpuPanels()
 
         auto *detail = new Perf::GpuDetailWidget(this);
         detail->SetGpu(i);
-        this->m_stack->addWidget(detail);
+        QWidget *page = createScrollableDetail(detail, this->m_stack);
+        this->m_stack->addWidget(page);
         this->m_gpuDetails.append(detail);
-        this->m_detailByItem.insert(item, detail);
+        this->m_detailByItem.insert(item, page);
     }
 }
 
@@ -307,9 +327,10 @@ void PerformanceWidget::setupNetworkPanels()
 
         auto *detail = new Perf::NetworkDetailWidget(this);
         detail->SetNetwork(i);
-        this->m_stack->addWidget(detail);
+        QWidget *page = createScrollableDetail(detail, this->m_stack);
+        this->m_stack->addWidget(page);
         this->m_networkDetails.append(detail);
-        this->m_detailByItem.insert(item, detail);
+        this->m_detailByItem.insert(item, page);
     }
 }
 
@@ -489,7 +510,7 @@ void PerformanceWidget::onSidePanelContextMenu(Perf::SidePanelItem * /*item*/, c
     showGrid->setChecked(CFG->SidePanelGridEnabled);
 
     menu.addSeparator();
-    UIHelper::AddRefreshIntervalContextMenu(&menu, nullptr, this->m_active);
+    UIHelper::AddRefreshIntervalContextMenu(&menu);
     UIHelper::AddGraphWindowContextMenu(&menu);
 
     menu.addSeparator();
@@ -501,43 +522,17 @@ void PerformanceWidget::onSidePanelContextMenu(Perf::SidePanelItem * /*item*/, c
 
     if (picked == customizeOrder)
     {
-        SidePanelOrderDialog dialog(sanitizeSidePanelGroupOrder(CFG->PerfSidePanelGroupOrder), this);
-        if (dialog.exec() != QDialog::Accepted)
-            return;
-
-        CFG->PerfSidePanelGroupOrder = serializeSidePanelGroupOrder(dialog.GetOrder());
-        this->applySidePanelOrder();
-        CFG->Save();
+        this->CustomizeOrder();
         return;
     }
-
     if (picked == customizeColors)
     {
-        ColorSchemeDialog dialog(this);
-        if (dialog.exec() != QDialog::Accepted)
-            return;
-
-        CFG->UseCustomColorScheme = dialog.UseCustomScheme();
-        const ColorScheme scheme = dialog.BuildScheme();
-        CFG->CustomColorScheme = scheme.ToVariantMap();
-
-        if (CFG->UseCustomColorScheme)
-            ColorScheme::Install(new ColorScheme(scheme));
-        else
-            ColorScheme::Install(new ColorScheme(ColorScheme::DetectDarkMode()
-                                                 ? ColorScheme::DefaultDark()
-                                                 : ColorScheme::DefaultLight()));
-
-        this->ApplyColorScheme();
-        CFG->Save();
+        this->CustomizeColors();
         return;
     }
-
     if (picked == showGrid)
     {
-        CFG->SidePanelGridEnabled = showGrid->isChecked();
-        this->applySidePanelGridEnabled();
-        CFG->Save();
+        this->SetSidePanelGridEnabled(showGrid->isChecked());
         return;
     }
 
@@ -575,6 +570,34 @@ void PerformanceWidget::onSidePanelContextMenu(Perf::SidePanelItem * /*item*/, c
     this->updateSamplingPolicy();
     if (this->m_active)
         this->onProviderUpdated();
+}
+
+void PerformanceWidget::CustomizeOrder()
+{
+    SidePanelOrderDialog dialog(sanitizeSidePanelGroupOrder(CFG->PerfSidePanelGroupOrder), this);
+    if (dialog.exec() != QDialog::Accepted)
+        return;
+    CFG->PerfSidePanelGroupOrder = serializeSidePanelGroupOrder(dialog.GetOrder());
+    this->applySidePanelOrder();
+    CFG->Save();
+}
+
+void PerformanceWidget::CustomizeColors()
+{
+    ColorSchemeDialog dialog(this);
+    if (dialog.exec() != QDialog::Accepted)
+        return;
+    CFG->UseCustomColorScheme = dialog.UseCustomScheme();
+    CFG->CustomColorScheme = dialog.BuildScheme().ToVariantMap();
+    ThemeManager::Get()->Apply();
+    CFG->Save();
+}
+
+void PerformanceWidget::SetSidePanelGridEnabled(bool enabled)
+{
+    CFG->SidePanelGridEnabled = enabled;
+    this->applySidePanelGridEnabled();
+    CFG->Save();
 }
 
 void PerformanceWidget::ApplyColorScheme()
