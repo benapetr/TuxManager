@@ -78,6 +78,9 @@ void Configuration::Load()
     this->ActiveTab      = s.value("Window/ActiveTab", this->ActiveTab).toInt();
 
     // General
+    this->AppearanceMode = s.value("General/AppearanceMode", "system").toString();
+    if (this->AppearanceMode != "light" && this->AppearanceMode != "dark")
+        this->AppearanceMode = "system";
     this->RefreshRateMs =        s.value("General/RefreshRateMs",        this->RefreshRateMs).toInt();
     this->RefreshPaused =        s.value("General/RefreshPaused",        this->RefreshPaused).toBool();
     this->UseCustomColorScheme = s.value("General/UseCustomColorScheme", this->UseCustomColorScheme).toBool();
@@ -168,6 +171,7 @@ void Configuration::Save()
     s.setValue("Window/ActiveTab",              this->ActiveTab);
 
     // General
+    s.setValue("General/AppearanceMode",        this->AppearanceMode);
     s.setValue("General/RefreshRateMs",         this->RefreshRateMs);
     s.setValue("General/RefreshPaused",         this->RefreshPaused);
     s.setValue("General/UseCustomColorScheme",  this->UseCustomColorScheme);

@@ -71,6 +71,14 @@ ProcessesWidget::ProcessesWidget(OS::ProcessRefreshService *processRefreshServic
     connect(this->ui->runNewTaskButton, &QPushButton::clicked, this, &ProcessesWidget::runNewTask);
     connect(this->ui->openTerminalButton, &QPushButton::clicked, this, &ProcessesWidget::openTerminal);
     connect(this->m_refreshTimer, &QTimer::timeout, this, &ProcessesWidget::onTimerTick);
+    connect(CFG, &Configuration::RefreshSettingsChanged, this, [this]()
+    {
+        this->m_refreshTimer->setInterval(CFG->RefreshRateMs);
+        if (this->m_active && !CFG->RefreshPaused)
+            this->m_refreshTimer->start();
+        else
+            this->m_refreshTimer->stop();
+    });
     connect(this->m_processRefreshService, &OS::ProcessRefreshService::snapshotReady, this, &ProcessesWidget::onRefreshFinished);
 
     // MainWindow controls active/inactive state based on current top tab.
@@ -736,7 +744,7 @@ void ProcessesWidget::onTableContextMenu(const QPoint &pos)
     connect(reniceAction, &QAction::triggered, this, &ProcessesWidget::reniceSelected);
 
     menu.addSeparator();
-    UIHelper::AddRefreshIntervalContextMenu(&menu, this->m_refreshTimer, this->m_active);
+    UIHelper::AddRefreshIntervalContextMenu(&menu);
     UIHelper::AddGlobalContextMenuItems(&menu, this);
 
     menu.exec(this->ui->tableView->viewport()->mapToGlobal(pos));
@@ -798,7 +806,7 @@ void ProcessesWidget::onTreeContextMenu(const QPoint &pos)
     connect(reniceAction, &QAction::triggered, this, &ProcessesWidget::reniceSelected);
 
     menu.addSeparator();
-    UIHelper::AddRefreshIntervalContextMenu(&menu, this->m_refreshTimer, this->m_active);
+    UIHelper::AddRefreshIntervalContextMenu(&menu);
     UIHelper::AddGlobalContextMenuItems(&menu, this);
 
     menu.exec(this->m_treeView->viewport()->mapToGlobal(pos));

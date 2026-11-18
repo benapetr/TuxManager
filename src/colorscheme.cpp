@@ -183,8 +183,8 @@ ColorScheme ColorScheme::DefaultDark()
     scheme.NetworkTitleColor = scheme.NetworkGraphLineColor;
     scheme.GpuTitleColor = scheme.GpuGraphLineColor;
     scheme.MutedTextColor = QColor(0xaa, 0xaa, 0xaa);                   // medium grey
-    scheme.StatLabelColor = QColor(0x88, 0x88, 0x88);                   // grey
-    scheme.AxisLabelColor = QColor(0x66, 0x66, 0x66);                   // dark grey
+    scheme.StatLabelColor = QColor(0xbb, 0xbb, 0xbb);                   // light grey
+    scheme.AxisLabelColor = QColor(0xaa, 0xaa, 0xaa);                   // readable on dark backgrounds
     scheme.MemoryLegendTextColor = QColor(0xaa, 0xaa, 0xaa);            // medium grey
     scheme.MemoryLegendUsedColor = scheme.MemoryGraphLineColor;
     scheme.MemoryLegendCompressedColor = QColor(0xaa, 0x66, 0xaa);      // muted purple

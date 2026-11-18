@@ -1,3 +1,11 @@
+tux-manager (1.1.1) unstable; urgency=medium
+
+  * Fit the application to smaller displays and add scrolling to performance details
+  * Add system, light, and dark appearance options and a Settings menu
+  * Add controls for refresh speed, graph history, and performance sidebar options
+
+ -- Petr Bena <petr@bena.rocks>  Tue, 17 Nov 2026 19:23:05 +0800
+
 tux-manager (1.1.0) unstable; urgency=medium
 
   * Add application icons and improve process names, layout and filtering

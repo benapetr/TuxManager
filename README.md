@@ -59,6 +59,32 @@ make -j$(nproc)
 ./tux-manager
 ```
 
+## Settings
+
+Use **Settings → Appearance** to follow the system theme or select **Light** or
+**Dark**. Changes apply immediately to the application and its graphs and are
+remembered between launches. System mode reads the desktop's appearance
+preference through the Settings portal, falling back to the native Qt palette.
+
+The Settings menu also provides refresh intervals and pause, graph history,
+performance sidebar grid and ordering, and custom graph colors. Custom graph
+colors remain in effect when changing appearance; disable **Use custom colors**
+in the color dialog to return to the theme defaults.
+
+## UI regression checks
+
+The appearance checks exercise theme switching and persistence, system preference
+changes, custom colors, refresh pause/resume, and resizing to 640×480. They use a
+temporary configuration directory and do not change your application settings.
+
+```bash
+mkdir -p build-appearance-tests
+cd build-appearance-tests
+qmake ../tests/appearance.pro  # or qmake6
+make -j$(nproc)
+QT_QPA_PLATFORM=offscreen ./appearance-tests
+```
+
 ## Translating
 
 To test a different UI locale without changing the system settings, override

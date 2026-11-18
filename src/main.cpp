@@ -19,6 +19,7 @@
 #include "mainwindow.h"
 #include "configuration.h"
 #include "i18n.h"
+#include "ui/thememanager.h"
 #include "logger.h"
 #include "globals.h"
 
@@ -103,6 +104,7 @@ int main(int argc, char *argv[])
 
     // ── Bootstrap ─────────────────────────────────────────────────────────────
     CFG->Load();
+    ThemeManager::Get()->Apply();
     CFG->ForceGpuDrm = parser.isSet(forceDrmOption);
 
     // Install translations for the system language before any widget is

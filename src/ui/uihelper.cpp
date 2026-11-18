@@ -25,6 +25,7 @@
 
 #include <QAbstractItemModel>
 #include <QAction>
+#include <QActionGroup>
 #include <QHeaderView>
 #include <QItemSelectionModel>
 #include <QLabel>
@@ -198,81 +199,83 @@ QAction *UIHelper::AddCopyWidgetAction(QMenu *menu, QWidget *widget, const QStri
     return copyAction;
 }
 
-void UIHelper::AddRefreshIntervalContextMenu(QMenu *menu, QTimer *timer, bool timerOwnerActive)
+void UIHelper::AddRefreshIntervalContextMenu(QMenu *menu)
 {
     QMenu *refreshMenu = menu->addMenu(QObject::tr("Refresh interval"));
-
-    QHash<QAction *, int> intervalActions;
-    intervalActions.clear();
-
+    refreshMenu->setObjectName("refreshIntervalMenu");
+    auto *group = new QActionGroup(refreshMenu);
     for (int ms : CFG->RefreshRateAvailableIntervals)
     {
-        QAction *a = refreshMenu->addAction(Misc::SimplifyTimeMS(ms));
-        a->setCheckable(true);
-        a->setChecked(!CFG->RefreshPaused && CFG->RefreshRateMs == ms);
-        intervalActions.insert(a, ms);
+        QAction *action = refreshMenu->addAction(Misc::SimplifyTimeMS(ms));
+        action->setCheckable(true);
+        action->setData(ms);
+        action->setChecked(!CFG->RefreshPaused && CFG->RefreshRateMs == ms);
+        group->addAction(action);
+    }
+    refreshMenu->addSeparator();
+    QAction *paused = refreshMenu->addAction(QObject::tr("Paused"));
+    paused->setCheckable(true);
+    paused->setData(0);
+    paused->setChecked(CFG->RefreshPaused);
+    group->addAction(paused);
 
-        QObject::connect(a, &QAction::triggered, menu, [ a, intervalActions, timer, timerOwnerActive]()
-        {          
-            const int ms = intervalActions.value(a);
-            CFG->RefreshPaused = false;
+    QObject::connect(refreshMenu, &QMenu::aboutToShow, refreshMenu, [group]()
+    {
+        const int current = CFG->RefreshPaused ? 0 : CFG->RefreshRateMs;
+        for (QAction *action : group->actions())
+            action->setChecked(action->data().toInt() == current);
+    });
+    QObject::connect(group, &QActionGroup::triggered, refreshMenu, [](QAction *action)
+    {
+        const int ms = action->data().toInt();
+        CFG->RefreshPaused = ms == 0;
+        if (ms > 0)
+        {
             CFG->RefreshRateMs = ms;
             Metrics::Get()->SetInterval(ms);
-            PerformanceWidget *pw = PerformanceWidget::Get();
-            if (pw && pw->IsActive())
+        }
+        emit CFG->RefreshSettingsChanged();
+        if (PerformanceWidget *pw = PerformanceWidget::Get())
+        {
+            if (pw->IsActive())
                 pw->onProviderUpdated();
-
-            if (timer && timerOwnerActive)
-                timer->start(ms);
-        });
-    }
-
-    refreshMenu->addSeparator();
-
-    QAction *pausedAction = refreshMenu->addAction(QObject::tr("Paused"));
-    pausedAction->setCheckable(true);
-    pausedAction->setChecked(CFG->RefreshPaused);
-
-    QObject::connect(pausedAction, &QAction::triggered, menu, [ timer, timerOwnerActive]()
-    {
-        CFG->RefreshPaused = true;
-        PerformanceWidget *pw = PerformanceWidget::Get();
-        if (pw && pw->IsActive())
-            pw->onProviderUpdated();
-
-        if (timer && timerOwnerActive)
-            timer->stop();
+        }
+        CFG->Save();
     });
 }
 
 void UIHelper::AddGraphWindowContextMenu(QMenu *menu)
 {
-    QMenu *timeMenu = menu->addMenu(QObject::tr("Graph time"));
+    QMenu *timeMenu = menu->addMenu(QObject::tr("Graph history"));
+    timeMenu->setObjectName("graphHistoryMenu");
+    auto *group = new QActionGroup(timeMenu);
     QVector<int> intervals = CFG->DataWindowAvailableIntervals;
     if (intervals.isEmpty())
         intervals.append(CFG->PerfGraphWindowSec);
-    QHash<QAction *, int> graphWindowActions;
-
     for (int sec : intervals)
     {
-        QAction *a = timeMenu->addAction(Misc::SimplifyTime(sec));
-        a->setCheckable(true);
-        a->setChecked(CFG->PerfGraphWindowSec == sec);
-        graphWindowActions.insert(a, sec);
-
-        QObject::connect(a, &QAction::triggered, menu, [=]()
-        {          
-            const int requestedWindow = graphWindowActions.value(a);
-            CFG->PerfGraphWindowSec = requestedWindow;
-            PerformanceWidget *pw = PerformanceWidget::Get();
-            if (pw)
-            {
-                pw->applyGraphWindowSeconds();
-                if (pw->IsActive())
-                    pw->onProviderUpdated();
-            }
-        });
+        QAction *action = timeMenu->addAction(Misc::SimplifyTime(sec));
+        action->setCheckable(true);
+        action->setData(sec);
+        action->setChecked(CFG->PerfGraphWindowSec == sec);
+        group->addAction(action);
     }
+    QObject::connect(timeMenu, &QMenu::aboutToShow, timeMenu, [group]()
+    {
+        for (QAction *action : group->actions())
+            action->setChecked(action->data().toInt() == CFG->PerfGraphWindowSec);
+    });
+    QObject::connect(group, &QActionGroup::triggered, timeMenu, [](QAction *action)
+    {
+        CFG->PerfGraphWindowSec = action->data().toInt();
+        if (PerformanceWidget *pw = PerformanceWidget::Get())
+        {
+            pw->applyGraphWindowSeconds();
+            if (pw->IsActive())
+                pw->onProviderUpdated();
+        }
+        CFG->Save();
+    });
 }
 
 void UIHelper::AddGraphContextMenuItems(QMenu *menu, QWidget *graphArea)

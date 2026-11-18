@@ -92,6 +92,14 @@ ServicesWidget::ServicesWidget(QWidget *parent)
     connect(hv, &QHeaderView::customContextMenuRequested, this, &ServicesWidget::onHeaderContextMenu);
     connect(this->ui->tableView, &QTableView::customContextMenuRequested, this, &ServicesWidget::onTableContextMenu);
     connect(this->m_refreshTimer, &QTimer::timeout, this, &ServicesWidget::onTimerTick);
+    connect(CFG, &Configuration::RefreshSettingsChanged, this, [this]()
+    {
+        this->m_refreshTimer->setInterval(CFG->RefreshRateMs);
+        if (this->m_active && !CFG->RefreshPaused)
+            this->m_refreshTimer->start();
+        else
+            this->m_refreshTimer->stop();
+    });
 
     this->m_worker->moveToThread(this->m_workerThread);
     connect(this->m_workerThread, &QThread::finished, this->m_worker, &QObject::deleteLater);
@@ -318,7 +326,7 @@ void ServicesWidget::onTableContextMenu(const QPoint &pos)
     });
 
     menu.addSeparator();
-    UIHelper::AddRefreshIntervalContextMenu(&menu, this->m_refreshTimer, this->m_active);
+    UIHelper::AddRefreshIntervalContextMenu(&menu);
     UIHelper::AddGlobalContextMenuItems(&menu, this);
 
     menu.exec(this->ui->tableView->viewport()->mapToGlobal(pos));

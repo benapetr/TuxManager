@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui dbus
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -29,6 +29,7 @@ SOURCES += \
     system/network.cpp \
     system/storage.cpp \
     system/swap.cpp \
+    ui/thememanager.cpp \
     ui/widgetstyle.cpp \
     ui/uihelper.cpp \
     configuration.cpp \
@@ -85,6 +86,7 @@ HEADERS += \
     system/network.h \
     system/storage.h \
     system/swap.h \
+    ui/thememanager.h \
     ui/widgetstyle.h \
     ui/uihelper.h \
     configuration.h \

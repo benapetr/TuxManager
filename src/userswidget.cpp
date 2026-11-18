@@ -97,6 +97,14 @@ UsersWidget::UsersWidget(OS::ProcessRefreshService *processRefreshService, QWidg
     hv->setSortIndicator(this->m_sortColumn, this->m_sortOrder);
 
     connect(this->m_refreshTimer, &QTimer::timeout, this, &UsersWidget::onTimerTick);
+    connect(CFG, &Configuration::RefreshSettingsChanged, this, [this]()
+    {
+        this->m_refreshTimer->setInterval(CFG->RefreshRateMs);
+        if (this->m_active && !CFG->RefreshPaused)
+            this->m_refreshTimer->start();
+        else
+            this->m_refreshTimer->stop();
+    });
     connect(this->m_processRefreshService,
             &OS::ProcessRefreshService::snapshotReady,
             this,
@@ -210,7 +218,7 @@ void UsersWidget::onContextMenu(const QPoint &pos)
         menu.addSeparator();
     }
 
-    UIHelper::AddRefreshIntervalContextMenu(&menu, this->m_refreshTimer, this->m_active);
+    UIHelper::AddRefreshIntervalContextMenu(&menu);
     UIHelper::AddGlobalContextMenuItems(&menu, this);
 
     menu.exec(this->ui->treeWidget->viewport()->mapToGlobal(pos));

@@ -48,6 +48,9 @@ class PerformanceWidget : public QWidget
         void SetActive(bool active);
         bool IsActive() const { return this->m_active; }
         void ApplyColorScheme();
+        void CustomizeColors();
+        void CustomizeOrder();
+        void SetSidePanelGridEnabled(bool enabled);
         static PerformanceWidget *Get() { return s_instance; };
         void onProviderUpdated();
         void applyGraphWindowSeconds();
