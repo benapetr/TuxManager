@@ -52,9 +52,6 @@ namespace Misc
     //! Converts bytes to KiB, rounding up so partial KiB still count toward memory usage.
     qint64 BytesToKiB(quint64 bytes);
 
-    quint16 ReadLe16(const QByteArray &raw, int off);
-    quint32 ReadLe32(const QByteArray &raw, int off);
-
     QString ReadFile(const QString &path);
 
     bool TextContainsAnyToken(const QString &text, const QStringList &tokens);

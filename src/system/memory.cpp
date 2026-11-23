@@ -70,63 +70,6 @@ namespace
 
         return stats;
     }
-
-    struct DimmStats
-    {
-        int SlotsTotal { 0 };
-        int SlotsUsed { 0 };
-        int SpeedMtps { 0 };
-    };
-
-    // SMBIOS entries are root-only, udev keeps a readable copy
-    DimmStats readUdevDimmStats()
-    {
-        DimmStats stats;
-        QFile dbFile("/run/udev/data/+dmi:id");
-        if (!dbFile.open(QIODevice::ReadOnly | QIODevice::Text))
-            return stats;
-
-        QHash<int, qint64> sizeByDevice;
-        QHash<int, int> speedByDevice;
-        QHash<int, int> configuredSpeedByDevice;
-        static const QRegularExpression deviceRe("^E:MEMORY_DEVICE_(\\d+)_([A-Z_]+)=(.*)$");
-        for (;;)
-        {
-            const QByteArray line = dbFile.readLine();
-            if (line.isNull())
-                break;
-
-            const QRegularExpressionMatch m = deviceRe.match(QString::fromUtf8(line).trimmed());
-            if (!m.hasMatch())
-                continue;
-
-            const int device = m.captured(1).toInt();
-            const QString key = m.captured(2);
-            const QString value = m.captured(3);
-            if (!sizeByDevice.contains(device))
-                sizeByDevice.insert(device, 0);
-            if (key == "SIZE")
-                sizeByDevice[device] = value.toLongLong();
-            else if (key == "SPEED_MTS")
-                speedByDevice.insert(device, value.toInt());
-            else if (key == "CONFIGURED_SPEED_MTS")
-                configuredSpeedByDevice.insert(device, value.toInt());
-        }
-        dbFile.close();
-
-        stats.SlotsTotal = static_cast<int>(sizeByDevice.size());
-        for (auto it = sizeByDevice.cbegin(); it != sizeByDevice.cend(); ++it)
-        {
-            if (it.value() <= 0)
-                continue;
-
-            ++stats.SlotsUsed;
-            const int configured = configuredSpeedByDevice.value(it.key(), 0);
-            stats.SpeedMtps = qMax(stats.SpeedMtps, configured > 0 ? configured : speedByDevice.value(it.key(), 0));
-        }
-
-        return stats;
-    }
 }
 
 Memory::Memory()
@@ -229,61 +172,50 @@ void Memory::updateZswapEnabled()
 
 void Memory::readHardwareMetadata()
 {
-    // Best-effort DIMM population and memory speed from SMBIOS type 17.
-    const QDir entriesDir("/sys/firmware/dmi/entries");
-    const QStringList type17 = entriesDir.entryList(QStringList() << "17-*", QDir::Dirs | QDir::NoDotAndDotDot);
-    int slotsTotal = 0;
-    int slotsUsed = 0;
-    int speedMtps = 0;
+    // Best-effort DIMM population and memory speed from SMBIOS type 17. The raw
+    // entries in /sys/firmware/dmi are root-only, so use the copy udev decodes at boot.
+    QFile dbFile("/run/udev/data/+dmi:id");
+    if (!dbFile.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
 
-    for (const QString &entry : type17)
+    QHash<int, qint64> sizeByDevice;
+    QHash<int, int> speedByDevice;
+    QHash<int, int> configuredSpeedByDevice;
+    static const QRegularExpression deviceRe("^E:MEMORY_DEVICE_(\\d+)_([A-Z_]+)=(.*)$");
+    for (;;)
     {
-        QFile rawFile(entriesDir.absoluteFilePath(entry + "/raw"));
-        if (!rawFile.open(QIODevice::ReadOnly))
+        const QByteArray line = dbFile.readLine();
+        if (line.isNull())
+            break;
+
+        const QRegularExpressionMatch m = deviceRe.match(QString::fromUtf8(line).trimmed());
+        if (!m.hasMatch())
             continue;
 
-        const QByteArray raw = rawFile.readAll();
-        rawFile.close();
-        if (raw.size() < 0x17)
+        const int device = m.captured(1).toInt();
+        const QString key = m.captured(2);
+        const QString value = m.captured(3);
+        if (!sizeByDevice.contains(device))
+            sizeByDevice.insert(device, 0);
+        if (key == "SIZE")
+            sizeByDevice[device] = value.toLongLong();
+        else if (key == "SPEED_MTS")
+            speedByDevice.insert(device, value.toInt());
+        else if (key == "CONFIGURED_SPEED_MTS")
+            configuredSpeedByDevice.insert(device, value.toInt());
+    }
+    dbFile.close();
+
+    this->m_memDimmSlotsTotal = static_cast<int>(sizeByDevice.size());
+    for (auto it = sizeByDevice.cbegin(); it != sizeByDevice.cend(); ++it)
+    {
+        if (it.value() <= 0)
             continue;
 
-        ++slotsTotal;
-
-        const int structLen = static_cast<unsigned char>(raw.at(1));
-        const quint16 sizeField = Misc::ReadLe16(raw, 12);
-
-        qint64 sizeMb = 0;
-        if (sizeField == 0 || sizeField == 0xFFFF)
-            sizeMb = 0;
-        else if (sizeField == 0x7FFF && structLen >= 0x20)
-            sizeMb = static_cast<qint64>(Misc::ReadLe32(raw, 28));
-        else if (sizeField & 0x8000)
-            sizeMb = static_cast<qint64>(sizeField & 0x7FFF) / 1024; // value is in KiB
-        else
-            sizeMb = static_cast<qint64>(sizeField); // value is in MiB
-
-        if (sizeMb > 0)
-        {
-            ++slotsUsed;
-            const int speed = static_cast<int>(Misc::ReadLe16(raw, 21));
-            int configured = 0;
-            if (structLen >= 0x22)
-                configured = static_cast<int>(Misc::ReadLe16(raw, 32));
-            speedMtps = qMax(speedMtps, configured > 0 ? configured : speed);
-        }
+        ++this->m_memDimmSlotsUsed;
+        const int configured = configuredSpeedByDevice.value(it.key(), 0);
+        this->m_memSpeedMtps = qMax(this->m_memSpeedMtps, configured > 0 ? configured : speedByDevice.value(it.key(), 0));
     }
-
-    if (slotsTotal == 0)
-    {
-        const DimmStats udev = readUdevDimmStats();
-        slotsTotal = udev.SlotsTotal;
-        slotsUsed  = udev.SlotsUsed;
-        speedMtps  = udev.SpeedMtps;
-    }
-
-    this->m_memDimmSlotsTotal = slotsTotal;
-    this->m_memDimmSlotsUsed  = slotsUsed;
-    this->m_memSpeedMtps      = speedMtps;
 }
 
 double Memory::MemFraction() const

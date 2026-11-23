@@ -119,26 +119,6 @@ qint64 Misc::BytesToKiB(quint64 bytes)
     return static_cast<qint64>((bytes + 1023ULL) / 1024ULL);
 }
 
-quint16 Misc::ReadLe16(const QByteArray &raw, int off)
-{
-    if (off < 0 || off + 1 >= raw.size())
-        return 0;
-    const quint16 b0 = static_cast<unsigned char>(raw.at(off));
-    const quint16 b1 = static_cast<unsigned char>(raw.at(off + 1));
-    return static_cast<quint16>(b0 | (b1 << 8));
-}
-
-quint32 Misc::ReadLe32(const QByteArray &raw, int off)
-{
-    if (off < 0 || off + 3 >= raw.size())
-        return 0;
-    const quint32 b0 = static_cast<unsigned char>(raw.at(off));
-    const quint32 b1 = static_cast<unsigned char>(raw.at(off + 1));
-    const quint32 b2 = static_cast<unsigned char>(raw.at(off + 2));
-    const quint32 b3 = static_cast<unsigned char>(raw.at(off + 3));
-    return static_cast<quint32>(b0 | (b1 << 8) | (b2 << 16) | (b3 << 24));
-}
-
 QString Misc::ReadFile(const QString &path)
 {
     QFile f(path);
