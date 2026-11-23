@@ -1,3 +1,6 @@
+# Next
+  * Memory slots and speed are now read only from the udev database, which needs systemd 245 or newer
+
 # 1.1.0
   * Added application icons to the process table and tree, with an option to hide them
   * Process names now appear before PIDs by default, with the tree hierarchy beside names and icons
